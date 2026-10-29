@@ -6,7 +6,7 @@ PushGate is an open-source safety gate for fast-moving config and data pushes. B
 
 It ships with **PushBench**, a reproducible benchmark of incidents rebuilt from public postmortems, so you can measure how much of a fleet each rollout strategy would have lost.
 
-> **Status: design phase.** This repository currently holds the plan, not the implementation. See [Roadmap](#roadmap) for what gets built and in what order.
+> **Status: week 1 of 6 done.** The fleet simulator, both consumers at four releases each, the DuckDB producer and the push-all baseline (B0) work end to end. The gate itself (weeks 2 to 4) is not built yet. See [Roadmap](#roadmap).
 
 ---
 
@@ -104,39 +104,71 @@ A simulated fleet of 500 to 2,000 lightweight consumer processes across a few re
 
 The working hypothesis, to be reported whichever way it comes out: B2 limits blast radius to roughly the ring 0 share, while B3 stops most of these shapes before any exposure, at under 2 minutes of push delay and a single-digit false-hold rate.
 
-## Planned layout
+## Layout
 
 ```
 pushgate/
 ├── consumers/
-│   ├── rust-proxy/        feature-table consumer (Cloudflare shape)
-│   └── go-policy/         policy checker (Google shape)
-├── producer/              writes a feature file every N minutes from DuckDB
-├── gate/                  structural check, semantic diff, sandbox runner
-├── rollout/               rings, bake times, rollback, kill switch
-├── lib/                   last-known-good fallback library for consumers
-├── bench/
-│   ├── scenarios/         bad-push scenarios (about 12)
-│   ├── corpus/            good-push corpus (about 500)
-│   └── run.py             runs B0 to B3, 5 seeds each
-├── docker-compose.yml     fleet simulator
-└── Makefile               make demo, make bench
+│   ├── rust-proxy/        bot-proxy: feature-table consumer (Cloudflare and CrowdStrike shapes)
+│   └── go-policy/         go-policy: quota policy checker (Google shape)
+├── fleet/
+│   ├── cmd/fleet/         supervisor: runs the fleet, restarts crashes, publishes the registry
+│   ├── cmd/pgctl/         status, push (B0 today), wait, crashes
+│   ├── cmd/loadgen/       steady traffic, success rate by release and region
+│   └── internal/registry/ fleet layout and live registry types
+├── producer/              builds feature files from DuckDB, and policy files
+├── deploy/                fleet.json (layout), prometheus.yml
+├── seed/                  initial config files every instance starts with
+├── scripts/               smoke.py (CI check), demo_week1.sh
+├── docs/versions.md       what differs between releases v41 to v44
+├── Dockerfile, docker-compose.yml
+└── Makefile
 ```
 
-## Quickstart (planned)
+Planned for later weeks: `gate/` (structural check, semantic diff, sandbox runner), `rollout/` (rings, bake times, rollback, kill switch), `lib/` (last-known-good library) and `bench/` (scenarios, good-push corpus, runner).
+
+## Quickstart
+
+Needs Go 1.24+, a recent stable Rust toolchain and Python 3.10+.
 
 ```bash
-make demo    # replay a Cloudflare-shaped push against B0, B2 and B3
-make bench   # run the full PushBench suite and produce charts
+make build        # bin/bot-proxy/v41..v44, bin/go-policy/v41..v44, bin/fleet, bin/pgctl, bin/loadgen
+make test         # Rust, Go and producer unit tests
+make demo-week1   # 500-instance fleet; the Cloudflare-shaped push takes down every bot-proxy, then recovers
+make smoke        # all three incident shapes; checks each one breaks exactly the releases it should
 ```
 
-Neither target exists yet. See the roadmap.
+Or run the pieces yourself:
+
+```bash
+make fleet                                   # terminal 1: 500 instances, registry on :19000
+bin/loadgen -rate 2000                       # terminal 2: traffic, one line per second
+bin/pgctl status                             # who runs what, and which config each instance serves
+bin/pgctl push -consumer bot-proxy -file f.json -percent 1   # deliver to a stable 1% subset
+bin/pgctl crashes                            # crash-looping instances, grouped by panic
+```
+
+With Docker, `docker compose up --build -d` runs the fleet plus Prometheus, which scrapes all 500 instances. Prometheus is at http://localhost:9090 and the registry at http://localhost:19000/registry.
+
+### What week 1 shows
+
+`make smoke` on a 4-core machine, 500 instances, 2,000 requests per second, no gate:
+
+| Scenario | Bad file | Crashed |
+|---|---|---|
+| Cloudflare | Producer query returns every feature twice (110 → 220) | bot-proxy v41, v42, v43, v44: 100% |
+| CrowdStrike | 5 rules gain a 21st match field | bot-proxy v41 to v43: 100%. v44: 0% |
+| Google Cloud | 3 policy rows with `enforce_quota` and a blank quota | go-policy v43, v44: 100%. v41, v42: 0% |
+
+Each push reached every instance of that consumer in under a second. Rolling back recovered the fleet in about 9 seconds, mostly restart backoff. The Cloudflare file comes from a real SQL flaw: the producer's metadata query filters on table name but not schema, so making a second schema visible doubles its output.
+
+One side effect: with Rust backtraces turned on, 400 crash-looping instances spent enough CPU symbolizing backtraces to stall a 4-core machine. That echoes Cloudflare's finding that error reporting made their outage worse. The supervisor turns backtraces off by default (`-backtraces` turns them back on).
 
 ## Roadmap
 
 | Week | Deliverable |
 |---|---|
-| 1 | Fleet simulator and consumers: Rust and Go consumers, 500+ mixed-version processes, version registry, producer, Prometheus metrics |
+| 1 ✅ | Fleet simulator and consumers: Rust and Go consumers, 500+ mixed-version processes, version registry, producer, Prometheus metrics |
 | 2 | Baselines B0 to B2: push service, rings, alarm rollback, kill switch. Rebuild the three incidents and confirm B0 takes down the fleet in each |
 | 3 | Gate checks: semantic diff (row count, cardinality, null rate, PSI drift) and sandbox with traffic replay, under 1 minute per run |
 | 4 | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |

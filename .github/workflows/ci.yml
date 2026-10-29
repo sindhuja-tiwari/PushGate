@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: consumers/rust-proxy
+      - name: Unit tests
+        run: make test
+      - name: Build every release
+        run: make build
+      - name: Smoke test (100-instance fleet, three incident shapes)
+        run: .venv/bin/python scripts/smoke.py --scale 0.2 --rate 500

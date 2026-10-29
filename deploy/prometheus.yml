@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 5s
+  scrape_timeout: 2s
+
+scrape_configs:
+  # Fleet-level gauges and per-instance restart counters.
+  - job_name: fleet-supervisor
+    static_configs:
+      - targets: ["127.0.0.1:19000"]
+
+  # Every consumer instance. The supervisor writes this file on start.
+  - job_name: consumers
+    file_sd_configs:
+      - files: ["/state/prom_targets.json"]
+        refresh_interval: 10s

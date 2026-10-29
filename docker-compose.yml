@@ -1,0 +1,33 @@
+# PushBench fleet simulator.
+#
+#   docker compose up --build -d
+#   docker compose exec fleet pgctl status
+#   docker compose exec fleet loadgen -rate 2000 -duration 30s
+#   open http://localhost:9090 (Prometheus) and http://localhost:19000/registry
+#
+# Prometheus shares the fleet container's network namespace, so it can scrape
+# all 500 instances on 127.0.0.1 without publishing 500 ports.
+services:
+  fleet:
+    build: .
+    image: pushgate-fleet:dev
+    ports:
+      - "19000:19000"   # supervisor: /registry, /metrics
+      - "9090:9090"     # Prometheus (published here because it shares this network)
+    volumes:
+      - state:/app/state
+    stop_grace_period: 20s
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    network_mode: "service:fleet"
+    depends_on: [fleet]
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - state:/state:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=2d
+
+volumes:
+  state:

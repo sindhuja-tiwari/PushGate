@@ -1,0 +1,30 @@
+[package]
+name = "bot-proxy"
+version = "0.1.0"
+edition = "2021"
+description = "PushGate test consumer: a bot-scoring proxy module with a preallocated feature table (Cloudflare shape) and a fixed-arity rule template (CrowdStrike shape)."
+license = "Apache-2.0"
+
+[[bin]]
+name = "bot-proxy"
+path = "src/main.rs"
+
+[features]
+# Exactly one version feature is enabled per build. Each one is a different
+# "release" of the consumer with different limits. See docs/versions.md.
+default = []
+v41 = []
+v42 = []
+v43 = []
+v44 = []
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tiny_http = "0.12"
+
+[profile.release]
+# A panic kills the whole process, like a crashed proxy worker. The fleet
+# supervisor then restarts it, and it reloads the same file.
+panic = "abort"
+opt-level = 2

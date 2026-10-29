@@ -1,0 +1,5 @@
+/bin/
+/state/
+/.venv/
+consumers/rust-proxy/target/
+__pycache__/
