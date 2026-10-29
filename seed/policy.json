@@ -1,0 +1,1595 @@
+{
+ "schema": "quota-policy/1",
+ "config_version": "pol-20261029T145811Z-f73c747980",
+ "policies": [
+  {
+   "project": "p-000",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-000",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-000",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-000",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-001",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-001",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-001",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-001",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-002",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-002",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-002",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-002",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-003",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-003",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-003",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-003",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-004",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-004",
+   "api": "storage.write",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-004",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-004",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-005",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-005",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-005",
+   "api": "compute.list",
+   "allow": false,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-005",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-006",
+   "api": "storage.read",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-006",
+   "api": "storage.write",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-006",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-006",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-007",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-007",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-007",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-007",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-008",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-008",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-008",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-008",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-009",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-009",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-009",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-009",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-010",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-010",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-010",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-010",
+   "api": "iam.get",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-011",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-011",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-011",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-011",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-012",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-012",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-012",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-012",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-013",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-013",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-013",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-013",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-014",
+   "api": "storage.read",
+   "allow": false,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-014",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-014",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-014",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-015",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-015",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-015",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-015",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-016",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-016",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-016",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-016",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-017",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-017",
+   "api": "storage.write",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-017",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-017",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-018",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-018",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-018",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-018",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-019",
+   "api": "storage.read",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-019",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-019",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-019",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-020",
+   "api": "storage.read",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-020",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-020",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-020",
+   "api": "iam.get",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-021",
+   "api": "storage.read",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-021",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-021",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-021",
+   "api": "iam.get",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-022",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-022",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-022",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-022",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-023",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-023",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-023",
+   "api": "compute.list",
+   "allow": false,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-023",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-024",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-024",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-024",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-024",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-025",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-025",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-025",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-025",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-026",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-026",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-026",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-026",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-027",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-027",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-027",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-027",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-028",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-028",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-028",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-028",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-029",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-029",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-029",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-029",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-030",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-030",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-030",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-030",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-031",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-031",
+   "api": "storage.write",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-031",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-031",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-032",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-032",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-032",
+   "api": "compute.list",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-032",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-033",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-033",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-033",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-033",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-034",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-034",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-034",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-034",
+   "api": "iam.get",
+   "allow": false,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-035",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-035",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-035",
+   "api": "compute.list",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-035",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-036",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-036",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-036",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-036",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-037",
+   "api": "storage.read",
+   "allow": false,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-037",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-037",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-037",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-038",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-038",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-038",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-038",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-039",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-039",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-039",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-039",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-040",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-040",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-040",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-040",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-041",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-041",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-041",
+   "api": "compute.list",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-041",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-042",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-042",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-042",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-042",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-043",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-043",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-043",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-043",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-044",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-044",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-044",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-044",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-045",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-045",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-045",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 6000,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-045",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-046",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-046",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-046",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-046",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-047",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-047",
+   "api": "storage.write",
+   "allow": false,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-047",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-047",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-048",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-048",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-048",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-048",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-049",
+   "api": "storage.read",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 1200,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-049",
+   "api": "storage.write",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  },
+  {
+   "project": "p-049",
+   "api": "compute.list",
+   "allow": true,
+   "enforce_quota": true,
+   "quota": {
+    "limit_per_min": 600,
+    "burst": 50
+   }
+  },
+  {
+   "project": "p-049",
+   "api": "iam.get",
+   "allow": true,
+   "enforce_quota": false,
+   "quota": null
+  }
+ ]
+}

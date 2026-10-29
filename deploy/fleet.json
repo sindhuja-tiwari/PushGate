@@ -1,0 +1,23 @@
+{
+  "state_dir": "state",
+  "bin_dir": "bin",
+  "base_port": 20000,
+  "seed": 7,
+  "regions": ["us-east", "us-west", "eu-west", "ap-south"],
+  "consumers": [
+    {
+      "name": "bot-proxy",
+      "per_region": 100,
+      "config_file": "feature.json",
+      "seed_file": "seed/feature.json",
+      "versions": {"41": 5, "42": 15, "43": 30, "44": 50}
+    },
+    {
+      "name": "go-policy",
+      "per_region": 25,
+      "config_file": "policy.json",
+      "seed_file": "seed/policy.json",
+      "versions": {"41": 10, "42": 20, "43": 30, "44": 40}
+    }
+  ]
+}
