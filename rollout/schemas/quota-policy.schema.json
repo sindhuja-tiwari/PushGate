@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pushgate.dev/schemas/quota-policy-1.json",
+  "title": "quota-policy/1",
+  "description": "What the policy file format promises. quota may be null, because policies without enforcement have none. The schema does not tie quota to enforce_quota: that rule only became important when releases v43+ started reading quota.",
+  "type": "object",
+  "required": ["schema", "config_version", "policies"],
+  "properties": {
+    "schema": {"const": "quota-policy/1"},
+    "config_version": {"type": "string", "minLength": 1},
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["project", "api", "allow", "enforce_quota", "quota"],
+        "properties": {
+          "project": {"type": "string", "minLength": 1},
+          "api": {"type": "string", "minLength": 1},
+          "allow": {"type": "boolean"},
+          "enforce_quota": {"type": "boolean"},
+          "quota": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "required": ["limit_per_min", "burst"],
+                "properties": {
+                  "limit_per_min": {"type": "integer", "minimum": 0},
+                  "burst": {"type": "integer", "minimum": 0}
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

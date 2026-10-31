@@ -1,0 +1,16 @@
+{
+  "name": "cloudflare-duplicate-rows",
+  "incident": "Cloudflare, 18 Nov 2025",
+  "consumer": "bot-proxy",
+  "summary": "A database permission change makes the producer's metadata query return every feature twice. The file grows from 110 to 220 features, past the 200-feature preallocation (128 on v41).",
+  "breaks": ["v41", "v42", "v43", "v44"],
+  "good": [
+    ["{py}", "producer/producer.py", "init", "--db", "{work}/producer.duckdb"],
+    ["{py}", "producer/producer.py", "features", "--db", "{work}/producer.duckdb", "--out", "{good}"]
+  ],
+  "bad": [
+    ["{py}", "producer/producer.py", "grant-r0", "--db", "{work}/producer.duckdb"],
+    ["{py}", "producer/producer.py", "features", "--db", "{work}/producer.duckdb", "--out", "{bad}"],
+    ["{py}", "producer/producer.py", "revoke-r0", "--db", "{work}/producer.duckdb"]
+  ]
+}

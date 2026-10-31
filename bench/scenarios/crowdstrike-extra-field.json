@@ -1,0 +1,14 @@
+{
+  "name": "crowdstrike-extra-field",
+  "incident": "CrowdStrike, 19 Jul 2024",
+  "consumer": "bot-proxy",
+  "summary": "Five rules use a new 21-field template. Releases v41 to v43 have 20 input slots and read out of bounds, but only when a request reaches field 21. v44 has the extra slot.",
+  "breaks": ["v41", "v42", "v43"],
+  "good": [
+    ["{py}", "producer/producer.py", "init", "--db", "{work}/producer.duckdb"],
+    ["{py}", "producer/producer.py", "features", "--db", "{work}/producer.duckdb", "--out", "{good}"]
+  ],
+  "bad": [
+    ["{py}", "producer/producer.py", "features", "--db", "{work}/producer.duckdb", "--out", "{bad}", "--extra-field", "v1", "--extra-count", "5"]
+  ]
+}

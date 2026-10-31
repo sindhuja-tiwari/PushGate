@@ -6,12 +6,13 @@
 #   make fleet        run the 500-instance fleet in the foreground
 #   make smoke        start the fleet, push a good and a bad file, check results
 #   make demo-week1   the Cloudflare-shaped push against B0 (push-all)
+#   make bench        B0, B1 and B2 on every incident scenario (about 10 minutes)
 
 VERSIONS   := 41 42 43 44
 PY         := .venv/bin/python
 CARGO_DIR  := consumers/rust-proxy
 
-.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 clean
+.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench clean
 
 build: build-rust build-go tools
 
@@ -35,6 +36,8 @@ tools:
 	go build -o bin/fleet ./fleet/cmd/fleet
 	go build -o bin/pgctl ./fleet/cmd/pgctl
 	go build -o bin/loadgen ./fleet/cmd/loadgen
+	go build -o bin/rollout ./rollout/cmd/rollout
+	go build -o bin/pushbench ./bench/cmd/pushbench
 
 producer-deps: $(PY)
 $(PY):
@@ -59,6 +62,9 @@ smoke: build producer-deps
 
 demo-week1: build producer-deps
 	scripts/demo_week1.sh
+
+bench: build producer-deps
+	bin/pushbench -window 45s -bake 10s
 
 clean:
 	rm -rf bin state

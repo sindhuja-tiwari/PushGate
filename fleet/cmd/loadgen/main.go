@@ -22,7 +22,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/sindhuja-tiwari/pushgate/fleet/internal/registry"
+	"github.com/sindhuja-tiwari/pushgate/internal/registry"
 )
 
 // Request vocabulary. The producer draws feature templates from the same
@@ -96,6 +96,7 @@ func main() {
 	jsonl := flag.String("jsonl", "", "also append one JSON report per interval to this file")
 	workers := flag.Int("workers", 256, "concurrent request workers")
 	quiet := flag.Bool("quiet", false, "only print the final summary")
+	listen := flag.String("listen", "", "serve per-instance results at http://ADDR/instances?window=N (e.g. 127.0.0.1:19100); rollout alarms read it")
 	flag.Parse()
 
 	snap, err := registry.Fetch(*reg)
@@ -129,7 +130,11 @@ func main() {
 		Transport: &http.Transport{MaxIdleConns: 2048, MaxIdleConnsPerHost: 4, IdleConnTimeout: 30 * time.Second},
 	}
 	st := &stats{keys: map[string]*counter{}}
+	per := newPerInstance()
 	var dropped atomic.Int64
+	if *listen != "" {
+		go servePerInstance(*listen, per)
+	}
 	jobs := make(chan registry.Instance, *workers*4)
 
 	var wg sync.WaitGroup
@@ -145,6 +150,7 @@ func main() {
 					ok = resp.StatusCode == 200
 					resp.Body.Close()
 				}
+				per.record(i.ID, ok, time.Now())
 				for _, k := range []string{
 					"consumer=" + i.Consumer,
 					"version=" + i.Consumer + "/v" + strconv.Itoa(i.Version),
@@ -247,4 +253,112 @@ loop:
 	wg.Wait()
 	report()
 	fmt.Printf("summary: %d requests, %.2f%% ok, worst interval %.1f%% ok\n", totOK+totFail, 100*float64(totOK)/float64(max(totOK+totFail, 1)), 100*minRate)
+}
+
+// perInstance keeps per-second ok/fail buckets for each instance, so a
+// reader can ask for the last N seconds, like a load balancer's per-backend
+// error rate.
+const bucketCount = 64
+
+type bucket struct {
+	sec      int64
+	ok, fail int64
+}
+
+type instBuckets struct {
+	mu sync.Mutex
+	b  [bucketCount]bucket
+}
+
+type perInstance struct {
+	mu sync.RWMutex
+	m  map[string]*instBuckets
+}
+
+func newPerInstance() *perInstance { return &perInstance{m: map[string]*instBuckets{}} }
+
+func (p *perInstance) get(id string) *instBuckets {
+	p.mu.RLock()
+	ib := p.m[id]
+	p.mu.RUnlock()
+	if ib != nil {
+		return ib
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if ib = p.m[id]; ib == nil {
+		ib = &instBuckets{}
+		p.m[id] = ib
+	}
+	return ib
+}
+
+func (p *perInstance) record(id string, ok bool, now time.Time) {
+	sec := now.Unix()
+	ib := p.get(id)
+	ib.mu.Lock()
+	b := &ib.b[sec%bucketCount]
+	if b.sec != sec {
+		*b = bucket{sec: sec}
+	}
+	if ok {
+		b.ok++
+	} else {
+		b.fail++
+	}
+	ib.mu.Unlock()
+}
+
+// window sums the current second and the n-1 before it.
+func (p *perInstance) window(n int64, now time.Time) map[string][2]int64 {
+	if n < 1 {
+		n = 1
+	}
+	if n >= bucketCount {
+		n = bucketCount - 1
+	}
+	cur := now.Unix()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	out := make(map[string][2]int64, len(p.m))
+	for id, ib := range p.m {
+		var ok, fail int64
+		ib.mu.Lock()
+		for _, b := range ib.b {
+			if b.sec > cur-n && b.sec <= cur {
+				ok += b.ok
+				fail += b.fail
+			}
+		}
+		ib.mu.Unlock()
+		out[id] = [2]int64{ok, fail}
+	}
+	return out
+}
+
+func servePerInstance(addr string, p *perInstance) {
+	type counts struct {
+		OK   int64 `json:"ok"`
+		Fail int64 `json:"fail"`
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
+		n, _ := strconv.ParseInt(r.URL.Query().Get("window"), 10, 64)
+		if n == 0 {
+			n = 5
+		}
+		body := struct {
+			WindowS   int64             `json:"window_s"`
+			Instances map[string]counts `json:"instances"`
+		}{WindowS: n, Instances: map[string]counts{}}
+		for id, c := range p.window(n, time.Now()) {
+			body.Instances[id] = counts{OK: c[0], Fail: c[1]}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(body)
+	})
+	srv := &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatalf("loadgen: listen %s: %v", addr, err)
+	}
 }
