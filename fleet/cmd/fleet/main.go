@@ -31,7 +31,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sindhuja-tiwari/pushgate/fleet/internal/registry"
+	"github.com/sindhuja-tiwari/pushgate/internal/registry"
 )
 
 const (

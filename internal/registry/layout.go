@@ -2,6 +2,8 @@ package registry
 
 import (
 	"fmt"
+	"hash/fnv"
+	"math"
 	"math/rand"
 	"path/filepath"
 	"sort"
@@ -93,4 +95,36 @@ func apportion(weights map[string]int, n int) ([]int, error) {
 		}
 	}
 	return out, nil
+}
+
+// ringHash places an instance on a stable ring. The same id always gets the
+// same position, so a 1% ring is always a subset of the 10% ring.
+func ringHash(id string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(id))
+	return h.Sum32()
+}
+
+// RingMembers returns the first pct percent of instances in stable ring
+// order, rounded up and never fewer than one (if there are any instances).
+func RingMembers(insts []Instance, pct float64) []Instance {
+	if len(insts) == 0 || pct <= 0 {
+		return nil
+	}
+	sorted := append([]Instance(nil), insts...)
+	sort.SliceStable(sorted, func(i, j int) bool {
+		hi, hj := ringHash(sorted[i].ID), ringHash(sorted[j].ID)
+		if hi != hj {
+			return hi < hj
+		}
+		return sorted[i].ID < sorted[j].ID
+	})
+	n := int(math.Ceil(pct / 100 * float64(len(sorted))))
+	if n < 1 {
+		n = 1
+	}
+	if n > len(sorted) {
+		n = len(sorted)
+	}
+	return sorted[:n]
 }

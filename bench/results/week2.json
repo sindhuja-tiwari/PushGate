@@ -1,0 +1,3910 @@
+[
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b0",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 400,
+    "push": {
+      "id": "20261031T164438.559Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b0",
+      "config_version": "feat-20261031T164428Z-43f5d134d6",
+      "started": "2026-10-31T16:44:38.559218484Z",
+      "status": "completed",
+      "fleet": 400,
+      "exposed": 400,
+      "exposed_share": 1,
+      "time_to_full_ms": 202,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 202,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 400,
+          "detail": "400 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 202,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 20,
+        "v42": 60,
+        "v43": 120,
+        "v44": 200
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 400,
+    "peak_failing_share": 1,
+    "failed_instance_seconds": 17939.5,
+    "requests_ok": 0,
+    "requests_failed": 70343,
+    "requests_failed_share": 1,
+    "recovered_at_s": null,
+    "samples": [
+      {
+        "at_s": 0.50361878,
+        "failing": 279
+      },
+      {
+        "at_s": 1.00347257,
+        "failing": 400
+      },
+      {
+        "at_s": 1.504287139,
+        "failing": 400
+      },
+      {
+        "at_s": 2.004700745,
+        "failing": 400
+      },
+      {
+        "at_s": 2.505776123,
+        "failing": 400
+      },
+      {
+        "at_s": 3.005713079,
+        "failing": 400
+      },
+      {
+        "at_s": 3.504197532,
+        "failing": 400
+      },
+      {
+        "at_s": 4.004592904,
+        "failing": 400
+      },
+      {
+        "at_s": 4.503587132,
+        "failing": 400
+      },
+      {
+        "at_s": 5.003525288,
+        "failing": 400
+      },
+      {
+        "at_s": 5.503510842,
+        "failing": 400
+      },
+      {
+        "at_s": 6.0043628,
+        "failing": 400
+      },
+      {
+        "at_s": 6.505919764,
+        "failing": 400
+      },
+      {
+        "at_s": 7.003700913,
+        "failing": 400
+      },
+      {
+        "at_s": 7.503906126,
+        "failing": 400
+      },
+      {
+        "at_s": 8.004521631,
+        "failing": 400
+      },
+      {
+        "at_s": 8.504216596,
+        "failing": 400
+      },
+      {
+        "at_s": 9.004135696,
+        "failing": 400
+      },
+      {
+        "at_s": 9.505379186999999,
+        "failing": 400
+      },
+      {
+        "at_s": 10.005799211,
+        "failing": 400
+      },
+      {
+        "at_s": 10.50409598,
+        "failing": 400
+      },
+      {
+        "at_s": 11.004318966,
+        "failing": 400
+      },
+      {
+        "at_s": 11.50417374,
+        "failing": 400
+      },
+      {
+        "at_s": 12.004879012,
+        "failing": 400
+      },
+      {
+        "at_s": 12.503693659,
+        "failing": 400
+      },
+      {
+        "at_s": 13.004137854,
+        "failing": 400
+      },
+      {
+        "at_s": 13.503714086,
+        "failing": 400
+      },
+      {
+        "at_s": 14.004838892,
+        "failing": 400
+      },
+      {
+        "at_s": 14.503419982,
+        "failing": 400
+      },
+      {
+        "at_s": 15.003966724,
+        "failing": 400
+      },
+      {
+        "at_s": 15.503988089,
+        "failing": 400
+      },
+      {
+        "at_s": 16.003595197,
+        "failing": 400
+      },
+      {
+        "at_s": 16.503907648,
+        "failing": 400
+      },
+      {
+        "at_s": 17.004048427,
+        "failing": 400
+      },
+      {
+        "at_s": 17.504852576,
+        "failing": 400
+      },
+      {
+        "at_s": 18.004101946,
+        "failing": 400
+      },
+      {
+        "at_s": 18.504492369,
+        "failing": 400
+      },
+      {
+        "at_s": 19.004134033,
+        "failing": 400
+      },
+      {
+        "at_s": 19.503478092,
+        "failing": 400
+      },
+      {
+        "at_s": 20.004081971,
+        "failing": 400
+      },
+      {
+        "at_s": 20.504040519,
+        "failing": 400
+      },
+      {
+        "at_s": 21.006118341,
+        "failing": 400
+      },
+      {
+        "at_s": 21.5043219,
+        "failing": 400
+      },
+      {
+        "at_s": 22.006557453,
+        "failing": 400
+      },
+      {
+        "at_s": 22.50584259,
+        "failing": 400
+      },
+      {
+        "at_s": 23.003993613,
+        "failing": 400
+      },
+      {
+        "at_s": 23.504594794,
+        "failing": 400
+      },
+      {
+        "at_s": 24.005477012,
+        "failing": 400
+      },
+      {
+        "at_s": 24.503621203,
+        "failing": 400
+      },
+      {
+        "at_s": 25.003200974,
+        "failing": 400
+      },
+      {
+        "at_s": 25.507732442,
+        "failing": 400
+      },
+      {
+        "at_s": 26.003619538,
+        "failing": 400
+      },
+      {
+        "at_s": 26.503919082,
+        "failing": 400
+      },
+      {
+        "at_s": 27.004030532,
+        "failing": 400
+      },
+      {
+        "at_s": 27.504056166,
+        "failing": 400
+      },
+      {
+        "at_s": 28.005338113,
+        "failing": 400
+      },
+      {
+        "at_s": 28.504730775,
+        "failing": 400
+      },
+      {
+        "at_s": 29.004185508,
+        "failing": 400
+      },
+      {
+        "at_s": 29.505155362,
+        "failing": 400
+      },
+      {
+        "at_s": 30.00387749,
+        "failing": 400
+      },
+      {
+        "at_s": 30.504143492,
+        "failing": 400
+      },
+      {
+        "at_s": 31.004587782,
+        "failing": 400
+      },
+      {
+        "at_s": 31.504005808,
+        "failing": 400
+      },
+      {
+        "at_s": 32.004482888,
+        "failing": 400
+      },
+      {
+        "at_s": 32.504017141,
+        "failing": 400
+      },
+      {
+        "at_s": 33.004544448,
+        "failing": 400
+      },
+      {
+        "at_s": 33.505488425,
+        "failing": 400
+      },
+      {
+        "at_s": 34.004046747,
+        "failing": 400
+      },
+      {
+        "at_s": 34.503477853,
+        "failing": 400
+      },
+      {
+        "at_s": 35.004111109,
+        "failing": 400
+      },
+      {
+        "at_s": 35.503213038,
+        "failing": 400
+      },
+      {
+        "at_s": 36.004605958,
+        "failing": 400
+      },
+      {
+        "at_s": 36.503305962,
+        "failing": 400
+      },
+      {
+        "at_s": 37.004581695,
+        "failing": 400
+      },
+      {
+        "at_s": 37.503250081,
+        "failing": 400
+      },
+      {
+        "at_s": 38.004705375,
+        "failing": 400
+      },
+      {
+        "at_s": 38.504022821,
+        "failing": 400
+      },
+      {
+        "at_s": 39.003805625,
+        "failing": 400
+      },
+      {
+        "at_s": 39.503303421,
+        "failing": 400
+      },
+      {
+        "at_s": 40.004803569,
+        "failing": 400
+      },
+      {
+        "at_s": 40.503667782,
+        "failing": 400
+      },
+      {
+        "at_s": 41.007836319,
+        "failing": 400
+      },
+      {
+        "at_s": 41.503072855,
+        "failing": 400
+      },
+      {
+        "at_s": 42.004507928,
+        "failing": 400
+      },
+      {
+        "at_s": 42.503193326,
+        "failing": 400
+      },
+      {
+        "at_s": 43.004628869,
+        "failing": 400
+      },
+      {
+        "at_s": 43.504521009,
+        "failing": 400
+      },
+      {
+        "at_s": 44.003882749,
+        "failing": 400
+      },
+      {
+        "at_s": 44.503557011,
+        "failing": 400
+      },
+      {
+        "at_s": 45.003880368,
+        "failing": 400
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 20,
+      "v42": 60,
+      "v43": 120,
+      "v44": 200
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b1",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 400,
+    "push": {
+      "id": "20261031T164538.834Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b1",
+      "config_version": "feat-20261031T164428Z-43f5d134d6",
+      "started": "2026-10-31T16:45:38.834099985Z",
+      "status": "completed",
+      "fleet": 400,
+      "exposed": 400,
+      "exposed_share": 1,
+      "time_to_full_ms": 147,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 5,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 147,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 400,
+          "detail": "400 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 147,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 20,
+        "v42": 60,
+        "v43": 120,
+        "v44": 200
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 400,
+    "peak_failing_share": 1,
+    "failed_instance_seconds": 17964.5,
+    "requests_ok": 0,
+    "requests_failed": 70589,
+    "requests_failed_share": 1,
+    "recovered_at_s": null,
+    "samples": [
+      {
+        "at_s": 0.504108032,
+        "failing": 329
+      },
+      {
+        "at_s": 1.00443662,
+        "failing": 400
+      },
+      {
+        "at_s": 1.5034499829999999,
+        "failing": 400
+      },
+      {
+        "at_s": 2.004285223,
+        "failing": 400
+      },
+      {
+        "at_s": 2.503762408,
+        "failing": 400
+      },
+      {
+        "at_s": 3.00376173,
+        "failing": 400
+      },
+      {
+        "at_s": 3.503175008,
+        "failing": 400
+      },
+      {
+        "at_s": 4.003663111,
+        "failing": 400
+      },
+      {
+        "at_s": 4.502964112,
+        "failing": 400
+      },
+      {
+        "at_s": 5.004722721,
+        "failing": 400
+      },
+      {
+        "at_s": 5.503621991,
+        "failing": 400
+      },
+      {
+        "at_s": 6.00375704,
+        "failing": 400
+      },
+      {
+        "at_s": 6.503728713,
+        "failing": 400
+      },
+      {
+        "at_s": 7.006024135,
+        "failing": 400
+      },
+      {
+        "at_s": 7.503447502,
+        "failing": 400
+      },
+      {
+        "at_s": 8.006406369,
+        "failing": 400
+      },
+      {
+        "at_s": 8.503187365,
+        "failing": 400
+      },
+      {
+        "at_s": 9.00671513,
+        "failing": 400
+      },
+      {
+        "at_s": 9.50436399,
+        "failing": 400
+      },
+      {
+        "at_s": 10.005261048,
+        "failing": 400
+      },
+      {
+        "at_s": 10.503646079,
+        "failing": 400
+      },
+      {
+        "at_s": 11.005159229,
+        "failing": 400
+      },
+      {
+        "at_s": 11.503233338,
+        "failing": 400
+      },
+      {
+        "at_s": 12.004719352,
+        "failing": 400
+      },
+      {
+        "at_s": 12.503232552,
+        "failing": 400
+      },
+      {
+        "at_s": 13.004554492,
+        "failing": 400
+      },
+      {
+        "at_s": 13.504905336,
+        "failing": 400
+      },
+      {
+        "at_s": 14.004153242,
+        "failing": 400
+      },
+      {
+        "at_s": 14.504617363,
+        "failing": 400
+      },
+      {
+        "at_s": 15.003692677,
+        "failing": 400
+      },
+      {
+        "at_s": 15.504359182,
+        "failing": 400
+      },
+      {
+        "at_s": 16.00434399,
+        "failing": 400
+      },
+      {
+        "at_s": 16.503637556,
+        "failing": 400
+      },
+      {
+        "at_s": 17.004532097,
+        "failing": 400
+      },
+      {
+        "at_s": 17.50464472,
+        "failing": 400
+      },
+      {
+        "at_s": 18.006974754,
+        "failing": 400
+      },
+      {
+        "at_s": 18.504176398,
+        "failing": 400
+      },
+      {
+        "at_s": 19.003872842,
+        "failing": 400
+      },
+      {
+        "at_s": 19.505105527,
+        "failing": 400
+      },
+      {
+        "at_s": 20.003629344,
+        "failing": 400
+      },
+      {
+        "at_s": 20.504347824,
+        "failing": 400
+      },
+      {
+        "at_s": 21.004856881,
+        "failing": 400
+      },
+      {
+        "at_s": 21.504252343,
+        "failing": 400
+      },
+      {
+        "at_s": 22.003742476,
+        "failing": 400
+      },
+      {
+        "at_s": 22.504376883,
+        "failing": 400
+      },
+      {
+        "at_s": 23.004151575,
+        "failing": 400
+      },
+      {
+        "at_s": 23.505175316,
+        "failing": 400
+      },
+      {
+        "at_s": 24.005776799,
+        "failing": 400
+      },
+      {
+        "at_s": 24.509699571,
+        "failing": 400
+      },
+      {
+        "at_s": 25.003819379,
+        "failing": 400
+      },
+      {
+        "at_s": 25.505630299,
+        "failing": 400
+      },
+      {
+        "at_s": 26.005313318,
+        "failing": 400
+      },
+      {
+        "at_s": 26.506283051,
+        "failing": 400
+      },
+      {
+        "at_s": 27.004492223,
+        "failing": 400
+      },
+      {
+        "at_s": 27.50496532,
+        "failing": 400
+      },
+      {
+        "at_s": 28.003956953,
+        "failing": 400
+      },
+      {
+        "at_s": 28.503812627,
+        "failing": 400
+      },
+      {
+        "at_s": 29.00455633,
+        "failing": 400
+      },
+      {
+        "at_s": 29.50390565,
+        "failing": 400
+      },
+      {
+        "at_s": 30.003259766,
+        "failing": 400
+      },
+      {
+        "at_s": 30.504273994,
+        "failing": 400
+      },
+      {
+        "at_s": 31.003455085,
+        "failing": 400
+      },
+      {
+        "at_s": 31.504182538,
+        "failing": 400
+      },
+      {
+        "at_s": 32.004471223,
+        "failing": 400
+      },
+      {
+        "at_s": 32.504736245,
+        "failing": 400
+      },
+      {
+        "at_s": 33.003314917,
+        "failing": 400
+      },
+      {
+        "at_s": 33.505307301,
+        "failing": 400
+      },
+      {
+        "at_s": 34.00410613,
+        "failing": 400
+      },
+      {
+        "at_s": 34.504214028,
+        "failing": 400
+      },
+      {
+        "at_s": 35.003926349,
+        "failing": 400
+      },
+      {
+        "at_s": 35.504166761,
+        "failing": 400
+      },
+      {
+        "at_s": 36.00354739,
+        "failing": 400
+      },
+      {
+        "at_s": 36.503872455,
+        "failing": 400
+      },
+      {
+        "at_s": 37.004264989,
+        "failing": 400
+      },
+      {
+        "at_s": 37.504853152,
+        "failing": 400
+      },
+      {
+        "at_s": 38.004129662,
+        "failing": 400
+      },
+      {
+        "at_s": 38.503999361,
+        "failing": 400
+      },
+      {
+        "at_s": 39.00401749,
+        "failing": 400
+      },
+      {
+        "at_s": 39.503902746,
+        "failing": 400
+      },
+      {
+        "at_s": 40.003184192,
+        "failing": 400
+      },
+      {
+        "at_s": 40.506631066,
+        "failing": 400
+      },
+      {
+        "at_s": 41.003437702,
+        "failing": 400
+      },
+      {
+        "at_s": 41.504163018,
+        "failing": 400
+      },
+      {
+        "at_s": 42.003946626,
+        "failing": 400
+      },
+      {
+        "at_s": 42.50428521,
+        "failing": 400
+      },
+      {
+        "at_s": 43.003495659,
+        "failing": 400
+      },
+      {
+        "at_s": 43.504479752,
+        "failing": 400
+      },
+      {
+        "at_s": 44.003967191,
+        "failing": 400
+      },
+      {
+        "at_s": 44.504339563,
+        "failing": 400
+      },
+      {
+        "at_s": 45.00347414,
+        "failing": 400
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 20,
+      "v42": 60,
+      "v43": 120,
+      "v44": 200
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b2",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 400,
+    "push": {
+      "id": "20261031T164639.649Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b2",
+      "config_version": "feat-20261031T164428Z-43f5d134d6",
+      "started": "2026-10-31T16:46:39.649146037Z",
+      "status": "rolled_back",
+      "reason": "crash alarm: 4 of 4 exposed instances crashed or not serving (e.g. bp-ap-south-079 v44 backoff: thread 'main' (6593) panicked at src/main.rs:186:29: bot-proxy v44 bp-ap-south-079: failed to load \"state/instances/bp-ap-south-079/feature.json\": feature count…)",
+      "fleet": 400,
+      "exposed": 4,
+      "exposed_share": 0.01,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 2024,
+      "time_to_revert_ms": 2026,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 5,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 19,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 4,
+          "detail": "4 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 2024,
+          "kind": "alarm",
+          "detail": "crash alarm: 4 of 4 exposed instances crashed or not serving (e.g. bp-ap-south-079 v44 backoff: thread 'main' (6593) panicked at src/main.rs:186:29: bot-proxy v44 bp-ap-south-079: failed to load \"state/instances/bp-ap-south-079/feature.json\": feature count…)"
+        },
+        {
+          "at_ms": 2026,
+          "kind": "rollback_delivered",
+          "count": 4,
+          "detail": "last known good feat-20261031T164428Z-94ed8b2c00"
+        },
+        {
+          "at_ms": 2026,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v42": 1,
+        "v43": 1,
+        "v44": 2
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 4,
+    "peak_failing_share": 0.01,
+    "failed_instance_seconds": 21.5,
+    "requests_ok": 70228,
+    "requests_failed": 56,
+    "requests_failed_share": 0.0007967674008309146,
+    "recovered_at_s": 8.004329838,
+    "samples": [
+      {
+        "at_s": 0.503148517,
+        "failing": 3
+      },
+      {
+        "at_s": 1.004312213,
+        "failing": 4
+      },
+      {
+        "at_s": 1.503539698,
+        "failing": 4
+      },
+      {
+        "at_s": 2.003897334,
+        "failing": 4
+      },
+      {
+        "at_s": 2.5040630950000002,
+        "failing": 4
+      },
+      {
+        "at_s": 3.004730907,
+        "failing": 4
+      },
+      {
+        "at_s": 3.5032892970000002,
+        "failing": 4
+      },
+      {
+        "at_s": 4.006998111,
+        "failing": 3
+      },
+      {
+        "at_s": 4.506523318,
+        "failing": 3
+      },
+      {
+        "at_s": 5.004736157,
+        "failing": 3
+      },
+      {
+        "at_s": 5.5035302470000005,
+        "failing": 3
+      },
+      {
+        "at_s": 6.004717714,
+        "failing": 1
+      },
+      {
+        "at_s": 6.503750859,
+        "failing": 1
+      },
+      {
+        "at_s": 7.005379189,
+        "failing": 1
+      },
+      {
+        "at_s": 7.503142326,
+        "failing": 1
+      },
+      {
+        "at_s": 8.004329838,
+        "failing": 0
+      },
+      {
+        "at_s": 8.504179704,
+        "failing": 0
+      },
+      {
+        "at_s": 9.003840323,
+        "failing": 0
+      },
+      {
+        "at_s": 9.505209073,
+        "failing": 0
+      },
+      {
+        "at_s": 10.003756391,
+        "failing": 0
+      },
+      {
+        "at_s": 10.504393186,
+        "failing": 0
+      },
+      {
+        "at_s": 11.003582636,
+        "failing": 0
+      },
+      {
+        "at_s": 11.503272451,
+        "failing": 0
+      },
+      {
+        "at_s": 12.011966061,
+        "failing": 0
+      },
+      {
+        "at_s": 12.503882618,
+        "failing": 0
+      },
+      {
+        "at_s": 13.005063613,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503357194,
+        "failing": 0
+      },
+      {
+        "at_s": 14.007215036,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503138081,
+        "failing": 0
+      },
+      {
+        "at_s": 15.004284141,
+        "failing": 0
+      },
+      {
+        "at_s": 15.503650828,
+        "failing": 0
+      },
+      {
+        "at_s": 16.006882367,
+        "failing": 0
+      },
+      {
+        "at_s": 16.506922154,
+        "failing": 0
+      },
+      {
+        "at_s": 17.004283807,
+        "failing": 0
+      },
+      {
+        "at_s": 17.503617988,
+        "failing": 0
+      },
+      {
+        "at_s": 18.004752574,
+        "failing": 0
+      },
+      {
+        "at_s": 18.503998031,
+        "failing": 0
+      },
+      {
+        "at_s": 19.004258046,
+        "failing": 0
+      },
+      {
+        "at_s": 19.503214013,
+        "failing": 0
+      },
+      {
+        "at_s": 20.00464955,
+        "failing": 0
+      },
+      {
+        "at_s": 20.503787457,
+        "failing": 0
+      },
+      {
+        "at_s": 21.003987055,
+        "failing": 0
+      },
+      {
+        "at_s": 21.503531203,
+        "failing": 0
+      },
+      {
+        "at_s": 22.004969501,
+        "failing": 0
+      },
+      {
+        "at_s": 22.504581677,
+        "failing": 0
+      },
+      {
+        "at_s": 23.004634728,
+        "failing": 0
+      },
+      {
+        "at_s": 23.503181522,
+        "failing": 0
+      },
+      {
+        "at_s": 24.005605334,
+        "failing": 0
+      },
+      {
+        "at_s": 24.504361873,
+        "failing": 0
+      },
+      {
+        "at_s": 25.004409098,
+        "failing": 0
+      },
+      {
+        "at_s": 25.503411201,
+        "failing": 0
+      },
+      {
+        "at_s": 26.004205825,
+        "failing": 0
+      },
+      {
+        "at_s": 26.5043317,
+        "failing": 0
+      },
+      {
+        "at_s": 27.0033198,
+        "failing": 0
+      },
+      {
+        "at_s": 27.504323023,
+        "failing": 0
+      },
+      {
+        "at_s": 28.003404762,
+        "failing": 0
+      },
+      {
+        "at_s": 28.504866145,
+        "failing": 0
+      },
+      {
+        "at_s": 29.00339522,
+        "failing": 0
+      },
+      {
+        "at_s": 29.505402097,
+        "failing": 0
+      },
+      {
+        "at_s": 30.003239706,
+        "failing": 0
+      },
+      {
+        "at_s": 30.504661125,
+        "failing": 0
+      },
+      {
+        "at_s": 31.003813959,
+        "failing": 0
+      },
+      {
+        "at_s": 31.504388412,
+        "failing": 0
+      },
+      {
+        "at_s": 32.003471837,
+        "failing": 0
+      },
+      {
+        "at_s": 32.508254707,
+        "failing": 0
+      },
+      {
+        "at_s": 33.003569935,
+        "failing": 0
+      },
+      {
+        "at_s": 33.50381689,
+        "failing": 0
+      },
+      {
+        "at_s": 34.003280808,
+        "failing": 0
+      },
+      {
+        "at_s": 34.504782952,
+        "failing": 0
+      },
+      {
+        "at_s": 35.003207642,
+        "failing": 0
+      },
+      {
+        "at_s": 35.504566132,
+        "failing": 0
+      },
+      {
+        "at_s": 36.003351416,
+        "failing": 0
+      },
+      {
+        "at_s": 36.50548144,
+        "failing": 0
+      },
+      {
+        "at_s": 37.003483556,
+        "failing": 0
+      },
+      {
+        "at_s": 37.504749929,
+        "failing": 0
+      },
+      {
+        "at_s": 38.003703181,
+        "failing": 0
+      },
+      {
+        "at_s": 38.504491696,
+        "failing": 0
+      },
+      {
+        "at_s": 39.004028635,
+        "failing": 0
+      },
+      {
+        "at_s": 39.504796618,
+        "failing": 0
+      },
+      {
+        "at_s": 40.004017406,
+        "failing": 0
+      },
+      {
+        "at_s": 40.504347703,
+        "failing": 0
+      },
+      {
+        "at_s": 41.004085874,
+        "failing": 0
+      },
+      {
+        "at_s": 41.504615519,
+        "failing": 0
+      },
+      {
+        "at_s": 42.003708882,
+        "failing": 0
+      },
+      {
+        "at_s": 42.506080086,
+        "failing": 0
+      },
+      {
+        "at_s": 43.003653189,
+        "failing": 0
+      },
+      {
+        "at_s": 43.503275826,
+        "failing": 0
+      },
+      {
+        "at_s": 44.00569885,
+        "failing": 0
+      },
+      {
+        "at_s": 44.503532589,
+        "failing": 0
+      },
+      {
+        "at_s": 45.004292892,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v42": 1,
+      "v43": 1,
+      "v44": 2
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b0",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 200,
+    "push": {
+      "id": "20261031T164730.857Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b0",
+      "config_version": "feat-20261031T164429Z-90c598411e",
+      "started": "2026-10-31T16:47:30.857227022Z",
+      "status": "completed",
+      "fleet": 400,
+      "exposed": 400,
+      "exposed_share": 1,
+      "time_to_full_ms": 83,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 83,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 400,
+          "detail": "400 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 83,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 20,
+        "v42": 60,
+        "v43": 120,
+        "v44": 200
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 200,
+    "peak_failing_share": 0.5,
+    "failed_instance_seconds": 8582,
+    "requests_ok": 37808,
+    "requests_failed": 32603,
+    "requests_failed_share": 0.4630384456974052,
+    "recovered_at_s": null,
+    "samples": [
+      {
+        "at_s": 0.504257082,
+        "failing": 66
+      },
+      {
+        "at_s": 1.004565774,
+        "failing": 158
+      },
+      {
+        "at_s": 1.503740955,
+        "failing": 186
+      },
+      {
+        "at_s": 2.007738823,
+        "failing": 132
+      },
+      {
+        "at_s": 2.504014949,
+        "failing": 169
+      },
+      {
+        "at_s": 3.004682969,
+        "failing": 190
+      },
+      {
+        "at_s": 3.503372742,
+        "failing": 199
+      },
+      {
+        "at_s": 4.004432251,
+        "failing": 155
+      },
+      {
+        "at_s": 4.503804347,
+        "failing": 186
+      },
+      {
+        "at_s": 5.004081202,
+        "failing": 193
+      },
+      {
+        "at_s": 5.503389783,
+        "failing": 197
+      },
+      {
+        "at_s": 6.005260371,
+        "failing": 163
+      },
+      {
+        "at_s": 6.504345542,
+        "failing": 189
+      },
+      {
+        "at_s": 7.00430324,
+        "failing": 197
+      },
+      {
+        "at_s": 7.503520512,
+        "failing": 199
+      },
+      {
+        "at_s": 8.004130143,
+        "failing": 164
+      },
+      {
+        "at_s": 8.50401883,
+        "failing": 182
+      },
+      {
+        "at_s": 9.004392994,
+        "failing": 191
+      },
+      {
+        "at_s": 9.503462199,
+        "failing": 198
+      },
+      {
+        "at_s": 10.011508865,
+        "failing": 197
+      },
+      {
+        "at_s": 10.503871286,
+        "failing": 189
+      },
+      {
+        "at_s": 11.003580401,
+        "failing": 194
+      },
+      {
+        "at_s": 11.504338426,
+        "failing": 198
+      },
+      {
+        "at_s": 12.003198394,
+        "failing": 198
+      },
+      {
+        "at_s": 12.505113998,
+        "failing": 195
+      },
+      {
+        "at_s": 13.003801002,
+        "failing": 197
+      },
+      {
+        "at_s": 13.504179122,
+        "failing": 199
+      },
+      {
+        "at_s": 14.003782968,
+        "failing": 200
+      },
+      {
+        "at_s": 14.503266334,
+        "failing": 184
+      },
+      {
+        "at_s": 15.00406393,
+        "failing": 198
+      },
+      {
+        "at_s": 15.503578777,
+        "failing": 199
+      },
+      {
+        "at_s": 16.003623581,
+        "failing": 200
+      },
+      {
+        "at_s": 16.503182443,
+        "failing": 196
+      },
+      {
+        "at_s": 17.004322193,
+        "failing": 199
+      },
+      {
+        "at_s": 17.503189727,
+        "failing": 200
+      },
+      {
+        "at_s": 18.004128135,
+        "failing": 200
+      },
+      {
+        "at_s": 18.503125817,
+        "failing": 190
+      },
+      {
+        "at_s": 19.004329241,
+        "failing": 195
+      },
+      {
+        "at_s": 19.503374254,
+        "failing": 197
+      },
+      {
+        "at_s": 20.005557421,
+        "failing": 197
+      },
+      {
+        "at_s": 20.503344317,
+        "failing": 188
+      },
+      {
+        "at_s": 21.003492671,
+        "failing": 195
+      },
+      {
+        "at_s": 21.504399404,
+        "failing": 198
+      },
+      {
+        "at_s": 22.003942779,
+        "failing": 200
+      },
+      {
+        "at_s": 22.504631256,
+        "failing": 194
+      },
+      {
+        "at_s": 23.00325384,
+        "failing": 199
+      },
+      {
+        "at_s": 23.503875253,
+        "failing": 200
+      },
+      {
+        "at_s": 24.003330293,
+        "failing": 200
+      },
+      {
+        "at_s": 24.502985568,
+        "failing": 188
+      },
+      {
+        "at_s": 25.003763466,
+        "failing": 197
+      },
+      {
+        "at_s": 25.503411919,
+        "failing": 199
+      },
+      {
+        "at_s": 26.004745492,
+        "failing": 199
+      },
+      {
+        "at_s": 26.509261536,
+        "failing": 180
+      },
+      {
+        "at_s": 27.004622736,
+        "failing": 190
+      },
+      {
+        "at_s": 27.503158981,
+        "failing": 196
+      },
+      {
+        "at_s": 28.004497156,
+        "failing": 200
+      },
+      {
+        "at_s": 28.503888374,
+        "failing": 184
+      },
+      {
+        "at_s": 29.004185646,
+        "failing": 194
+      },
+      {
+        "at_s": 29.503504556,
+        "failing": 199
+      },
+      {
+        "at_s": 30.004220904,
+        "failing": 200
+      },
+      {
+        "at_s": 30.503178585,
+        "failing": 180
+      },
+      {
+        "at_s": 31.003931309,
+        "failing": 191
+      },
+      {
+        "at_s": 31.503435272,
+        "failing": 193
+      },
+      {
+        "at_s": 32.003476436,
+        "failing": 198
+      },
+      {
+        "at_s": 32.502918511,
+        "failing": 176
+      },
+      {
+        "at_s": 33.004941053,
+        "failing": 191
+      },
+      {
+        "at_s": 33.504172505,
+        "failing": 197
+      },
+      {
+        "at_s": 34.00459998,
+        "failing": 199
+      },
+      {
+        "at_s": 34.503216522,
+        "failing": 178
+      },
+      {
+        "at_s": 35.003337986,
+        "failing": 193
+      },
+      {
+        "at_s": 35.504961045,
+        "failing": 196
+      },
+      {
+        "at_s": 36.003368413,
+        "failing": 199
+      },
+      {
+        "at_s": 36.512478285,
+        "failing": 193
+      },
+      {
+        "at_s": 37.003015023,
+        "failing": 193
+      },
+      {
+        "at_s": 37.504658564,
+        "failing": 199
+      },
+      {
+        "at_s": 38.003907594,
+        "failing": 200
+      },
+      {
+        "at_s": 38.503349017,
+        "failing": 200
+      },
+      {
+        "at_s": 39.004471378,
+        "failing": 195
+      },
+      {
+        "at_s": 39.50413786,
+        "failing": 198
+      },
+      {
+        "at_s": 40.005173472,
+        "failing": 200
+      },
+      {
+        "at_s": 40.503310055,
+        "failing": 200
+      },
+      {
+        "at_s": 41.005866248,
+        "failing": 191
+      },
+      {
+        "at_s": 41.503723779,
+        "failing": 195
+      },
+      {
+        "at_s": 42.00611747,
+        "failing": 197
+      },
+      {
+        "at_s": 42.503903911,
+        "failing": 200
+      },
+      {
+        "at_s": 43.004927102,
+        "failing": 190
+      },
+      {
+        "at_s": 43.504455433,
+        "failing": 199
+      },
+      {
+        "at_s": 44.00335952,
+        "failing": 199
+      },
+      {
+        "at_s": 44.504280631,
+        "failing": 200
+      },
+      {
+        "at_s": 45.004929989,
+        "failing": 188
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 20,
+      "v42": 60,
+      "v43": 120,
+      "v44": 200
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b1",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 200,
+    "push": {
+      "id": "20261031T164832.639Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b1",
+      "config_version": "feat-20261031T164429Z-90c598411e",
+      "started": "2026-10-31T16:48:32.639374479Z",
+      "status": "completed",
+      "fleet": 400,
+      "exposed": 400,
+      "exposed_share": 1,
+      "time_to_full_ms": 88,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 2,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 88,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 400,
+          "detail": "400 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 88,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 20,
+        "v42": 60,
+        "v43": 120,
+        "v44": 200
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 200,
+    "peak_failing_share": 0.5,
+    "failed_instance_seconds": 8680.5,
+    "requests_ok": 37406,
+    "requests_failed": 33077,
+    "requests_failed_share": 0.4692904672048579,
+    "recovered_at_s": null,
+    "samples": [
+      {
+        "at_s": 0.504908806,
+        "failing": 67
+      },
+      {
+        "at_s": 1.003605634,
+        "failing": 160
+      },
+      {
+        "at_s": 1.504393135,
+        "failing": 177
+      },
+      {
+        "at_s": 2.003107483,
+        "failing": 189
+      },
+      {
+        "at_s": 2.504677089,
+        "failing": 194
+      },
+      {
+        "at_s": 3.003292634,
+        "failing": 197
+      },
+      {
+        "at_s": 3.50495305,
+        "failing": 180
+      },
+      {
+        "at_s": 4.003451758,
+        "failing": 193
+      },
+      {
+        "at_s": 4.505046106,
+        "failing": 199
+      },
+      {
+        "at_s": 5.003405657,
+        "failing": 200
+      },
+      {
+        "at_s": 5.506844946,
+        "failing": 183
+      },
+      {
+        "at_s": 6.003802878,
+        "failing": 191
+      },
+      {
+        "at_s": 6.504772108,
+        "failing": 195
+      },
+      {
+        "at_s": 7.003395502,
+        "failing": 200
+      },
+      {
+        "at_s": 7.506229101,
+        "failing": 188
+      },
+      {
+        "at_s": 8.003477472,
+        "failing": 197
+      },
+      {
+        "at_s": 8.503787452,
+        "failing": 199
+      },
+      {
+        "at_s": 9.004123038,
+        "failing": 200
+      },
+      {
+        "at_s": 9.503837193,
+        "failing": 200
+      },
+      {
+        "at_s": 10.004799885,
+        "failing": 190
+      },
+      {
+        "at_s": 10.504045854,
+        "failing": 198
+      },
+      {
+        "at_s": 11.006265536,
+        "failing": 199
+      },
+      {
+        "at_s": 11.504129055,
+        "failing": 200
+      },
+      {
+        "at_s": 12.004120016,
+        "failing": 188
+      },
+      {
+        "at_s": 12.503577127,
+        "failing": 196
+      },
+      {
+        "at_s": 13.003984371,
+        "failing": 196
+      },
+      {
+        "at_s": 13.503509254,
+        "failing": 200
+      },
+      {
+        "at_s": 14.004389798,
+        "failing": 185
+      },
+      {
+        "at_s": 14.503370193,
+        "failing": 195
+      },
+      {
+        "at_s": 15.004775919,
+        "failing": 199
+      },
+      {
+        "at_s": 15.506908523,
+        "failing": 200
+      },
+      {
+        "at_s": 16.004327304,
+        "failing": 189
+      },
+      {
+        "at_s": 16.503484749,
+        "failing": 195
+      },
+      {
+        "at_s": 17.003567523,
+        "failing": 199
+      },
+      {
+        "at_s": 17.503731131,
+        "failing": 200
+      },
+      {
+        "at_s": 18.003404621,
+        "failing": 193
+      },
+      {
+        "at_s": 18.505859606,
+        "failing": 197
+      },
+      {
+        "at_s": 19.00417302,
+        "failing": 198
+      },
+      {
+        "at_s": 19.506595741,
+        "failing": 198
+      },
+      {
+        "at_s": 20.003528945,
+        "failing": 190
+      },
+      {
+        "at_s": 20.506018194,
+        "failing": 198
+      },
+      {
+        "at_s": 21.003884424,
+        "failing": 200
+      },
+      {
+        "at_s": 21.503566143,
+        "failing": 200
+      },
+      {
+        "at_s": 22.003981009,
+        "failing": 184
+      },
+      {
+        "at_s": 22.504717913,
+        "failing": 194
+      },
+      {
+        "at_s": 23.004584099,
+        "failing": 196
+      },
+      {
+        "at_s": 23.505558588,
+        "failing": 197
+      },
+      {
+        "at_s": 24.004682737,
+        "failing": 179
+      },
+      {
+        "at_s": 24.503888416,
+        "failing": 190
+      },
+      {
+        "at_s": 25.004097964,
+        "failing": 198
+      },
+      {
+        "at_s": 25.503566067,
+        "failing": 199
+      },
+      {
+        "at_s": 26.005468021,
+        "failing": 189
+      },
+      {
+        "at_s": 26.50396569,
+        "failing": 194
+      },
+      {
+        "at_s": 27.007257862,
+        "failing": 198
+      },
+      {
+        "at_s": 27.503453501,
+        "failing": 200
+      },
+      {
+        "at_s": 28.003164445,
+        "failing": 182
+      },
+      {
+        "at_s": 28.505718571,
+        "failing": 192
+      },
+      {
+        "at_s": 29.003581648,
+        "failing": 196
+      },
+      {
+        "at_s": 29.508639118,
+        "failing": 200
+      },
+      {
+        "at_s": 30.003610946,
+        "failing": 177
+      },
+      {
+        "at_s": 30.504235078,
+        "failing": 191
+      },
+      {
+        "at_s": 31.003198145,
+        "failing": 198
+      },
+      {
+        "at_s": 31.505290181,
+        "failing": 200
+      },
+      {
+        "at_s": 32.003640334,
+        "failing": 186
+      },
+      {
+        "at_s": 32.505764643,
+        "failing": 196
+      },
+      {
+        "at_s": 33.00347601,
+        "failing": 200
+      },
+      {
+        "at_s": 33.504426447,
+        "failing": 200
+      },
+      {
+        "at_s": 34.006884695,
+        "failing": 191
+      },
+      {
+        "at_s": 34.505163174,
+        "failing": 196
+      },
+      {
+        "at_s": 35.003912874,
+        "failing": 200
+      },
+      {
+        "at_s": 35.50432618,
+        "failing": 200
+      },
+      {
+        "at_s": 36.003793827,
+        "failing": 200
+      },
+      {
+        "at_s": 36.504585928,
+        "failing": 190
+      },
+      {
+        "at_s": 37.003194106,
+        "failing": 197
+      },
+      {
+        "at_s": 37.504735997,
+        "failing": 199
+      },
+      {
+        "at_s": 38.003645143,
+        "failing": 200
+      },
+      {
+        "at_s": 38.504378624,
+        "failing": 195
+      },
+      {
+        "at_s": 39.003580538,
+        "failing": 198
+      },
+      {
+        "at_s": 39.504516463,
+        "failing": 198
+      },
+      {
+        "at_s": 40.003772043,
+        "failing": 198
+      },
+      {
+        "at_s": 40.50431576,
+        "failing": 194
+      },
+      {
+        "at_s": 41.004234629,
+        "failing": 198
+      },
+      {
+        "at_s": 41.503995756,
+        "failing": 199
+      },
+      {
+        "at_s": 42.002986646,
+        "failing": 199
+      },
+      {
+        "at_s": 42.507699176,
+        "failing": 187
+      },
+      {
+        "at_s": 43.003846476,
+        "failing": 193
+      },
+      {
+        "at_s": 43.504417873,
+        "failing": 197
+      },
+      {
+        "at_s": 44.00385025,
+        "failing": 199
+      },
+      {
+        "at_s": 44.505453622,
+        "failing": 190
+      },
+      {
+        "at_s": 45.003338681,
+        "failing": 195
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 20,
+      "v42": 60,
+      "v43": 120,
+      "v44": 200
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b2",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 200,
+    "push": {
+      "id": "20261031T164933.927Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b2",
+      "config_version": "feat-20261031T164429Z-90c598411e",
+      "started": "2026-10-31T16:49:33.927455663Z",
+      "status": "rolled_back",
+      "reason": "crash alarm: 2 of 4 exposed instances crashed or not serving (e.g. bp-ap-south-009 v42 backoff: thread '\u003cunnamed\u003e' (21424) panicked at src/main.rs:108:20: index out of bounds: the len is 20 but the index is 20)",
+      "fleet": 400,
+      "exposed": 4,
+      "exposed_share": 0.01,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 2014,
+      "time_to_revert_ms": 2016,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 1,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 11,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 4,
+          "detail": "4 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 2014,
+          "kind": "alarm",
+          "detail": "crash alarm: 2 of 4 exposed instances crashed or not serving (e.g. bp-ap-south-009 v42 backoff: thread '\u003cunnamed\u003e' (21424) panicked at src/main.rs:108:20: index out of bounds: the len is 20 but the index is 20)"
+        },
+        {
+          "at_ms": 2016,
+          "kind": "rollback_delivered",
+          "count": 4,
+          "detail": "last known good feat-20261031T164429Z-94ed8b2c00"
+        },
+        {
+          "at_ms": 2016,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v42": 1,
+        "v43": 1,
+        "v44": 2
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 2,
+    "peak_failing_share": 0.005,
+    "failed_instance_seconds": 9.5,
+    "requests_ok": 70271,
+    "requests_failed": 36,
+    "requests_failed_share": 0.0005120400529108055,
+    "recovered_at_s": 8.004417183,
+    "samples": [
+      {
+        "at_s": 0.503571615,
+        "failing": 0
+      },
+      {
+        "at_s": 1.004051876,
+        "failing": 2
+      },
+      {
+        "at_s": 1.50387365,
+        "failing": 2
+      },
+      {
+        "at_s": 2.003938099,
+        "failing": 2
+      },
+      {
+        "at_s": 2.503833547,
+        "failing": 2
+      },
+      {
+        "at_s": 3.003566359,
+        "failing": 2
+      },
+      {
+        "at_s": 3.504140904,
+        "failing": 1
+      },
+      {
+        "at_s": 4.003136265,
+        "failing": 1
+      },
+      {
+        "at_s": 4.504467237,
+        "failing": 1
+      },
+      {
+        "at_s": 5.003572272,
+        "failing": 1
+      },
+      {
+        "at_s": 5.511607047,
+        "failing": 1
+      },
+      {
+        "at_s": 6.003559236,
+        "failing": 1
+      },
+      {
+        "at_s": 6.504405737,
+        "failing": 1
+      },
+      {
+        "at_s": 7.004152654,
+        "failing": 1
+      },
+      {
+        "at_s": 7.503970303,
+        "failing": 1
+      },
+      {
+        "at_s": 8.004417183,
+        "failing": 0
+      },
+      {
+        "at_s": 8.503627312,
+        "failing": 0
+      },
+      {
+        "at_s": 9.004081563,
+        "failing": 0
+      },
+      {
+        "at_s": 9.503961334,
+        "failing": 0
+      },
+      {
+        "at_s": 10.00406877,
+        "failing": 0
+      },
+      {
+        "at_s": 10.503537123,
+        "failing": 0
+      },
+      {
+        "at_s": 11.0046661,
+        "failing": 0
+      },
+      {
+        "at_s": 11.503244225,
+        "failing": 0
+      },
+      {
+        "at_s": 12.003249113,
+        "failing": 0
+      },
+      {
+        "at_s": 12.504457465,
+        "failing": 0
+      },
+      {
+        "at_s": 13.003219789,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503920266,
+        "failing": 0
+      },
+      {
+        "at_s": 14.003171862,
+        "failing": 0
+      },
+      {
+        "at_s": 14.504377791,
+        "failing": 0
+      },
+      {
+        "at_s": 15.003562719,
+        "failing": 0
+      },
+      {
+        "at_s": 15.504368664,
+        "failing": 0
+      },
+      {
+        "at_s": 16.003948118,
+        "failing": 0
+      },
+      {
+        "at_s": 16.504346987,
+        "failing": 0
+      },
+      {
+        "at_s": 17.005614408,
+        "failing": 0
+      },
+      {
+        "at_s": 17.504028759,
+        "failing": 0
+      },
+      {
+        "at_s": 18.005174586,
+        "failing": 0
+      },
+      {
+        "at_s": 18.503355958,
+        "failing": 0
+      },
+      {
+        "at_s": 19.004868477,
+        "failing": 0
+      },
+      {
+        "at_s": 19.503840982,
+        "failing": 0
+      },
+      {
+        "at_s": 20.003123992,
+        "failing": 0
+      },
+      {
+        "at_s": 20.504820813,
+        "failing": 0
+      },
+      {
+        "at_s": 21.003445129,
+        "failing": 0
+      },
+      {
+        "at_s": 21.504766399,
+        "failing": 0
+      },
+      {
+        "at_s": 22.003750553,
+        "failing": 0
+      },
+      {
+        "at_s": 22.503889945,
+        "failing": 0
+      },
+      {
+        "at_s": 23.003423945,
+        "failing": 0
+      },
+      {
+        "at_s": 23.504185553,
+        "failing": 0
+      },
+      {
+        "at_s": 24.005896229,
+        "failing": 0
+      },
+      {
+        "at_s": 24.504695976,
+        "failing": 0
+      },
+      {
+        "at_s": 25.003246894,
+        "failing": 0
+      },
+      {
+        "at_s": 25.504650222,
+        "failing": 0
+      },
+      {
+        "at_s": 26.003391552,
+        "failing": 0
+      },
+      {
+        "at_s": 26.505016198,
+        "failing": 0
+      },
+      {
+        "at_s": 27.003610929,
+        "failing": 0
+      },
+      {
+        "at_s": 27.504175618,
+        "failing": 0
+      },
+      {
+        "at_s": 28.003717597,
+        "failing": 0
+      },
+      {
+        "at_s": 28.504229327,
+        "failing": 0
+      },
+      {
+        "at_s": 29.003820994,
+        "failing": 0
+      },
+      {
+        "at_s": 29.504154848,
+        "failing": 0
+      },
+      {
+        "at_s": 30.003154589,
+        "failing": 0
+      },
+      {
+        "at_s": 30.504111368,
+        "failing": 0
+      },
+      {
+        "at_s": 31.004274286,
+        "failing": 0
+      },
+      {
+        "at_s": 31.503089784,
+        "failing": 0
+      },
+      {
+        "at_s": 32.00446026,
+        "failing": 0
+      },
+      {
+        "at_s": 32.503170043,
+        "failing": 0
+      },
+      {
+        "at_s": 33.003934781,
+        "failing": 0
+      },
+      {
+        "at_s": 33.503561158,
+        "failing": 0
+      },
+      {
+        "at_s": 34.003298357,
+        "failing": 0
+      },
+      {
+        "at_s": 34.504467613,
+        "failing": 0
+      },
+      {
+        "at_s": 35.003435404,
+        "failing": 0
+      },
+      {
+        "at_s": 35.503734814,
+        "failing": 0
+      },
+      {
+        "at_s": 36.003155654,
+        "failing": 0
+      },
+      {
+        "at_s": 36.503899648,
+        "failing": 0
+      },
+      {
+        "at_s": 37.003694591,
+        "failing": 0
+      },
+      {
+        "at_s": 37.503480922,
+        "failing": 0
+      },
+      {
+        "at_s": 38.003546544,
+        "failing": 0
+      },
+      {
+        "at_s": 38.503001666,
+        "failing": 0
+      },
+      {
+        "at_s": 39.004072145,
+        "failing": 0
+      },
+      {
+        "at_s": 39.5032795,
+        "failing": 0
+      },
+      {
+        "at_s": 40.004560916,
+        "failing": 0
+      },
+      {
+        "at_s": 40.503133041,
+        "failing": 0
+      },
+      {
+        "at_s": 41.004660321,
+        "failing": 0
+      },
+      {
+        "at_s": 41.503853166,
+        "failing": 0
+      },
+      {
+        "at_s": 42.004086988,
+        "failing": 0
+      },
+      {
+        "at_s": 42.509328778,
+        "failing": 0
+      },
+      {
+        "at_s": 43.004380364,
+        "failing": 0
+      },
+      {
+        "at_s": 43.503545171,
+        "failing": 0
+      },
+      {
+        "at_s": 44.003949607,
+        "failing": 0
+      },
+      {
+        "at_s": 44.503497199,
+        "failing": 0
+      },
+      {
+        "at_s": 45.004357876,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v42": 1,
+      "v43": 1,
+      "v44": 2
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b0",
+    "consumer": "go-policy",
+    "fleet": 100,
+    "vulnerable": 68,
+    "push": {
+      "id": "20261031T165025.071Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b0",
+      "config_version": "pol-20261031T164429Z-8d717807c3",
+      "started": "2026-10-31T16:50:25.071004883Z",
+      "status": "completed",
+      "fleet": 100,
+      "exposed": 100,
+      "exposed_share": 1,
+      "time_to_full_ms": 30,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 30,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 100,
+          "detail": "100 of 100 instances now have the file"
+        },
+        {
+          "at_ms": 30,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 12,
+        "v42": 20,
+        "v43": 28,
+        "v44": 40
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 68,
+    "peak_failing_share": 0.68,
+    "failed_instance_seconds": 3060,
+    "requests_ok": 5525,
+    "requests_failed": 11895,
+    "requests_failed_share": 0.6828358208955224,
+    "recovered_at_s": null,
+    "samples": [
+      {
+        "at_s": 0.504472624,
+        "failing": 68
+      },
+      {
+        "at_s": 1.005498082,
+        "failing": 68
+      },
+      {
+        "at_s": 1.504757958,
+        "failing": 68
+      },
+      {
+        "at_s": 2.005625269,
+        "failing": 68
+      },
+      {
+        "at_s": 2.503507259,
+        "failing": 68
+      },
+      {
+        "at_s": 3.005006167,
+        "failing": 68
+      },
+      {
+        "at_s": 3.503629867,
+        "failing": 68
+      },
+      {
+        "at_s": 4.006667569,
+        "failing": 68
+      },
+      {
+        "at_s": 4.504591635,
+        "failing": 68
+      },
+      {
+        "at_s": 5.004409083,
+        "failing": 68
+      },
+      {
+        "at_s": 5.50408956,
+        "failing": 68
+      },
+      {
+        "at_s": 6.006396791,
+        "failing": 68
+      },
+      {
+        "at_s": 6.504342047,
+        "failing": 68
+      },
+      {
+        "at_s": 7.005119539,
+        "failing": 68
+      },
+      {
+        "at_s": 7.504269711,
+        "failing": 68
+      },
+      {
+        "at_s": 8.006960795,
+        "failing": 68
+      },
+      {
+        "at_s": 8.504917784,
+        "failing": 68
+      },
+      {
+        "at_s": 9.005895006,
+        "failing": 68
+      },
+      {
+        "at_s": 9.505070497,
+        "failing": 68
+      },
+      {
+        "at_s": 10.00627528,
+        "failing": 68
+      },
+      {
+        "at_s": 10.505294307,
+        "failing": 68
+      },
+      {
+        "at_s": 11.006100703,
+        "failing": 68
+      },
+      {
+        "at_s": 11.505659385,
+        "failing": 68
+      },
+      {
+        "at_s": 12.004970316,
+        "failing": 68
+      },
+      {
+        "at_s": 12.504847861,
+        "failing": 68
+      },
+      {
+        "at_s": 13.004386481,
+        "failing": 68
+      },
+      {
+        "at_s": 13.50459044,
+        "failing": 68
+      },
+      {
+        "at_s": 14.005046569,
+        "failing": 68
+      },
+      {
+        "at_s": 14.50536715,
+        "failing": 68
+      },
+      {
+        "at_s": 15.004711846,
+        "failing": 68
+      },
+      {
+        "at_s": 15.50930541,
+        "failing": 68
+      },
+      {
+        "at_s": 16.004146333,
+        "failing": 68
+      },
+      {
+        "at_s": 16.505218256,
+        "failing": 68
+      },
+      {
+        "at_s": 17.003773788,
+        "failing": 68
+      },
+      {
+        "at_s": 17.505214135,
+        "failing": 68
+      },
+      {
+        "at_s": 18.003402379,
+        "failing": 68
+      },
+      {
+        "at_s": 18.504002628,
+        "failing": 68
+      },
+      {
+        "at_s": 19.004323368,
+        "failing": 68
+      },
+      {
+        "at_s": 19.50394487,
+        "failing": 68
+      },
+      {
+        "at_s": 20.007790251,
+        "failing": 68
+      },
+      {
+        "at_s": 20.50504242,
+        "failing": 68
+      },
+      {
+        "at_s": 21.004352483,
+        "failing": 68
+      },
+      {
+        "at_s": 21.505958375,
+        "failing": 68
+      },
+      {
+        "at_s": 22.004397621,
+        "failing": 68
+      },
+      {
+        "at_s": 22.505001068,
+        "failing": 68
+      },
+      {
+        "at_s": 23.005362946,
+        "failing": 68
+      },
+      {
+        "at_s": 23.505569319,
+        "failing": 68
+      },
+      {
+        "at_s": 24.005544833,
+        "failing": 68
+      },
+      {
+        "at_s": 24.506432274,
+        "failing": 68
+      },
+      {
+        "at_s": 25.004276919,
+        "failing": 68
+      },
+      {
+        "at_s": 25.505767814,
+        "failing": 68
+      },
+      {
+        "at_s": 26.004234774,
+        "failing": 68
+      },
+      {
+        "at_s": 26.506392184,
+        "failing": 68
+      },
+      {
+        "at_s": 27.004507033,
+        "failing": 68
+      },
+      {
+        "at_s": 27.504247799,
+        "failing": 68
+      },
+      {
+        "at_s": 28.004706588,
+        "failing": 68
+      },
+      {
+        "at_s": 28.504642056,
+        "failing": 68
+      },
+      {
+        "at_s": 29.004126635,
+        "failing": 68
+      },
+      {
+        "at_s": 29.507170952,
+        "failing": 68
+      },
+      {
+        "at_s": 30.003787109,
+        "failing": 68
+      },
+      {
+        "at_s": 30.505592616,
+        "failing": 68
+      },
+      {
+        "at_s": 31.00359669,
+        "failing": 68
+      },
+      {
+        "at_s": 31.504965425,
+        "failing": 68
+      },
+      {
+        "at_s": 32.004617312,
+        "failing": 68
+      },
+      {
+        "at_s": 32.504705506,
+        "failing": 68
+      },
+      {
+        "at_s": 33.005057116,
+        "failing": 68
+      },
+      {
+        "at_s": 33.504580971,
+        "failing": 68
+      },
+      {
+        "at_s": 34.004982753,
+        "failing": 68
+      },
+      {
+        "at_s": 34.506235675,
+        "failing": 68
+      },
+      {
+        "at_s": 35.006119095,
+        "failing": 68
+      },
+      {
+        "at_s": 35.504312779,
+        "failing": 68
+      },
+      {
+        "at_s": 36.006220246,
+        "failing": 68
+      },
+      {
+        "at_s": 36.504788658,
+        "failing": 68
+      },
+      {
+        "at_s": 37.004086431,
+        "failing": 68
+      },
+      {
+        "at_s": 37.504454337,
+        "failing": 68
+      },
+      {
+        "at_s": 38.00499937,
+        "failing": 68
+      },
+      {
+        "at_s": 38.505769751,
+        "failing": 68
+      },
+      {
+        "at_s": 39.005735309,
+        "failing": 68
+      },
+      {
+        "at_s": 39.504552017,
+        "failing": 68
+      },
+      {
+        "at_s": 40.004987975,
+        "failing": 68
+      },
+      {
+        "at_s": 40.503697979,
+        "failing": 68
+      },
+      {
+        "at_s": 41.005004648,
+        "failing": 68
+      },
+      {
+        "at_s": 41.505245999,
+        "failing": 68
+      },
+      {
+        "at_s": 42.005586803,
+        "failing": 68
+      },
+      {
+        "at_s": 42.511761639,
+        "failing": 68
+      },
+      {
+        "at_s": 43.005026927,
+        "failing": 68
+      },
+      {
+        "at_s": 43.504867705,
+        "failing": 68
+      },
+      {
+        "at_s": 44.005004848,
+        "failing": 68
+      },
+      {
+        "at_s": 44.503376226,
+        "failing": 68
+      },
+      {
+        "at_s": 45.004355987,
+        "failing": 68
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 12,
+      "v42": 20,
+      "v43": 28,
+      "v44": 40
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b1",
+    "consumer": "go-policy",
+    "fleet": 100,
+    "vulnerable": 68,
+    "push": {
+      "id": "20261031T165124.230Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b1",
+      "config_version": "pol-20261031T164429Z-8d717807c3",
+      "started": "2026-10-31T16:51:24.230033198Z",
+      "status": "completed",
+      "fleet": 100,
+      "exposed": 100,
+      "exposed_share": 1,
+      "time_to_full_ms": 31,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 2,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 31,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 100,
+          "detail": "100 of 100 instances now have the file"
+        },
+        {
+          "at_ms": 31,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 12,
+        "v42": 20,
+        "v43": 28,
+        "v44": 40
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 68,
+    "peak_failing_share": 0.68,
+    "failed_instance_seconds": 3058,
+    "requests_ok": 5676,
+    "requests_failed": 11833,
+    "requests_failed_share": 0.6758238620138215,
+    "recovered_at_s": null,
+    "samples": [
+      {
+        "at_s": 0.503791777,
+        "failing": 64
+      },
+      {
+        "at_s": 1.003809379,
+        "failing": 68
+      },
+      {
+        "at_s": 1.506739794,
+        "failing": 68
+      },
+      {
+        "at_s": 2.005256561,
+        "failing": 68
+      },
+      {
+        "at_s": 2.503435983,
+        "failing": 68
+      },
+      {
+        "at_s": 3.003464888,
+        "failing": 68
+      },
+      {
+        "at_s": 3.503738002,
+        "failing": 68
+      },
+      {
+        "at_s": 4.003328255,
+        "failing": 68
+      },
+      {
+        "at_s": 4.505031778,
+        "failing": 68
+      },
+      {
+        "at_s": 5.003600078,
+        "failing": 68
+      },
+      {
+        "at_s": 5.505294411,
+        "failing": 68
+      },
+      {
+        "at_s": 6.004270647,
+        "failing": 68
+      },
+      {
+        "at_s": 6.507025748,
+        "failing": 68
+      },
+      {
+        "at_s": 7.004677386,
+        "failing": 68
+      },
+      {
+        "at_s": 7.504184085,
+        "failing": 68
+      },
+      {
+        "at_s": 8.003760426,
+        "failing": 68
+      },
+      {
+        "at_s": 8.504584201,
+        "failing": 68
+      },
+      {
+        "at_s": 9.00387582,
+        "failing": 68
+      },
+      {
+        "at_s": 9.505983558,
+        "failing": 68
+      },
+      {
+        "at_s": 10.004339935,
+        "failing": 68
+      },
+      {
+        "at_s": 10.50967356,
+        "failing": 68
+      },
+      {
+        "at_s": 11.003872892,
+        "failing": 68
+      },
+      {
+        "at_s": 11.505174916,
+        "failing": 68
+      },
+      {
+        "at_s": 12.008476726,
+        "failing": 68
+      },
+      {
+        "at_s": 12.503453259,
+        "failing": 68
+      },
+      {
+        "at_s": 13.005179393,
+        "failing": 68
+      },
+      {
+        "at_s": 13.50495807,
+        "failing": 68
+      },
+      {
+        "at_s": 14.004306861,
+        "failing": 68
+      },
+      {
+        "at_s": 14.503225586,
+        "failing": 68
+      },
+      {
+        "at_s": 15.004770444,
+        "failing": 68
+      },
+      {
+        "at_s": 15.504032417,
+        "failing": 68
+      },
+      {
+        "at_s": 16.005832139,
+        "failing": 68
+      },
+      {
+        "at_s": 16.504563787,
+        "failing": 68
+      },
+      {
+        "at_s": 17.004891357,
+        "failing": 68
+      },
+      {
+        "at_s": 17.50363077,
+        "failing": 68
+      },
+      {
+        "at_s": 18.004691058,
+        "failing": 68
+      },
+      {
+        "at_s": 18.503218715,
+        "failing": 68
+      },
+      {
+        "at_s": 19.005450979,
+        "failing": 68
+      },
+      {
+        "at_s": 19.503222968,
+        "failing": 68
+      },
+      {
+        "at_s": 20.00529524,
+        "failing": 68
+      },
+      {
+        "at_s": 20.503389672,
+        "failing": 68
+      },
+      {
+        "at_s": 21.005509438,
+        "failing": 68
+      },
+      {
+        "at_s": 21.503291271,
+        "failing": 68
+      },
+      {
+        "at_s": 22.005374577,
+        "failing": 68
+      },
+      {
+        "at_s": 22.503332081,
+        "failing": 68
+      },
+      {
+        "at_s": 23.005232876,
+        "failing": 68
+      },
+      {
+        "at_s": 23.507543031,
+        "failing": 68
+      },
+      {
+        "at_s": 24.006192798,
+        "failing": 68
+      },
+      {
+        "at_s": 24.503413959,
+        "failing": 68
+      },
+      {
+        "at_s": 25.004335314,
+        "failing": 68
+      },
+      {
+        "at_s": 25.503682478,
+        "failing": 68
+      },
+      {
+        "at_s": 26.004981029,
+        "failing": 68
+      },
+      {
+        "at_s": 26.503365484,
+        "failing": 68
+      },
+      {
+        "at_s": 27.006150645,
+        "failing": 68
+      },
+      {
+        "at_s": 27.503894818,
+        "failing": 68
+      },
+      {
+        "at_s": 28.003756336,
+        "failing": 68
+      },
+      {
+        "at_s": 28.503252541,
+        "failing": 68
+      },
+      {
+        "at_s": 29.006133175,
+        "failing": 68
+      },
+      {
+        "at_s": 29.503351944,
+        "failing": 68
+      },
+      {
+        "at_s": 30.006122226,
+        "failing": 68
+      },
+      {
+        "at_s": 30.503813755,
+        "failing": 68
+      },
+      {
+        "at_s": 31.006360543,
+        "failing": 68
+      },
+      {
+        "at_s": 31.505982108,
+        "failing": 68
+      },
+      {
+        "at_s": 32.006659627,
+        "failing": 68
+      },
+      {
+        "at_s": 32.505878228,
+        "failing": 68
+      },
+      {
+        "at_s": 33.005433565,
+        "failing": 68
+      },
+      {
+        "at_s": 33.5030232,
+        "failing": 68
+      },
+      {
+        "at_s": 34.003447464,
+        "failing": 68
+      },
+      {
+        "at_s": 34.509471413,
+        "failing": 68
+      },
+      {
+        "at_s": 35.006629048,
+        "failing": 68
+      },
+      {
+        "at_s": 35.503857564,
+        "failing": 68
+      },
+      {
+        "at_s": 36.005353605,
+        "failing": 68
+      },
+      {
+        "at_s": 36.506944724,
+        "failing": 68
+      },
+      {
+        "at_s": 37.005096278,
+        "failing": 68
+      },
+      {
+        "at_s": 37.50568013,
+        "failing": 68
+      },
+      {
+        "at_s": 38.003352048,
+        "failing": 68
+      },
+      {
+        "at_s": 38.505845307,
+        "failing": 68
+      },
+      {
+        "at_s": 39.004026033,
+        "failing": 68
+      },
+      {
+        "at_s": 39.504359215,
+        "failing": 68
+      },
+      {
+        "at_s": 40.00331997,
+        "failing": 68
+      },
+      {
+        "at_s": 40.504890062,
+        "failing": 68
+      },
+      {
+        "at_s": 41.003165441,
+        "failing": 68
+      },
+      {
+        "at_s": 41.505456193,
+        "failing": 68
+      },
+      {
+        "at_s": 42.004487201,
+        "failing": 68
+      },
+      {
+        "at_s": 42.503507733,
+        "failing": 68
+      },
+      {
+        "at_s": 43.003421534,
+        "failing": 68
+      },
+      {
+        "at_s": 43.505939196,
+        "failing": 68
+      },
+      {
+        "at_s": 44.005651296,
+        "failing": 68
+      },
+      {
+        "at_s": 44.504676339,
+        "failing": 68
+      },
+      {
+        "at_s": 45.004876878,
+        "failing": 68
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 12,
+      "v42": 20,
+      "v43": 28,
+      "v44": 40
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b2",
+    "consumer": "go-policy",
+    "fleet": 100,
+    "vulnerable": 68,
+    "push": {
+      "id": "20261031T165223.387Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b2",
+      "config_version": "pol-20261031T164429Z-8d717807c3",
+      "started": "2026-10-31T16:52:23.387454595Z",
+      "status": "rolled_back",
+      "reason": "crash alarm: 1 of 1 exposed instances crashed or not serving (e.g. gp-eu-west-023 v43 backoff: panic: runtime error: invalid memory address or nil pointer dereference at main.go:89)",
+      "fleet": 100,
+      "exposed": 1,
+      "exposed_share": 0.01,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 2013,
+      "time_to_revert_ms": 2014,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 1,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 10,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 1,
+          "detail": "1 of 100 instances now have the file"
+        },
+        {
+          "at_ms": 2013,
+          "kind": "alarm",
+          "detail": "crash alarm: 1 of 1 exposed instances crashed or not serving (e.g. gp-eu-west-023 v43 backoff: panic: runtime error: invalid memory address or nil pointer dereference at main.go:89)"
+        },
+        {
+          "at_ms": 2014,
+          "kind": "rollback_delivered",
+          "count": 1,
+          "detail": "last known good pol-20261031T164429Z-f73c747980"
+        },
+        {
+          "at_ms": 2014,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v43": 1
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 1,
+    "peak_failing_share": 0.01,
+    "failed_instance_seconds": 6,
+    "requests_ok": 17564,
+    "requests_failed": 32,
+    "requests_failed_share": 0.0018185951352580132,
+    "recovered_at_s": 6.503610533,
+    "samples": [
+      {
+        "at_s": 0.50388173,
+        "failing": 1
+      },
+      {
+        "at_s": 1.003858804,
+        "failing": 1
+      },
+      {
+        "at_s": 1.503558338,
+        "failing": 1
+      },
+      {
+        "at_s": 2.003813719,
+        "failing": 1
+      },
+      {
+        "at_s": 2.503925202,
+        "failing": 1
+      },
+      {
+        "at_s": 3.003337794,
+        "failing": 1
+      },
+      {
+        "at_s": 3.50379637,
+        "failing": 1
+      },
+      {
+        "at_s": 4.005007667,
+        "failing": 1
+      },
+      {
+        "at_s": 4.504361317,
+        "failing": 1
+      },
+      {
+        "at_s": 5.004774655,
+        "failing": 1
+      },
+      {
+        "at_s": 5.503518625,
+        "failing": 1
+      },
+      {
+        "at_s": 6.003776221,
+        "failing": 1
+      },
+      {
+        "at_s": 6.503610533,
+        "failing": 0
+      },
+      {
+        "at_s": 7.004145192,
+        "failing": 0
+      },
+      {
+        "at_s": 7.503991666,
+        "failing": 0
+      },
+      {
+        "at_s": 8.004961283,
+        "failing": 0
+      },
+      {
+        "at_s": 8.503480451,
+        "failing": 0
+      },
+      {
+        "at_s": 9.004189037,
+        "failing": 0
+      },
+      {
+        "at_s": 9.503508669,
+        "failing": 0
+      },
+      {
+        "at_s": 10.003796804,
+        "failing": 0
+      },
+      {
+        "at_s": 10.503519179,
+        "failing": 0
+      },
+      {
+        "at_s": 11.004295358,
+        "failing": 0
+      },
+      {
+        "at_s": 11.503430918,
+        "failing": 0
+      },
+      {
+        "at_s": 12.00556025,
+        "failing": 0
+      },
+      {
+        "at_s": 12.503532749,
+        "failing": 0
+      },
+      {
+        "at_s": 13.010882426,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503805304,
+        "failing": 0
+      },
+      {
+        "at_s": 14.004215211,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503931808,
+        "failing": 0
+      },
+      {
+        "at_s": 15.00340993,
+        "failing": 0
+      },
+      {
+        "at_s": 15.504744566,
+        "failing": 0
+      },
+      {
+        "at_s": 16.003624464,
+        "failing": 0
+      },
+      {
+        "at_s": 16.504522823,
+        "failing": 0
+      },
+      {
+        "at_s": 17.004187654,
+        "failing": 0
+      },
+      {
+        "at_s": 17.504615135999998,
+        "failing": 0
+      },
+      {
+        "at_s": 18.003912444,
+        "failing": 0
+      },
+      {
+        "at_s": 18.503847547,
+        "failing": 0
+      },
+      {
+        "at_s": 19.003286934,
+        "failing": 0
+      },
+      {
+        "at_s": 19.504608972,
+        "failing": 0
+      },
+      {
+        "at_s": 20.003486498,
+        "failing": 0
+      },
+      {
+        "at_s": 20.503748766,
+        "failing": 0
+      },
+      {
+        "at_s": 21.003706478,
+        "failing": 0
+      },
+      {
+        "at_s": 21.50439487,
+        "failing": 0
+      },
+      {
+        "at_s": 22.003817458,
+        "failing": 0
+      },
+      {
+        "at_s": 22.506768259,
+        "failing": 0
+      },
+      {
+        "at_s": 23.003256048,
+        "failing": 0
+      },
+      {
+        "at_s": 23.504527905,
+        "failing": 0
+      },
+      {
+        "at_s": 24.00334911,
+        "failing": 0
+      },
+      {
+        "at_s": 24.504658138,
+        "failing": 0
+      },
+      {
+        "at_s": 25.003713677,
+        "failing": 0
+      },
+      {
+        "at_s": 25.504707021,
+        "failing": 0
+      },
+      {
+        "at_s": 26.003796954,
+        "failing": 0
+      },
+      {
+        "at_s": 26.50411588,
+        "failing": 0
+      },
+      {
+        "at_s": 27.003450816,
+        "failing": 0
+      },
+      {
+        "at_s": 27.50407848,
+        "failing": 0
+      },
+      {
+        "at_s": 28.004551418,
+        "failing": 0
+      },
+      {
+        "at_s": 28.503479001,
+        "failing": 0
+      },
+      {
+        "at_s": 29.004179185,
+        "failing": 0
+      },
+      {
+        "at_s": 29.503540367,
+        "failing": 0
+      },
+      {
+        "at_s": 30.004436919,
+        "failing": 0
+      },
+      {
+        "at_s": 30.503927012,
+        "failing": 0
+      },
+      {
+        "at_s": 31.004092774,
+        "failing": 0
+      },
+      {
+        "at_s": 31.503465576,
+        "failing": 0
+      },
+      {
+        "at_s": 32.004647367,
+        "failing": 0
+      },
+      {
+        "at_s": 32.503419185,
+        "failing": 0
+      },
+      {
+        "at_s": 33.003995207,
+        "failing": 0
+      },
+      {
+        "at_s": 33.504678166,
+        "failing": 0
+      },
+      {
+        "at_s": 34.004486776,
+        "failing": 0
+      },
+      {
+        "at_s": 34.50347138,
+        "failing": 0
+      },
+      {
+        "at_s": 35.004617332,
+        "failing": 0
+      },
+      {
+        "at_s": 35.504424416,
+        "failing": 0
+      },
+      {
+        "at_s": 36.005851276,
+        "failing": 0
+      },
+      {
+        "at_s": 36.50370391,
+        "failing": 0
+      },
+      {
+        "at_s": 37.004260733,
+        "failing": 0
+      },
+      {
+        "at_s": 37.503896493,
+        "failing": 0
+      },
+      {
+        "at_s": 38.004736252,
+        "failing": 0
+      },
+      {
+        "at_s": 38.503832084,
+        "failing": 0
+      },
+      {
+        "at_s": 39.003842856,
+        "failing": 0
+      },
+      {
+        "at_s": 39.504152467,
+        "failing": 0
+      },
+      {
+        "at_s": 40.004043656,
+        "failing": 0
+      },
+      {
+        "at_s": 40.50419084,
+        "failing": 0
+      },
+      {
+        "at_s": 41.010631933,
+        "failing": 0
+      },
+      {
+        "at_s": 41.504110044,
+        "failing": 0
+      },
+      {
+        "at_s": 42.004044339,
+        "failing": 0
+      },
+      {
+        "at_s": 42.505845751,
+        "failing": 0
+      },
+      {
+        "at_s": 43.004918613,
+        "failing": 0
+      },
+      {
+        "at_s": 43.504802304,
+        "failing": 0
+      },
+      {
+        "at_s": 44.003423398,
+        "failing": 0
+      },
+      {
+        "at_s": 44.504560184,
+        "failing": 0
+      },
+      {
+        "at_s": 45.003268864,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v43": 1
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  }
+]

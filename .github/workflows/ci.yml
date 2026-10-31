@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -27,3 +27,8 @@ jobs:
         run: make build
       - name: Smoke test (100-instance fleet, three incident shapes)
         run: .venv/bin/python scripts/smoke.py --scale 0.2 --rate 500
+      - name: PushBench dry run (100 instances, short windows)
+        run: bin/pushbench -scale 0.2 -rate 500 -window 15s -bake 4s -out state/bench/ci.json -md state/bench/ci.md
+      - name: Show PushBench table
+        if: always()
+        run: cat state/bench/ci.md || true

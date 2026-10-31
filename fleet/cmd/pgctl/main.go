@@ -12,7 +12,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"hash/fnv"
 	"os"
 	"regexp"
 	"sort"
@@ -20,7 +19,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/sindhuja-tiwari/pushgate/fleet/internal/registry"
+	"github.com/sindhuja-tiwari/pushgate/internal/registry"
 )
 
 func usage() {
@@ -99,21 +98,13 @@ func status(src string) error {
 	return nil
 }
 
-// inPercent picks a stable subset: the same instance is always inside or
-// outside a given percentage, so 1% is a subset of 10%.
-func inPercent(id string, pct float64) bool {
-	h := fnv.New32a()
-	h.Write([]byte(id))
-	return float64(h.Sum32()%10000) < pct*100
-}
-
 func push(src string, args []string) error {
 	fs := flag.NewFlagSet("push", flag.ExitOnError)
 	consumer := fs.String("consumer", "", "consumer type (bot-proxy or go-policy)")
 	file := fs.String("file", "", "config file to deliver")
 	region := fs.String("region", "", "only this region")
 	version := fs.Int("version", 0, "only this release")
-	percent := fs.Float64("percent", 100, "only this share of matching instances (stable by id)")
+	percent := fs.Float64("percent", 100, "only this share of matching instances, in stable ring order (same rings as rollout)")
 	dry := fs.Bool("dry-run", false, "list targets without writing")
 	_ = fs.Parse(args)
 	if *consumer == "" || *file == "" {
@@ -127,15 +118,16 @@ func push(src string, args []string) error {
 	if err != nil {
 		return err
 	}
-	var targets []registry.Instance
+	var matching []registry.Instance
 	for _, i := range s.Instances {
 		if i.Consumer != *consumer || (*region != "" && i.Region != *region) || (*version != 0 && i.Version != *version) {
 			continue
 		}
-		if *percent < 100 && !inPercent(i.ID, *percent) {
-			continue
-		}
-		targets = append(targets, i)
+		matching = append(matching, i)
+	}
+	targets := matching
+	if *percent < 100 {
+		targets = registry.RingMembers(matching, *percent)
 	}
 	if len(targets) == 0 {
 		return fmt.Errorf("no instances match")

@@ -6,7 +6,7 @@ PushGate is an open-source safety gate for fast-moving config and data pushes. B
 
 It ships with **PushBench**, a reproducible benchmark of incidents rebuilt from public postmortems, so you can measure how much of a fleet each rollout strategy would have lost.
 
-> **Status: week 1 of 6 done.** The fleet simulator, both consumers at four releases each, the DuckDB producer and the push-all baseline (B0) work end to end. The gate itself (weeks 2 to 4) is not built yet. See [Roadmap](#roadmap).
+> **Status: week 2 of 6 done.** The fleet simulator, both consumers at four releases each, the DuckDB producer, and all three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback) work end to end, with a first benchmark run. PushGate's own checks (weeks 3 and 4) are not built yet. See [Roadmap](#roadmap).
 
 ---
 
@@ -113,29 +113,38 @@ pushgate/
 │   └── go-policy/         go-policy: quota policy checker (Google shape)
 ├── fleet/
 │   ├── cmd/fleet/         supervisor: runs the fleet, restarts crashes, publishes the registry
-│   ├── cmd/pgctl/         status, push (B0 today), wait, crashes
-│   ├── cmd/loadgen/       steady traffic, success rate by release and region
-│   └── internal/registry/ fleet layout and live registry types
+│   ├── cmd/pgctl/         status, raw push, wait, crashes
+│   └── cmd/loadgen/       steady traffic; per-instance error rates for alarms (-listen)
+├── rollout/               B0, B1, B2: validators, rings, bake, alarms, rollback, kill switch
+│   ├── schemas/           JSON Schemas for each file format (B1, B2)
+│   └── cmd/rollout/       push, set-lkg, rollback, freeze, unfreeze, status
+├── bench/
+│   ├── scenarios/         incident scenarios (one JSON file each)
+│   ├── cmd/pushbench/     runs scenarios × strategies and measures the damage
+│   └── results/           committed benchmark results
+├── internal/registry/     fleet layout, live registry, stable rings
 ├── producer/              builds feature files from DuckDB, and policy files
 ├── deploy/                fleet.json (layout), prometheus.yml
 ├── seed/                  initial config files every instance starts with
 ├── scripts/               smoke.py (CI check), demo_week1.sh
 ├── docs/versions.md       what differs between releases v41 to v44
+├── docs/baselines.md      how B0, B1 and B2 work, and what B2 cannot see
 ├── Dockerfile, docker-compose.yml
 └── Makefile
 ```
 
-Planned for later weeks: `gate/` (structural check, semantic diff, sandbox runner), `rollout/` (rings, bake times, rollback, kill switch), `lib/` (last-known-good library) and `bench/` (scenarios, good-push corpus, runner).
+Planned for later weeks: `gate/` (semantic diff, consumer-in-the-loop sandbox), `lib/` (last-known-good library), and the good-push corpus and more scenarios under `bench/`.
 
 ## Quickstart
 
 Needs Go 1.24+, a recent stable Rust toolchain and Python 3.10+.
 
 ```bash
-make build        # bin/bot-proxy/v41..v44, bin/go-policy/v41..v44, bin/fleet, bin/pgctl, bin/loadgen
+make build        # consumers v41..v44, plus bin/fleet, pgctl, loadgen, rollout, pushbench
 make test         # Rust, Go and producer unit tests
 make demo-week1   # 500-instance fleet; the Cloudflare-shaped push takes down every bot-proxy, then recovers
 make smoke        # all three incident shapes; checks each one breaks exactly the releases it should
+make bench        # B0, B1 and B2 on every scenario, about 10 minutes; writes bench/results/latest.md
 ```
 
 Or run the pieces yourself:
@@ -146,6 +155,12 @@ bin/loadgen -rate 2000                       # terminal 2: traffic, one line per
 bin/pgctl status                             # who runs what, and which config each instance serves
 bin/pgctl push -consumer bot-proxy -file f.json -percent 1   # deliver to a stable 1% subset
 bin/pgctl crashes                            # crash-looping instances, grouped by panic
+
+bin/loadgen -rate 2000 -listen 127.0.0.1:19100              # traffic plus per-instance error rates
+bin/rollout set-lkg -consumer bot-proxy -file seed/feature.json
+bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b2 -bake 10s -consumer bot-proxy -file f.json
+bin/rollout freeze -consumer bot-proxy -reason "incident 1234"   # kill switch
+bin/rollout rollback -consumer bot-proxy                         # last known good, everywhere
 ```
 
 With Docker, `docker compose up --build -d` runs the fleet plus Prometheus, which scrapes all 500 instances. Prometheus is at http://localhost:9090 and the registry at http://localhost:19000/registry.
@@ -164,12 +179,28 @@ Each push reached every instance of that consumer in under a second. Rolling bac
 
 One side effect: with Rust backtraces turned on, 400 crash-looping instances spent enough CPU symbolizing backtraces to stall a 4-core machine. That echoes Cloudflare's finding that error reporting made their outage worse. The supervisor turns backtraces off by default (`-backtraces` turns them back on).
 
+### What week 2 shows
+
+`make bench` on the same machine, 500 instances, 2,000 requests per second, each run watched for 45 s, B2 baking 10 s per ring ([full table](bench/results/week2.md)):
+
+| Incident | B0 push-all | B1 schema | B2 staged + alarms |
+|---|---|---|---|
+| Cloudflare (bot-proxy, 400) | 400 failing, 100% of requests failed | same as B0 | 4 exposed, alarm at 2 s, rolled back. 0.1% of requests failed |
+| CrowdStrike (bot-proxy, 400) | 200 failing, 46% of requests failed | same as B0 | 4 exposed, alarm at 2 s, rolled back. 0.1% failed |
+| Google Cloud (go-policy, 100) | 68 failing, 68% of requests failed | same as B0 | 1 exposed, alarm at 2 s, rolled back. 0.2% failed |
+
+Three things stand out:
+
+- **B1's schema caught none of them.** Each bad file is legal in its format. The limits it broke live in consumer code. See [docs/baselines.md](docs/baselines.md).
+- **B2 works well when ring 0 holds a release the file breaks.** At this fleet size, the 1% ring happened to include a vulnerable release in all three cases.
+- **It is luck, not design.** On a 100-instance fleet ([table](bench/results/week2-small-fleet.md)), the Google-shaped file reached ring 0 and ring 1 on safe releases only (v41, v42). B2 rolled it out to 100% before the alarm fired, and 60% of that fleet crashed. The CrowdStrike file got past ring 0 the same way. Ring 0 is picked by instance, not by release, so whether B2 catches a release-specific file depends on which instances land in the first ring. Week 5 measures this across many fleet layouts. PushGate's consumer-in-the-loop check (week 3) is aimed at exactly this gap.
+
 ## Roadmap
 
 | Week | Deliverable |
 |---|---|
 | 1 ✅ | Fleet simulator and consumers: Rust and Go consumers, 500+ mixed-version processes, version registry, producer, Prometheus metrics |
-| 2 | Baselines B0 to B2: push service, rings, alarm rollback, kill switch. Rebuild the three incidents and confirm B0 takes down the fleet in each |
+| 2 ✅ | Baselines B0 to B2: push service, rings, alarm rollback, kill switch. Rebuild the three incidents and confirm B0 takes down the fleet in each |
 | 3 | Gate checks: semantic diff (row count, cardinality, null rate, PSI drift) and sandbox with traffic replay, under 1 minute per run |
 | 4 | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |
 | 5 | PushBench runs: 12 bad scenarios and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, blast-radius charts |
