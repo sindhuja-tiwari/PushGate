@@ -1,4 +1,4 @@
-# PushGate / PushBench. Week 1: fleet simulator and consumers.
+# PushGate / PushBench.
 #
 #   make build        build every consumer release into bin/
 #   make test         Rust, Go and producer tests
@@ -6,7 +6,7 @@
 #   make fleet        run the 500-instance fleet in the foreground
 #   make smoke        start the fleet, push a good and a bad file, check results
 #   make demo-week1   the Cloudflare-shaped push against B0 (push-all)
-#   make bench        B0, B1 and B2 on every incident scenario (about 10 minutes)
+#   make bench        B0 to B3 on every incident scenario (about 15 minutes)
 
 VERSIONS   := 41 42 43 44
 PY         := .venv/bin/python
@@ -38,6 +38,7 @@ tools:
 	go build -o bin/loadgen ./fleet/cmd/loadgen
 	go build -o bin/rollout ./rollout/cmd/rollout
 	go build -o bin/pushbench ./bench/cmd/pushbench
+	go build -o bin/gate ./gate/cmd/gate
 
 producer-deps: $(PY)
 $(PY):

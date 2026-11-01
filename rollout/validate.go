@@ -16,6 +16,13 @@ type Validator interface {
 	Validate(consumer string, data []byte) error
 }
 
+// A Reporter is a Validator that also returns a detailed report, which the
+// runner stores in the push record whether the check passed or not.
+type Reporter interface {
+	Validator
+	ValidateReport(consumer string, data []byte) (report any, err error)
+}
+
 // formats maps each consumer to the file format it reads.
 var formats = map[string]string{
 	"bot-proxy": "bot-features/1",

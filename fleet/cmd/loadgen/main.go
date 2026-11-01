@@ -96,6 +96,8 @@ func main() {
 	jsonl := flag.String("jsonl", "", "also append one JSON report per interval to this file")
 	workers := flag.Int("workers", 256, "concurrent request workers")
 	quiet := flag.Bool("quiet", false, "only print the final summary")
+	record := flag.String("record", "", "keep a random sample of requests in this file, for PushGate's sandbox replay")
+	recordN := flag.Int("record-n", 5000, "requests to keep per consumer in the -record sample")
 	listen := flag.String("listen", "", "serve per-instance results at http://ADDR/instances?window=N (e.g. 127.0.0.1:19100); rollout alarms read it")
 	flag.Parse()
 
@@ -131,6 +133,17 @@ func main() {
 	}
 	st := &stats{keys: map[string]*counter{}}
 	per := newPerInstance()
+	sample := newReservoir(*recordN)
+	if *record != "" {
+		go func() {
+			for {
+				time.Sleep(5 * time.Second)
+				if err := sample.write(*record); err != nil {
+					log.Printf("loadgen: writing sample: %v", err)
+				}
+			}
+		}()
+	}
 	var dropped atomic.Int64
 	if *listen != "" {
 		go servePerInstance(*listen, per)
@@ -145,7 +158,11 @@ func main() {
 			rng := rand.New(rand.NewSource(seed))
 			for i := range jobs {
 				ok := false
-				resp, err := client.Get(buildURL(rng, i))
+				u := buildURL(rng, i)
+				if *record != "" {
+					sample.add(i.Consumer, u[strings.Index(u[len("http://"):], "/")+len("http://"):])
+				}
+				resp, err := client.Get(u)
 				if err == nil {
 					ok = resp.StatusCode == 200
 					resp.Body.Close()
@@ -252,6 +269,9 @@ loop:
 	}
 	wg.Wait()
 	report()
+	if *record != "" {
+		_ = sample.write(*record)
+	}
 	fmt.Printf("summary: %d requests, %.2f%% ok, worst interval %.1f%% ok\n", totOK+totFail, 100*float64(totOK)/float64(max(totOK+totFail, 1)), 100*minRate)
 }
 
@@ -361,4 +381,48 @@ func servePerInstance(addr string, p *perInstance) {
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("loadgen: listen %s: %v", addr, err)
 	}
+}
+
+// reservoir keeps a uniform random sample of request paths per consumer
+// (Vitter's algorithm R). The file it writes has one request per line:
+// "consumer<TAB>/path?query".
+type reservoir struct {
+	mu   sync.Mutex
+	n    int
+	seen map[string]int
+	keep map[string][]string
+	rng  *rand.Rand
+}
+
+func newReservoir(n int) *reservoir {
+	return &reservoir{n: n, seen: map[string]int{}, keep: map[string][]string{}, rng: rand.New(rand.NewSource(7))}
+}
+
+func (r *reservoir) add(consumer, path string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.seen[consumer]++
+	k := r.keep[consumer]
+	if len(k) < r.n {
+		r.keep[consumer] = append(k, path)
+		return
+	}
+	if j := r.rng.Intn(r.seen[consumer]); j < r.n {
+		k[j] = path
+	}
+}
+
+func (r *reservoir) write(path string) error {
+	r.mu.Lock()
+	var b strings.Builder
+	for _, c := range registry.SortedKeys(r.keep) {
+		for _, p := range r.keep[c] {
+			b.WriteString(c + "\t" + p + "\n")
+		}
+	}
+	r.mu.Unlock()
+	if b.Len() == 0 {
+		return nil
+	}
+	return registry.WriteAtomic(path, []byte(b.String()))
 }

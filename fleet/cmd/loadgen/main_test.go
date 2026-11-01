@@ -20,3 +20,14 @@ func TestPerInstanceWindow(t *testing.T) {
 		t.Fatalf("b: got %v want [0 1]", w["b"])
 	}
 }
+
+func TestReservoirKeepsAtMostN(t *testing.T) {
+	r := newReservoir(10)
+	for i := 0; i < 1000; i++ {
+		r.add("bot-proxy", "/score?x")
+	}
+	r.add("go-policy", "/check?y")
+	if len(r.keep["bot-proxy"]) != 10 || len(r.keep["go-policy"]) != 1 {
+		t.Fatalf("got %d and %d", len(r.keep["bot-proxy"]), len(r.keep["go-policy"]))
+	}
+}
