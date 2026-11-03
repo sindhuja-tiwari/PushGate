@@ -21,10 +21,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: consumers/rust-proxy
-      - name: Unit tests
-        run: make test
       - name: Build every release
         run: make build
+      - name: Unit tests (gate sandbox tests use the binaries built above)
+        run: make test
       - name: Smoke test (100-instance fleet, three incident shapes)
         run: .venv/bin/python scripts/smoke.py --scale 0.2 --rate 500
       - name: PushBench dry run (100 instances, short windows)

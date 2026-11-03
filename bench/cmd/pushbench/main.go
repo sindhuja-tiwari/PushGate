@@ -6,10 +6,13 @@
 // window, and records how many instances were hurt, for how long, and how
 // many requests failed.
 //
-//	pushbench -strategies b0,b1,b2 -window 45s -bake 10s
+//	pushbench -strategies b0,b1,b2,b3 -window 45s -bake 10s
 //
-// By default it starts its own fleet and loadgen. Week 5 extends this with
-// the good-push corpus, more scenarios and repeated seeds.
+// B3 is PushGate (B2 with the pre-exposure gate in front); b3-diff and
+// b3-sandbox run one gate layer each. By default pushbench starts its own
+// fleet and loadgen, and loadgen records the traffic sample the gate's
+// sandbox replays. Week 5 extends this with the good-push corpus, more
+// scenarios and repeated seeds.
 package main
 
 import (
@@ -28,6 +31,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sindhuja-tiwari/pushgate/gate"
 	"github.com/sindhuja-tiwari/pushgate/internal/registry"
 	"github.com/sindhuja-tiwari/pushgate/rollout"
 )
@@ -80,7 +84,7 @@ type Run struct {
 
 func main() {
 	scenarioGlob := flag.String("scenarios", "bench/scenarios/*.json", "scenario files")
-	strategies := flag.String("strategies", "b0,b1,b2", "comma-separated strategies")
+	strategies := flag.String("strategies", "b0,b1,b2,b3", "comma-separated strategies (b0, b1, b2, b3, b3-diff, b3-sandbox)")
 	window := flag.Duration("window", 45*time.Second, "how long to watch the fleet after each push")
 	bake := flag.Duration("bake", 10*time.Second, "b2 bake time per ring")
 	rate := flag.Int("rate", 2000, "loadgen requests per second")
@@ -90,15 +94,20 @@ func main() {
 	out := flag.String("out", "bench/results/latest.json", "results JSON")
 	md := flag.String("md", "bench/results/latest.md", "results table (Markdown)")
 	manage := flag.Bool("manage", true, "start and stop the fleet and loadgen")
+	replay := flag.Int("replay", 1000, "b3: recorded requests the sandbox replays per release")
 	flag.Parse()
 
 	scenarios, err := loadScenarios(*scenarioGlob)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fleet := rollout.SimFleet{Registry: registryURL}
+	traffic := filepath.Join(*work, "traffic.txt")
+	gcfg := gate.DefaultConfig(fleet, rollout.Store{Dir: filepath.Join(*work, "rollout")})
+	gcfg.TrafficFile, gcfg.Replay = traffic, *replay
 	var strats []rollout.Strategy
 	for _, name := range strings.Split(*strategies, ",") {
-		s, err := rollout.ByName(strings.TrimSpace(name), *bake)
+		s, err := gate.StrategyByName(strings.TrimSpace(name), *bake, gcfg)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -133,14 +142,13 @@ func main() {
 
 	jsonl := filepath.Join(*work, "load.jsonl")
 	if *manage {
-		stop, err := startFleet(*scale, *rate, jsonl)
+		stop, err := startFleet(*scale, *rate, jsonl, traffic)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer stop()
 	}
 
-	fleet := rollout.SimFleet{Registry: registryURL}
 	var runs []Run
 	for _, sc := range scenarios {
 		for _, s := range strats {
@@ -207,8 +215,9 @@ func runCmd(argv []string, vars map[string]string) error {
 	return nil
 }
 
-func startFleet(scale float64, rate int, jsonl string) (func(), error) {
+func startFleet(scale float64, rate int, jsonl, traffic string) (func(), error) {
 	_ = os.Remove(jsonl)
+	_ = os.Remove(traffic)
 	fl := exec.Command("bin/fleet", "-config", "deploy/fleet.json", "-fresh", "-scale", fmt.Sprint(scale))
 	fl.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
 	if err := fl.Start(); err != nil {
@@ -218,13 +227,19 @@ func startFleet(scale float64, rate int, jsonl string) (func(), error) {
 		fl.Process.Kill()
 		return nil, err
 	}
-	lg := exec.Command("bin/loadgen", "-rate", fmt.Sprint(rate), "-quiet", "-listen", loadgenAddr, "-jsonl", jsonl)
+	lg := exec.Command("bin/loadgen", "-rate", fmt.Sprint(rate), "-quiet", "-listen", loadgenAddr, "-jsonl", jsonl, "-record", traffic)
 	lg.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
 	if err := lg.Start(); err != nil {
 		fl.Process.Kill()
 		return nil, err
 	}
-	time.Sleep(3 * time.Second)
+	// loadgen writes its traffic sample every 5 s; B3 needs it.
+	for deadline := time.Now().Add(15 * time.Second); time.Now().Before(deadline); time.Sleep(500 * time.Millisecond) {
+		if st, err := os.Stat(traffic); err == nil && st.Size() > 0 {
+			break
+		}
+	}
+	time.Sleep(time.Second)
 	return func() {
 		_ = lg.Process.Signal(os.Interrupt)
 		_, _ = lg.Process.Wait()
@@ -422,8 +437,8 @@ func markdown(runs []Run, window, bake time.Duration, rate int) string {
 	fmt.Fprintf(&b, "# PushBench results\n\n")
 	fmt.Fprintf(&b, "Generated %s on %d CPUs. Traffic %d req/s. Each run watched the fleet for %s after the push. B2 bake time %s per ring (rings 1%%, 10%%, 100%%).\n\n",
 		time.Now().UTC().Format("2006-01-02 15:04 MST"), runtime.NumCPU(), rate, window, bake)
-	b.WriteString("| Incident | Strategy | Outcome | Got the bad file | Peak failing | Failed instance-seconds | Failed requests | Alarm | Recovered |\n")
-	b.WriteString("|---|---|---|---|---|---|---|---|---|\n")
+	b.WriteString("| Incident | Strategy | Outcome | Gate | Got the bad file | Peak failing | Failed instance-seconds | Failed requests | Alarm | Recovered |\n")
+	b.WriteString("|---|---|---|---|---|---|---|---|---|---|\n")
 	for _, r := range runs {
 		alarm := "–"
 		if r.Push.TimeToAlarm > 0 {
@@ -441,10 +456,40 @@ func markdown(runs []Run, window, bake time.Duration, rate int) string {
 		if r.Push.Status == rollout.StatusRejected {
 			outcome = "rejected before delivery"
 		}
-		fmt.Fprintf(&b, "| %s | %s | %s | %d of %d (%.0f%%) | %d (%.0f%%) | %.0f | %.1f%% | %s | %s |\n",
-			r.Incident, strings.ToUpper(r.Strategy), outcome, r.Push.Exposed, r.Fleet, 100*r.Push.ExposedPeak,
+		fmt.Fprintf(&b, "| %s | %s | %s | %s | %d of %d (%.0f%%) | %d (%.0f%%) | %.0f | %.1f%% | %s | %s |\n",
+			r.Incident, strings.ToUpper(r.Strategy), outcome, gateCell(r.Push), r.Push.Exposed, r.Fleet, 100*r.Push.ExposedPeak,
 			r.PeakFailing, 100*r.PeakFailingShare, r.FailedInstSec, 100*r.ReqFailShare, alarm, rec)
 	}
+	b.WriteString("\nGate: what B3's pre-exposure gate decided, which layer held the file, and how long the gate took. B3-DIFF and B3-SANDBOX run one layer each.\n")
 	b.WriteString("\nB0 and B1 have no health gate, so nothing rolls them back inside the window. In the real incidents people did, hours later. Failed instance-seconds for B0 and B1 therefore grow with the window length; compare strategies within one window, not across windows.\n")
 	return b.String()
+}
+
+// gateCell summarises the gate's report in a push record: verdict, the
+// layers that held the file, and how long the gate took.
+func gateCell(r *rollout.Result) string {
+	for _, name := range []string{"gate", "gate-diff", "gate-sandbox"} {
+		rep, ok := r.Checks[name].(*gate.Report)
+		if !ok {
+			continue
+		}
+		held := map[string]bool{}
+		for _, f := range rep.Findings {
+			if f.Severity == gate.Hold {
+				held[f.Layer] = true
+			}
+		}
+		var by []string
+		for _, l := range []string{"diff", "sandbox"} {
+			if held[l] {
+				by = append(by, l)
+			}
+		}
+		secs := float64(rep.DurationMS) / 1000
+		if len(by) > 0 {
+			return fmt.Sprintf("held by %s, %.1f s", strings.Join(by, " + "), secs)
+		}
+		return fmt.Sprintf("passed, %.1f s", secs)
+	}
+	return "–"
 }

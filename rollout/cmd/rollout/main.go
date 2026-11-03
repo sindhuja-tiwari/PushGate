@@ -1,7 +1,7 @@
 // Command rollout delivers config files to the simulated fleet under one of
 // the PushBench baseline strategies, and holds the kill switch.
 //
-//	rollout push -strategy b2 -consumer bot-proxy -file f.json [-bake 20s] [-rings 1,10,100]
+//	rollout push -strategy b3 -consumer bot-proxy -file f.json [-bake 20s] [-rings 1,10,100]
 //	rollout set-lkg -consumer bot-proxy -file f.json   mark a file as last known good
 //	rollout rollback -consumer bot-proxy               deliver last known good everywhere
 //	rollout freeze -consumer bot-proxy -reason "..."   stop all pushes for this file type
@@ -18,6 +18,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/sindhuja-tiwari/pushgate/gate"
 	"github.com/sindhuja-tiwari/pushgate/rollout"
 )
 
@@ -84,12 +85,14 @@ func main() {
 
 func push(rn *rollout.Runner, args []string) error {
 	fs := flag.NewFlagSet("push", flag.ExitOnError)
-	strategy := fs.String("strategy", "b2", "b0 (push-all), b1 (schema) or b2 (staged with alarms)")
+	strategy := fs.String("strategy", "b3", "b0 (push-all), b1 (schema), b2 (staged with alarms), b3 (b2 with the pre-exposure gate), b3-diff or b3-sandbox")
 	consumer := fs.String("consumer", "", "consumer type (bot-proxy or go-policy)")
 	file := fs.String("file", "", "config file to push")
 	bake := fs.Duration("bake", 20*time.Second, "b2: how long each ring must stay healthy")
 	rings := fs.String("rings", "", "b2: cumulative ring percentages, e.g. 1,10,100")
 	jsonOut := fs.Bool("json", false, "print the push record as JSON instead of a timeline")
+	binDir := fs.String("bin", "bin", "b3: directory holding bin/<consumer>/v<NN>")
+	traffic := fs.String("traffic", "state/traffic.txt", "b3: loadgen -record sample the sandbox replays")
 	_ = fs.Parse(args)
 	if *consumer == "" || *file == "" {
 		return fmt.Errorf("push needs -consumer and -file")
@@ -98,7 +101,9 @@ func push(rn *rollout.Runner, args []string) error {
 	if err != nil {
 		return err
 	}
-	s, err := rollout.ByName(*strategy, *bake)
+	gcfg := gate.DefaultConfig(rn.Fleet, rn.Store)
+	gcfg.BinDir, gcfg.TrafficFile = *binDir, *traffic
+	s, err := gate.StrategyByName(*strategy, *bake, gcfg)
 	if err != nil {
 		return err
 	}

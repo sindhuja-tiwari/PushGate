@@ -140,6 +140,9 @@ type Result struct {
 	TimeToRevert  Millis         `json:"time_to_revert_ms"` // push start to rollback delivered (0 if none)
 	Events        []Event        `json:"events"`
 	ExposedByVer  map[string]int `json:"exposed_by_version"`
+	// Checks holds detailed reports from validators that produce one
+	// (PushGate's gate), keyed by validator name.
+	Checks map[string]any `json:"checks,omitempty"`
 }
 
 // Runner executes pushes against a fleet.
@@ -188,7 +191,20 @@ func (rn *Runner) Push(ctx context.Context, s Strategy, consumer string, data []
 	}
 
 	for _, v := range s.Validators {
-		if err := v.Validate(consumer, data); err != nil {
+		var err error
+		if rv, ok := v.(Reporter); ok {
+			var report any
+			report, err = rv.ValidateReport(consumer, data)
+			if report != nil {
+				if r.Checks == nil {
+					r.Checks = map[string]any{}
+				}
+				r.Checks[v.Name()] = report
+			}
+		} else {
+			err = v.Validate(consumer, data)
+		}
+		if err != nil {
 			emit("validate_fail", 0, 0, v.Name()+": "+err.Error())
 			return finish(StatusRejected, v.Name()+" check failed: "+err.Error())
 		}

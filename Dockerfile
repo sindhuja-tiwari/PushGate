@@ -17,6 +17,7 @@ COPY fleet/ fleet/
 COPY internal/ internal/
 COPY rollout/ rollout/
 COPY bench/ bench/
+COPY gate/ gate/
 RUN for v in 41 42 43 44; do \
       CGO_ENABLED=0 go build -ldflags "-X main.buildVersion=$v" -o /out/go-policy/v$v ./consumers/go-policy; \
     done && \
@@ -24,7 +25,8 @@ RUN for v in 41 42 43 44; do \
     CGO_ENABLED=0 go build -o /out/pgctl ./fleet/cmd/pgctl && \
     CGO_ENABLED=0 go build -o /out/loadgen ./fleet/cmd/loadgen && \
     CGO_ENABLED=0 go build -o /out/rollout ./rollout/cmd/rollout && \
-    CGO_ENABLED=0 go build -o /out/pushbench ./bench/cmd/pushbench
+    CGO_ENABLED=0 go build -o /out/pushbench ./bench/cmd/pushbench && \
+    CGO_ENABLED=0 go build -o /out/gate ./gate/cmd/gate
 
 FROM python:3.12-slim-bookworm
 WORKDIR /app

@@ -6,7 +6,7 @@ PushGate is an open-source safety gate for fast-moving config and data pushes. B
 
 It ships with **PushBench**, a reproducible benchmark of incidents rebuilt from public postmortems, so you can measure how much of a fleet each rollout strategy would have lost.
 
-> **Status: week 2 of 6 done.** The simulated fleet, both consumers at four releases each, the DuckDB producer, and the three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback) work end to end, with benchmark results committed. **PushGate's own gate (B3) is not built yet.** See [Roadmap](#roadmap).
+> **Status: week 3 of 6 done.** The simulated fleet, both consumers at four releases each, the DuckDB producer, the three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback) and **PushGate's own pre-exposure gate (B3)** work end to end, with benchmark results committed. The consumer-side last-known-good library (week 4) is not built yet. See [Roadmap](#roadmap).
 
 ## Results so far
 
@@ -17,8 +17,9 @@ Three public incidents, rebuilt as scenarios on a 500-instance fleet:
 | **B0 push-all** | The bad file reached every instance in under a second. 46% to 100% of requests failed. |
 | **B1 schema** | Caught none of the three. Each file is legal in its format, and the limits it broke live in consumer code. |
 | **B2 staged + alarms** | Contained all three to 0.1% to 0.2% of requests, **but only because ring 0 happened to contain a vulnerable release.** On a 100-instance fleet, B2 rolled the Google-shaped file out to 100% and 60% of the fleet crashed. |
+| **B3 PushGate** | Held all three before any instance got the file, on both fleet sizes, in 0.2 to 0.3 s per check. Each held push names the releases that crash and the panic. |
 
-That last row is the gap PushGate targets. Staged rollout picks ring 0 by instance, not by release, so whether it catches a release-specific bad file is partly luck. Running the file through every deployed consumer version *before* exposure removes the luck. Details in [What week 2 shows](#what-week-2-shows).
+Staged rollout picks ring 0 by instance, not by release, so whether it catches a release-specific bad file is partly luck. Running the file through every deployed consumer version *before* exposure removes the luck. Details in [What week 2 shows](#what-week-2-shows) and [What week 3 shows](#what-week-3-shows).
 
 ## Why this exists
 
@@ -63,24 +64,25 @@ Producer pipeline (e.g. feature file every 5 min)
    ▼
 1. Structural check         schema, field counts                      [built: B1]
    ▼
-2. Semantic diff            vs last known good: size, cardinality,    [week 3]
+2. Semantic diff            vs last known good: size, cardinality,    [built: B3]
    ▼                        nulls, drift
-3. Consumer-in-the-loop     load into each deployed version,          [week 3]
+3. Consumer-in-the-loop     load into each deployed version,          [built: B3]
    ▼                        replay sampled traffic
 Ring 0 (1%) ─ healthy after bake ─▶ Ring 1 (10%) ─ healthy after bake ─▶ Ring 2 (100%)   [built: B2]
    │ alarm                              │ alarm
    ▼                                    ▼
         Auto-rollback to last known good                              [built: B2]
 
-Any failure in steps 2 or 3  ─▶  Hold + explain                       [weeks 3-4]
+Any failure in steps 2 or 3  ─▶  Hold + explain                       [built: B3]
 ```
 
 **Components**
 
-- **Consumer-in-the-loop sandbox** (the core idea, week 3). The fleet registry lists live consumer versions, say v41 through v44. For each, PushGate starts a container, loads the candidate file, replays about 1,000 sampled requests, and records crashes, panics, memory use, and output differences versus the last known good file. Output differences are a warning, not a block, since changed behavior is often the point of a push.
+- **Semantic diff** (built). Compares the candidate with the last known good file: row count, duplicate keys, new rule shapes, new nulls, PSI drift. It holds only on what is almost never legitimate (duplicates, the file doubling) and warns on the rest.
+- **Consumer-in-the-loop sandbox** (the core idea, built). The fleet registry lists live consumer versions, say v41 through v44. For each, PushGate starts that release's binary as an isolated process, loads the candidate file, replays about 1,000 sampled requests, and records crashes, panics, latency, memory use, and output differences versus the same release running the last known good file. Output differences are a warning, not a block, since changed behavior is often the point of a push. How both layers work is in [docs/gate.md](docs/gate.md).
 - **Consumer-side safety net** (week 4). A small library: if a file fails to load or breaks a declared limit, the consumer keeps serving with the last known good file and reports why. Fail-open vs fail-closed is a per-file setting, because failing open on a security rule file can be the wrong call.
 - **Ring rollout and kill switch** (built). Rings with bake times, health checks, automatic rollback, and one command to freeze all pushes for a file type. Deliberately simple: AppConfig already does this well.
-- **Explanations** (weeks 3 to 4). Every held push produces a short report, for example: `Held: feature count 400 > consumer v44 limit 200; v44 panicked at features.rs:118; row count +118% vs last good.`
+- **Explanations** (built). Every held push produces a short report, for example: `Held: v41, v42, v43 (200 of 400 instances) crashes on replayed traffic: panicked at src/main.rs:108:20: index out of bounds: the len is 20 but the index is 20 (also 1 warning(s): 5 rules use a 21-field template)`.
 
 ## PushBench
 
@@ -93,7 +95,7 @@ A simulated fleet of 500 to 2,000 lightweight consumer processes across a few re
 | B0 | push-all: validate format, send to 100% | The fast paths in all three incidents | Built |
 | B1 | schema: JSON Schema plus field-count checks, push to all | A typical validator | Built |
 | B2 | staged + alarms: rings, bake times, alarm rollback | AppConfig-style rollout | Built |
-| B3 | PushGate: B2 plus semantic diff, consumer-in-the-loop, last-known-good library | This project | Week 3 to 4 |
+| B3 | PushGate: B2 plus semantic diff and consumer-in-the-loop sandbox (last-known-good library in week 4) | This project | Gate built; library week 4 |
 
 How B0 to B2 work, and what B2 cannot see, is in [docs/baselines.md](docs/baselines.md).
 
@@ -127,6 +129,8 @@ pushgate/
 │   ├── cmd/fleet/         supervisor: runs the fleet, restarts crashes, publishes the registry
 │   ├── cmd/pgctl/         status, raw push, wait, crashes
 │   └── cmd/loadgen/       steady traffic; per-instance error rates for alarms (-listen)
+├── gate/                  B3: semantic diff, consumer-in-the-loop sandbox, held-push reports
+│   └── cmd/gate/          gate check: run the gate on one file without delivering it
 ├── rollout/               B0, B1, B2: validators, rings, bake, alarms, rollback, kill switch
 │   ├── schemas/           JSON Schemas for each file format (B1, B2)
 │   └── cmd/rollout/       push, set-lkg, rollback, freeze, unfreeze, status
@@ -139,24 +143,24 @@ pushgate/
 ├── deploy/                fleet.json (layout), prometheus.yml
 ├── seed/                  initial config files every instance starts with
 ├── scripts/               smoke.py (CI check), demo_week1.sh
-├── docs/                  versions.md (release differences), baselines.md (B0 to B2)
+├── docs/                  versions.md (release differences), baselines.md (B0 to B2), gate.md (B3)
 ├── .github/workflows/     CI
 ├── Dockerfile, docker-compose.yml
 └── Makefile
 ```
 
-Planned for later weeks: `gate/` (semantic diff, consumer-in-the-loop sandbox), `lib/` (last-known-good library), and the good-push corpus under `bench/`.
+Planned for later weeks: `lib/` (last-known-good library) and the good-push corpus under `bench/`.
 
 ## Quickstart
 
 Needs Go 1.24+, a recent stable Rust toolchain and Python 3.10+.
 
 ```bash
-make build        # consumers v41..v44, plus bin/fleet, pgctl, loadgen, rollout, pushbench
+make build        # consumers v41..v44, plus bin/fleet, pgctl, loadgen, rollout, pushbench, gate
 make test         # Rust, Go and producer unit tests
 make demo-week1   # 500-instance fleet; the Cloudflare-shaped push takes down every bot-proxy, then recovers
 make smoke        # all three incident shapes; checks each one breaks exactly the releases it should
-make bench        # B0, B1 and B2 on every scenario, about 10 minutes; writes bench/results/latest.md
+make bench        # B0 to B3 on every scenario, about 15 minutes; writes bench/results/latest.md
 ```
 
 Or run the pieces yourself:
@@ -171,6 +175,9 @@ bin/pgctl crashes                            # crash-looping instances, grouped 
 bin/loadgen -rate 2000 -listen 127.0.0.1:19100              # traffic plus per-instance error rates
 bin/rollout set-lkg -consumer bot-proxy -file seed/feature.json
 bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b2 -bake 10s -consumer bot-proxy -file f.json
+bin/loadgen -rate 2000 -listen 127.0.0.1:19100 -record state/traffic.txt   # also keep a traffic sample for the gate
+bin/gate check -consumer bot-proxy -file f.json                  # pass or hold, and why; delivers nothing
+bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b3 -bake 10s -consumer bot-proxy -file f.json
 bin/rollout freeze -consumer bot-proxy -reason "incident 1234"   # kill switch
 bin/rollout rollback -consumer bot-proxy                         # last known good, everywhere
 ```
@@ -207,18 +214,31 @@ Three things stand out:
 - **B2 works well when ring 0 holds a release the file breaks.** At this fleet size, the 1% ring happened to include a vulnerable release in all three cases.
 - **It is luck, not design.** On a 100-instance fleet ([table](bench/results/week2-small-fleet.md)), the Google-shaped file reached ring 0 and ring 1 on safe releases only (v41, v42). B2 rolled it out to 100% before the alarm fired, and 60% of that fleet crashed. The CrowdStrike file got past ring 0 the same way. Week 5 measures this across many fleet layouts.
 
+### What week 3 shows
+
+Same machine and settings as week 2, now with B3 and two ablations that run one gate layer each ([full table](bench/results/week3.md), [100-instance fleet](bench/results/week3-small-fleet.md)):
+
+| Incident | B2 staged + alarms | B3 PushGate | B3 diff only | B3 sandbox only |
+|---|---|---|---|---|
+| Cloudflare | 4 exposed, rolled back | **held, 0 exposed** (diff and sandbox) | held | held |
+| CrowdStrike | 4 exposed, rolled back | **held, 0 exposed** (sandbox) | warned, passed: 4 exposed, rolled back | held |
+| Google Cloud | 1 exposed, rolled back | **held, 0 exposed** (sandbox) | warned, passed: 1 exposed, rolled back | held |
+
+- **B3 held every bad file before any instance got it,** on the 500- and the 100-instance fleet. On the small fleet B2 again let the Google file reach 100% (12 of 20 go-policy instances crashed) and the CrowdStrike file reach 10%; B3 exposed nothing. Ring 0 luck no longer decides these shapes. Each check took 0.2 to 0.3 s against a one-minute budget.
+- **The sandbox does the work.** The diff alone catches only the Cloudflare file. It sees the 21-field rules and the blank quotas, but those are legal changes in general, so it warns rather than holds. Only running v41 to v44 shows which releases crash, which is the project's central claim.
+- **The report says what would have happened.** For CrowdStrike: v41, v42 and v43 (200 of 400 instances) crash on the second replayed request with an index out of bounds at `main.rs:108`, while v44 is fine.
+- **What this does not show yet:** how often the gate holds a good push. The good-push corpus in week 5 measures that. So far it passes identical files and 10% growth (unit tests).
+
 ## Roadmap
 
 | Week | Deliverable |
 |---|---|
 | 1 ✅ | Fleet simulator and consumers: Rust and Go consumers, 500+ mixed-version processes, version registry, producer, Prometheus metrics |
 | 2 ✅ | Baselines B0 to B2: push service, rings, alarm rollback, kill switch. Rebuild the three incidents and confirm B0 takes down the fleet in each |
-| **3 ← next** | Gate checks: semantic diff (row count, cardinality, null rate, PSI drift) and sandbox with traffic replay, under 1 minute per run |
-| 4 | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |
+| 3 ✅ | Gate checks: semantic diff (row count, cardinality, null rate, PSI drift) and sandbox with traffic replay, under 1 minute per run |
+| **4 ← next** | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |
 | 5 | PushBench runs: 12 bad scenarios and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, blast-radius charts |
 | 6 | Write-up and demo: README as a short paper, 90-second video, one-command `make bench` |
-
-**Smallest useful first step for week 3:** a load-only dry run. Each consumer version loads a candidate file and exits non-zero on a panic or limit breach, and a `gate/` command runs that once per live version from the registry (v41 to v44). No traffic replay or semantic diff yet. That alone would hold all three rebuilt incident files before ring 0, which is the main claim, and the diff and replay layers then add to something already working.
 
 ## Limitations
 
