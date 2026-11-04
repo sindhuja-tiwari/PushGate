@@ -18,8 +18,8 @@ type fakeFleet struct {
 	// library: a file their release cannot load is refused, not crashed on.
 	refuse bool
 	mu     sync.Mutex
-	insts []registry.Instance
-	files map[string][]byte
+	insts  []registry.Instance
+	files  map[string][]byte
 	// breaks reports whether data crashes a given release.
 	breaks func(version int, data []byte) bool
 }
