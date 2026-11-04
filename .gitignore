@@ -3,3 +3,4 @@
 /.venv/
 consumers/rust-proxy/target/
 __pycache__/
+lib/rust/lkg/target/

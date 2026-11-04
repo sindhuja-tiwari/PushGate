@@ -6,7 +6,7 @@ PushGate is an open-source safety gate for fast-moving config and data pushes. B
 
 It ships with **PushBench**, a reproducible benchmark of incidents rebuilt from public postmortems, so you can measure how much of a fleet each rollout strategy would have lost.
 
-> **Status: week 3 of 6 done.** The simulated fleet, both consumers at four releases each, the DuckDB producer, the three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback) and **PushGate's own pre-exposure gate (B3)** work end to end, with benchmark results committed. The consumer-side last-known-good library (week 4) is not built yet. See [Roadmap](#roadmap).
+> **Status: week 4 of 6 done.** The simulated fleet, both consumers at four releases each, the DuckDB producer, the three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback), **PushGate's pre-exposure gate (B3)** and the **consumer-side last-known-good library** (Go and Rust) work end to end, with benchmark results committed. Next: the full benchmark with good pushes, seeds and confidence intervals. See [Roadmap](#roadmap).
 
 ## Results so far
 
@@ -18,8 +18,9 @@ Three public incidents, rebuilt as scenarios on a 500-instance fleet:
 | **B1 schema** | Caught none of the three. Each file is legal in its format, and the limits it broke live in consumer code. |
 | **B2 staged + alarms** | Contained all three to 0.1% to 0.2% of requests, **but only because ring 0 happened to contain a vulnerable release.** On a 100-instance fleet, B2 rolled the Google-shaped file out to 100% and 60% of the fleet crashed. |
 | **B3 PushGate** | Held all three before any instance got the file, on both fleet sizes, in 0.2 to 0.3 s per check. Each held push names the releases that crash and the panic. |
+| **Last-known-good library** | With the library inside the consumers, even B0 push-all crashed nothing: vulnerable releases refused the file and kept serving the old one. No requests failed. |
 
-Staged rollout picks ring 0 by instance, not by release, so whether it catches a release-specific bad file is partly luck. Running the file through every deployed consumer version *before* exposure removes the luck. Details in [What week 2 shows](#what-week-2-shows) and [What week 3 shows](#what-week-3-shows).
+Staged rollout picks ring 0 by instance, not by release, so whether it catches a release-specific bad file is partly luck. Running the file through every deployed consumer version *before* exposure removes the luck. Details in [What week 2 shows](#what-week-2-shows), [What week 3 shows](#what-week-3-shows) and [What week 4 shows](#what-week-4-shows).
 
 ## Why this exists
 
@@ -80,7 +81,7 @@ Any failure in steps 2 or 3  ─▶  Hold + explain                       [built
 
 - **Semantic diff** (built). Compares the candidate with the last known good file: row count, duplicate keys, new rule shapes, new nulls, PSI drift. It holds only on what is almost never legitimate (duplicates, the file doubling) and warns on the rest.
 - **Consumer-in-the-loop sandbox** (the core idea, built). The fleet registry lists live consumer versions, say v41 through v44. For each, PushGate starts that release's binary as an isolated process, loads the candidate file, replays about 1,000 sampled requests, and records crashes, panics, latency, memory use, and output differences versus the same release running the last known good file. Output differences are a warning, not a block, since changed behavior is often the point of a push. How both layers work is in [docs/gate.md](docs/gate.md).
-- **Consumer-side safety net** (week 4). A small library: if a file fails to load or breaks a declared limit, the consumer keeps serving with the last known good file and reports why. Fail-open vs fail-closed is a per-file setting, because failing open on a security rule file can be the wrong call.
+- **Consumer-side safety net** (built). A small library in Go (`lib/go/lkg`) and Rust (`lib/rust/lkg`): if a file fails to load, breaks a declared limit or (Go) panics while loading, the consumer keeps serving the last known good file, caches it for restarts, and reports why on `/healthz`. Fail-open vs fail-closed is a per-file setting, because failing open on a security rule file can be the wrong call. Rollout alarms count a refusal as a failure, so a rollout does not carry a file to 100% while consumers quietly reject it. Details in [docs/lkg.md](docs/lkg.md).
 - **Ring rollout and kill switch** (built). Rings with bake times, health checks, automatic rollback, and one command to freeze all pushes for a file type. Deliberately simple: AppConfig already does this well.
 - **Explanations** (built). Every held push produces a short report, for example: `Held: v41, v42, v43 (200 of 400 instances) crashes on replayed traffic: panicked at src/main.rs:108:20: index out of bounds: the len is 20 but the index is 20 (also 1 warning(s): 5 rules use a 21-field template)`.
 
@@ -95,7 +96,7 @@ A simulated fleet of 500 to 2,000 lightweight consumer processes across a few re
 | B0 | push-all: validate format, send to 100% | The fast paths in all three incidents | Built |
 | B1 | schema: JSON Schema plus field-count checks, push to all | A typical validator | Built |
 | B2 | staged + alarms: rings, bake times, alarm rollback | AppConfig-style rollout | Built |
-| B3 | PushGate: B2 plus semantic diff and consumer-in-the-loop sandbox (last-known-good library in week 4) | This project | Gate built; library week 4 |
+| B3 | PushGate: B2 plus semantic diff and consumer-in-the-loop sandbox, with the last-known-good library in consumers | This project | Built |
 
 How B0 to B2 work, and what B2 cannot see, is in [docs/baselines.md](docs/baselines.md).
 
@@ -138,18 +139,21 @@ pushgate/
 │   ├── scenarios/         incident scenarios (one JSON file each)
 │   ├── cmd/pushbench/     runs scenarios x strategies and measures the damage
 │   └── results/           committed benchmark results
+├── lib/
+│   ├── go/lkg/            last-known-good library for Go consumers
+│   └── rust/lkg/          the same for Rust consumers
 ├── internal/registry/     fleet layout, live registry, stable rings
 ├── producer/              builds feature files from DuckDB, and policy files
 ├── deploy/                fleet.json (layout), prometheus.yml
 ├── seed/                  initial config files every instance starts with
 ├── scripts/               smoke.py (CI check), demo_week1.sh
-├── docs/                  versions.md (release differences), baselines.md (B0 to B2), gate.md (B3)
+├── docs/                  versions.md, baselines.md (B0 to B2), gate.md (B3), lkg.md (the library)
 ├── .github/workflows/     CI
 ├── Dockerfile, docker-compose.yml
 └── Makefile
 ```
 
-Planned for later weeks: `lib/` (last-known-good library) and the good-push corpus under `bench/`.
+Planned for later weeks: the good-push corpus under `bench/`.
 
 ## Quickstart
 
@@ -161,6 +165,7 @@ make test         # Rust, Go and producer unit tests
 make demo-week1   # 500-instance fleet; the Cloudflare-shaped push takes down every bot-proxy, then recovers
 make smoke        # all three incident shapes; checks each one breaks exactly the releases it should
 make bench        # B0 to B3 on every scenario, about 15 minutes; writes bench/results/latest.md
+make bench-lkg    # B0, B2 and B3 with the last-known-good library in every consumer
 ```
 
 Or run the pieces yourself:
@@ -171,6 +176,7 @@ bin/loadgen -rate 2000                       # terminal 2: traffic, one line per
 bin/pgctl status                             # who runs what, and which config each instance serves
 bin/pgctl push -consumer bot-proxy -file f.json -percent 1   # deliver to a stable 1% subset
 bin/pgctl crashes                            # crash-looping instances, grouped by panic
+bin/pgctl rejections                         # files the last-known-good library refused, grouped by reason
 
 bin/loadgen -rate 2000 -listen 127.0.0.1:19100              # traffic plus per-instance error rates
 bin/rollout set-lkg -consumer bot-proxy -file seed/feature.json
@@ -229,6 +235,21 @@ Same machine and settings as week 2, now with B3 and two ablations that run one 
 - **The report says what would have happened.** For CrowdStrike: v41, v42 and v43 (200 of 400 instances) crash on the second replayed request with an index out of bounds at `main.rs:108`, while v44 is fine.
 - **What this does not show yet:** how often the gate holds a good push. The good-push corpus in week 5 measures that. So far it passes identical files and 10% growth (unit tests).
 
+### What week 4 shows
+
+The same benchmark with every consumer loading through the last-known-good library ([full table](bench/results/week4.md), [100-instance fleet](bench/results/week4-small-fleet.md), [fail-closed](bench/results/week4-fail-closed.md)):
+
+| Incident | B0 push-all, no library | B0 push-all + library | B2 + library | B3 + library |
+|---|---|---|---|---|
+| Cloudflare | 400 failing, 100% of requests failed | 400 refused the file, 0 failing, 0% failed | 4 refused, rejection alarm at 3 s, rolled back | held by the gate, 0 exposed |
+| CrowdStrike | 200 failing, 46% failed | 200 refused (v41 to v43), 0 failing, 0% failed | 2 refused, alarm at 3 s, rolled back | held, 0 exposed |
+| Google Cloud | 68 failing, 68% failed | 68 refused (v43, v44), 0 failing, 0% failed | 1 refused, alarm at 2 s, rolled back | held, 0 exposed |
+
+- **The library turns a fleet-wide outage into a non-event.** Pushed to everyone at once, all three files crashed nothing: each vulnerable instance rejected the file with the reason, for example `feature 0 has 21 match fields; this release reads 20 input slots`, and kept serving the old one.
+- **Silent rejection is its own risk, so rejections raise the alarm.** Without that, B2 would treat an instance that refuses the file as healthy and carry it to 100%. With it, B2 rolled back at ring 0. On the 100-instance fleet, B2 still reached 100% with the Google file, because rings 0 and 1 again held only safe releases. Nothing failed, but 12 of 20 instances were left on stale config until the alarm fired at 14 s. The gate catches that case before exposure.
+- **Fail-closed trades availability for safety, as designed.** With `fail_closed`, B0 failed about as many requests as with no library, since refusing instances answer 503, but nothing crash-looped. B2 recovered in 3 to 6.5 s.
+- **Rust panics cannot be caught** (`panic = "abort"`), so bot-proxy relies on declared limits. Go's library also catches panics: go-policy's unchanged v43 code still hits the nil quota, and the library turns that into a rejection naming `main.go:101`.
+
 ## Roadmap
 
 | Week | Deliverable |
@@ -236,8 +257,8 @@ Same machine and settings as week 2, now with B3 and two ablations that run one 
 | 1 ✅ | Fleet simulator and consumers: Rust and Go consumers, 500+ mixed-version processes, version registry, producer, Prometheus metrics |
 | 2 ✅ | Baselines B0 to B2: push service, rings, alarm rollback, kill switch. Rebuild the three incidents and confirm B0 takes down the fleet in each |
 | 3 ✅ | Gate checks: semantic diff (row count, cardinality, null rate, PSI drift) and sandbox with traffic replay, under 1 minute per run |
-| **4 ← next** | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |
-| 5 | PushBench runs: 12 bad scenarios and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, blast-radius charts |
+| 4 ✅ | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |
+| **5 ← next** | PushBench runs: 12 bad scenarios and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, blast-radius charts |
 | 6 | Write-up and demo: README as a short paper, 90-second video, one-command `make bench` |
 
 ## Limitations
@@ -246,7 +267,8 @@ Same machine and settings as week 2, now with B3 and two ablations that run one 
 - **Results so far come from one 4-core machine.** Timings such as the 2 s alarm and 9 s recovery depend on that setup. Week 5 adds seeds and confidence intervals.
 - **Replay only catches what the sample covers.** Google's bug sat on a path only one policy shape reached. If the replay misses that request type, so does the gate. A rare-request scenario will measure this directly.
 - **Speed versus safety is a real tradeoff.** Security content needs to move fast. Results will be reported for both a fast lane and a full gate.
-- **Failing open is not always safe.** For auth or security rule files it may let through traffic that should be blocked.
+- **Failing open is not always safe.** For auth or security rule files it may let through traffic that should be blocked. The library's `fail_closed` mode exists for those.
+- **The library needs a code release.** In the simulation every release gets it through a flag, which assumes a backport. In a real fleet it protects only the releases that ship it.
 - **Data-triggered failures only.** PushGate does not catch ordinary code bugs or bad commands such as Facebook's 2021 BGP withdrawal.
 
 ## Sources

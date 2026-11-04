@@ -4,6 +4,7 @@
 //	pgctl push -consumer bot-proxy -file f.json [-region r] [-version 41] [-percent 10]
 //	pgctl wait -timeout 60s              wait until every instance is up
 //	pgctl crashes                        list instances that crashed, with the panic
+//	pgctl rejections                     instances whose last-known-good library refused a file, and why
 //
 // In week 1, `pgctl push` with no filters is baseline B0 (push-all): the file
 // is written to every matching instance at once, with no checks.
@@ -23,7 +24,7 @@ import (
 )
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: pgctl [-registry URL|path] status|push|wait|crashes [flags]")
+	fmt.Fprintln(os.Stderr, "usage: pgctl [-registry URL|path] status|push|wait|crashes|rejections [flags]")
 	os.Exit(2)
 }
 
@@ -44,6 +45,8 @@ func main() {
 		err = wait(*reg, args)
 	case "crashes":
 		err = crashes(*reg)
+	case "rejections":
+		err = rejections(*reg)
 	default:
 		usage()
 	}
@@ -215,6 +218,67 @@ func crashes(src string) error {
 			restarts += i.Restarts
 		}
 		fmt.Printf("%4d instances, %5d restarts  %s\n", len(g), restarts, k)
+	}
+	return nil
+}
+
+// rejections groups instances whose last-known-good library refused a file:
+// the held-push report from the consumers' side.
+func rejections(src string) error {
+	s, err := registry.Fetch(src)
+	if err != nil {
+		return err
+	}
+	type key struct {
+		consumer string
+		version  int
+		file     string
+		reason   string
+	}
+	groups := map[key][]registry.Instance{}
+	notServing := 0
+	for _, i := range s.Instances {
+		if i.NotServing {
+			notServing++
+		}
+		if i.Rejected == "" {
+			continue
+		}
+		k := key{i.Consumer, i.Version, i.Rejected, i.RejectReason}
+		groups[k] = append(groups[k], i)
+	}
+	if len(groups) == 0 {
+		fmt.Println("no rejections")
+		return nil
+	}
+	keys := make([]key, 0, len(groups))
+	for k := range groups {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(a, b int) bool {
+		if keys[a].consumer != keys[b].consumer {
+			return keys[a].consumer < keys[b].consumer
+		}
+		return keys[a].version < keys[b].version
+	})
+	for _, k := range keys {
+		g := groups[k]
+		serving := map[string]int{}
+		for _, i := range g {
+			if i.NotServing {
+				serving["nothing (fail closed)"]++
+			} else {
+				serving[i.ConfigVersion]++
+			}
+		}
+		var still []string
+		for _, v := range registry.SortedKeys(serving) {
+			still = append(still, v)
+		}
+		fmt.Printf("%4d instances  %s v%d refused %s: %s\n      still serving: %s\n", len(g), k.consumer, k.version, k.file, k.reason, strings.Join(still, ", "))
+	}
+	if notServing > 0 {
+		fmt.Printf("%d instances are not serving\n", notServing)
 	}
 	return nil
 }

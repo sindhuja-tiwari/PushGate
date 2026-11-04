@@ -32,6 +32,9 @@ type ConsumerConfig struct {
 	// Versions maps a release number to its relative weight in the fleet,
 	// for example {"41": 5, "44": 50}.
 	Versions map[string]int `json:"versions"`
+	// OnBadFile, if set, runs instances with the last-known-good library:
+	// "keep_last_good" or "fail_closed". Empty runs the naive loader.
+	OnBadFile string `json:"on_bad_file,omitempty"`
 }
 
 // LoadFleetConfig reads and checks a fleet layout file.
@@ -87,6 +90,19 @@ type Instance struct {
 	LastExit      string    `json:"last_exit,omitempty"`
 	LastPanic     string    `json:"last_panic,omitempty"`
 	StateSince    time.Time `json:"state_since"`
+
+	// Set only for instances running the last-known-good library.
+	OnBadFile string `json:"on_bad_file,omitempty"`
+	// NotServing: the process is up but refuses requests (fail-closed after
+	// a rejection, or no good file yet).
+	NotServing bool `json:"not_serving,omitempty"`
+	// Rejected is the config version of the last file the instance refused,
+	// with the reason. Cleared when a newer file loads.
+	Rejected     string `json:"rejected,omitempty"`
+	RejectReason string `json:"reject_reason,omitempty"`
+	// ServingFrom is "file" or "cache" (<config>.lkg after a bad file at
+	// startup).
+	ServingFrom string `json:"serving_from,omitempty"`
 }
 
 // Snapshot is what the supervisor publishes at /registry and in

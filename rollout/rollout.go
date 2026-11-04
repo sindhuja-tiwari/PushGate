@@ -311,7 +311,7 @@ func (rn *Runner) Push(ctx context.Context, s Strategy, consumer string, data []
 				emit("frozen", pct, 0, f.Reason)
 				return finish(StatusFrozen, "frozen during bake: "+f.Reason)
 			}
-			sig, err := evaluate(s.Alarms, rn.Fleet, rn.Errors, exposed, time.Now())
+			sig, err := evaluate(s.Alarms, rn.Fleet, rn.Errors, exposed, r.ConfigVersion, time.Now())
 			if err != nil {
 				emit("alarm_eval_error", pct, 0, err.Error())
 				continue

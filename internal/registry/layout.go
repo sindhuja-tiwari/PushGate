@@ -34,6 +34,7 @@ func Plan(c *FleetConfig) ([]Instance, error) {
 					Port:       port,
 					ConfigPath: filepath.Join(c.StateDir, "instances", id, cc.ConfigFile),
 					State:      StateStarting,
+					OnBadFile:  cc.OnBadFile,
 				})
 				port++
 			}

@@ -84,11 +84,11 @@ func (p *proc) run(ctx context.Context, rng *rand.Rand, rngMu *sync.Mutex) {
 	attempt := 0
 	for ctx.Err() == nil {
 		inst := p.snapshot()
-		cmd := exec.Command(p.bin,
-			"--id", inst.ID,
-			"--port", strconv.Itoa(inst.Port),
-			"--config", inst.ConfigPath,
-		)
+		args := []string{"--id", inst.ID, "--port", strconv.Itoa(inst.Port), "--config", inst.ConfigPath}
+		if inst.OnBadFile != "" {
+			args = append(args, "--on-bad-file", inst.OnBadFile)
+		}
+		cmd := exec.Command(p.bin, args...)
 		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGKILL}
 		cmd.Env = p.env
 		stderr, _ := cmd.StderrPipe()
@@ -207,10 +207,26 @@ func healthLoop(ctx context.Context, procs []*proc) {
 				defer resp.Body.Close()
 				var h struct {
 					ConfigVersion string `json:"config_version"`
+					Serving       *bool  `json:"serving"`
+					LKG           *struct {
+						From         string `json:"from"`
+						LastRejected *struct {
+							ConfigVersion string `json:"config_version"`
+							Reason        string `json:"reason"`
+						} `json:"last_rejected"`
+					} `json:"lkg"`
 				}
 				if resp.StatusCode == 200 && json.NewDecoder(resp.Body).Decode(&h) == nil {
 					p.mu.Lock()
 					p.inst.ConfigVersion = h.ConfigVersion
+					p.inst.NotServing = h.Serving != nil && !*h.Serving
+					p.inst.Rejected, p.inst.RejectReason, p.inst.ServingFrom = "", "", ""
+					if h.LKG != nil {
+						p.inst.ServingFrom = h.LKG.From
+						if r := h.LKG.LastRejected; r != nil {
+							p.inst.Rejected, p.inst.RejectReason = r.ConfigVersion, r.Reason
+						}
+					}
 					p.mu.Unlock()
 					// Only promote if the process did not exit meanwhile.
 					if p.snapshot().State == registry.StateStarting {
@@ -270,6 +286,7 @@ func main() {
 	fresh := flag.Bool("fresh", false, "reset every instance's config file to the seed file")
 	backtraces := flag.Bool("backtraces", false, "let Rust consumers print backtraces on panic. Costly in a crash loop: with 400 instances crash-looping, symbolizing backtraces alone can saturate a 4-core machine, much like the core dumps in Cloudflare's postmortem")
 	scale := flag.Float64("scale", 1, "multiply per_region counts, for quick local runs (e.g. 0.1)")
+	onBad := flag.String("on-bad-file", "", "run every consumer with the last-known-good library: keep_last_good or fail_closed, or off for the naive loader (default: each consumer's on_bad_file in the layout)")
 	flag.Parse()
 
 	cfg, err := registry.LoadFleetConfig(*cfgPath)
@@ -283,6 +300,17 @@ func main() {
 				n = 1
 			}
 			cfg.Consumers[i].PerRegion = n
+		}
+	}
+	switch *onBad {
+	case "":
+	case "off", "none", "naive":
+		for i := range cfg.Consumers {
+			cfg.Consumers[i].OnBadFile = ""
+		}
+	default:
+		for i := range cfg.Consumers {
+			cfg.Consumers[i].OnBadFile = *onBad
 		}
 	}
 	plan, err := registry.Plan(cfg)

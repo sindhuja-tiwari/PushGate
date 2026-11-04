@@ -1,0 +1,4255 @@
+[
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b0",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 400,
+    "push": {
+      "id": "20261104T091153.246Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b0",
+      "config_version": "feat-20261104T091139Z-43f5d134d6",
+      "started": "2026-11-04T09:11:53.246032345Z",
+      "status": "completed",
+      "fleet": 400,
+      "exposed": 400,
+      "exposed_share": 1,
+      "time_to_full_ms": 146,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 146,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 400,
+          "detail": "400 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 146,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 20,
+        "v42": 60,
+        "v43": 120,
+        "v44": 200
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 400,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 70340,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.50580637,
+        "failing": 0
+      },
+      {
+        "at_s": 1.009651825,
+        "failing": 0
+      },
+      {
+        "at_s": 1.50374982,
+        "failing": 0
+      },
+      {
+        "at_s": 2.006512186,
+        "failing": 0
+      },
+      {
+        "at_s": 2.504931764,
+        "failing": 0
+      },
+      {
+        "at_s": 3.005442904,
+        "failing": 0
+      },
+      {
+        "at_s": 3.505300457,
+        "failing": 0
+      },
+      {
+        "at_s": 4.005621581,
+        "failing": 0
+      },
+      {
+        "at_s": 4.509535999,
+        "failing": 0
+      },
+      {
+        "at_s": 5.005495892,
+        "failing": 0
+      },
+      {
+        "at_s": 5.504608078,
+        "failing": 0
+      },
+      {
+        "at_s": 6.005451568,
+        "failing": 0
+      },
+      {
+        "at_s": 6.505098434,
+        "failing": 0
+      },
+      {
+        "at_s": 7.005118851,
+        "failing": 0
+      },
+      {
+        "at_s": 7.506242051,
+        "failing": 0
+      },
+      {
+        "at_s": 8.006194145,
+        "failing": 0
+      },
+      {
+        "at_s": 8.505646823,
+        "failing": 0
+      },
+      {
+        "at_s": 9.005005848,
+        "failing": 0
+      },
+      {
+        "at_s": 9.50536464,
+        "failing": 0
+      },
+      {
+        "at_s": 10.004480974,
+        "failing": 0
+      },
+      {
+        "at_s": 10.505423059,
+        "failing": 0
+      },
+      {
+        "at_s": 11.005949593,
+        "failing": 0
+      },
+      {
+        "at_s": 11.508642944,
+        "failing": 0
+      },
+      {
+        "at_s": 12.004501378,
+        "failing": 0
+      },
+      {
+        "at_s": 12.504730495,
+        "failing": 0
+      },
+      {
+        "at_s": 13.004273332,
+        "failing": 0
+      },
+      {
+        "at_s": 13.505208351,
+        "failing": 0
+      },
+      {
+        "at_s": 14.005198083,
+        "failing": 0
+      },
+      {
+        "at_s": 14.50601749,
+        "failing": 0
+      },
+      {
+        "at_s": 15.005841917,
+        "failing": 0
+      },
+      {
+        "at_s": 15.504901376,
+        "failing": 0
+      },
+      {
+        "at_s": 16.009413248,
+        "failing": 0
+      },
+      {
+        "at_s": 16.504166888,
+        "failing": 0
+      },
+      {
+        "at_s": 17.005802324,
+        "failing": 0
+      },
+      {
+        "at_s": 17.504152292,
+        "failing": 0
+      },
+      {
+        "at_s": 18.004884773,
+        "failing": 0
+      },
+      {
+        "at_s": 18.504280064,
+        "failing": 0
+      },
+      {
+        "at_s": 19.01918361,
+        "failing": 0
+      },
+      {
+        "at_s": 19.50484312,
+        "failing": 0
+      },
+      {
+        "at_s": 20.004722613,
+        "failing": 0
+      },
+      {
+        "at_s": 20.504522482,
+        "failing": 0
+      },
+      {
+        "at_s": 21.005878932,
+        "failing": 0
+      },
+      {
+        "at_s": 21.506504089,
+        "failing": 0
+      },
+      {
+        "at_s": 22.004145251,
+        "failing": 0
+      },
+      {
+        "at_s": 22.504376193,
+        "failing": 0
+      },
+      {
+        "at_s": 23.004690706,
+        "failing": 0
+      },
+      {
+        "at_s": 23.504837541,
+        "failing": 0
+      },
+      {
+        "at_s": 24.004399274,
+        "failing": 0
+      },
+      {
+        "at_s": 24.506300272,
+        "failing": 0
+      },
+      {
+        "at_s": 25.005115469,
+        "failing": 0
+      },
+      {
+        "at_s": 25.507808114,
+        "failing": 0
+      },
+      {
+        "at_s": 26.005024127,
+        "failing": 0
+      },
+      {
+        "at_s": 26.507083461,
+        "failing": 0
+      },
+      {
+        "at_s": 27.004514245,
+        "failing": 0
+      },
+      {
+        "at_s": 27.505639246,
+        "failing": 0
+      },
+      {
+        "at_s": 28.00486235,
+        "failing": 0
+      },
+      {
+        "at_s": 28.505027973,
+        "failing": 0
+      },
+      {
+        "at_s": 29.005201291,
+        "failing": 0
+      },
+      {
+        "at_s": 29.506066814,
+        "failing": 0
+      },
+      {
+        "at_s": 30.005773003,
+        "failing": 0
+      },
+      {
+        "at_s": 30.504707918,
+        "failing": 0
+      },
+      {
+        "at_s": 31.004810832,
+        "failing": 0
+      },
+      {
+        "at_s": 31.505276675,
+        "failing": 0
+      },
+      {
+        "at_s": 32.005531568,
+        "failing": 0
+      },
+      {
+        "at_s": 32.50574169,
+        "failing": 0
+      },
+      {
+        "at_s": 33.005367364,
+        "failing": 0
+      },
+      {
+        "at_s": 33.508697606,
+        "failing": 0
+      },
+      {
+        "at_s": 34.006031673,
+        "failing": 0
+      },
+      {
+        "at_s": 34.50553765,
+        "failing": 0
+      },
+      {
+        "at_s": 35.005931643,
+        "failing": 0
+      },
+      {
+        "at_s": 35.505134701,
+        "failing": 0
+      },
+      {
+        "at_s": 36.005375085,
+        "failing": 0
+      },
+      {
+        "at_s": 36.504638984,
+        "failing": 0
+      },
+      {
+        "at_s": 37.006773918,
+        "failing": 0
+      },
+      {
+        "at_s": 37.505119699,
+        "failing": 0
+      },
+      {
+        "at_s": 38.004920506,
+        "failing": 0
+      },
+      {
+        "at_s": 38.504200833,
+        "failing": 0
+      },
+      {
+        "at_s": 39.004470363,
+        "failing": 0
+      },
+      {
+        "at_s": 39.505118856,
+        "failing": 0
+      },
+      {
+        "at_s": 40.004259278,
+        "failing": 0
+      },
+      {
+        "at_s": 40.505400983,
+        "failing": 0
+      },
+      {
+        "at_s": 41.004865786,
+        "failing": 0
+      },
+      {
+        "at_s": 41.504134025,
+        "failing": 0
+      },
+      {
+        "at_s": 42.004607823,
+        "failing": 0
+      },
+      {
+        "at_s": 42.50587126,
+        "failing": 0
+      },
+      {
+        "at_s": 43.004955308,
+        "failing": 0
+      },
+      {
+        "at_s": 43.506365908,
+        "failing": 0
+      },
+      {
+        "at_s": 44.004261365,
+        "failing": 0
+      },
+      {
+        "at_s": 44.504562173,
+        "failing": 0
+      },
+      {
+        "at_s": 45.004414953,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 20,
+      "v42": 60,
+      "v43": 120,
+      "v44": 200
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b2",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 400,
+    "push": {
+      "id": "20261104T091245.802Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b2",
+      "config_version": "feat-20261104T091139Z-43f5d134d6",
+      "started": "2026-11-04T09:12:45.802806489Z",
+      "status": "rolled_back",
+      "reason": "rejection alarm: 4 of 4 exposed instances crashed, refused the file or are not serving (e.g. bp-ap-south-041 v43 up, refused feat-20261104T091139Z-43f5d134d6: feature count 220 exceeds preallocated limit 200)",
+      "fleet": 400,
+      "exposed": 4,
+      "exposed_share": 0.01,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 3020,
+      "time_to_revert_ms": 3021,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 7,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 17,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 4,
+          "detail": "4 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 3020,
+          "kind": "alarm",
+          "detail": "rejection alarm: 4 of 4 exposed instances crashed, refused the file or are not serving (e.g. bp-ap-south-041 v43 up, refused feat-20261104T091139Z-43f5d134d6: feature count 220 exceeds preallocated limit 200)"
+        },
+        {
+          "at_ms": 3021,
+          "kind": "rollback_delivered",
+          "count": 4,
+          "detail": "last known good feat-20261104T091139Z-94ed8b2c00"
+        },
+        {
+          "at_ms": 3021,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v42": 1,
+        "v43": 1,
+        "v44": 2
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 4,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 70495,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.503214695,
+        "failing": 0
+      },
+      {
+        "at_s": 1.005916676,
+        "failing": 0
+      },
+      {
+        "at_s": 1.505487614,
+        "failing": 0
+      },
+      {
+        "at_s": 2.004527047,
+        "failing": 0
+      },
+      {
+        "at_s": 2.50510018,
+        "failing": 0
+      },
+      {
+        "at_s": 3.004373653,
+        "failing": 0
+      },
+      {
+        "at_s": 3.507519476,
+        "failing": 0
+      },
+      {
+        "at_s": 4.003688511,
+        "failing": 0
+      },
+      {
+        "at_s": 4.506960094,
+        "failing": 0
+      },
+      {
+        "at_s": 5.003538576,
+        "failing": 0
+      },
+      {
+        "at_s": 5.5052387,
+        "failing": 0
+      },
+      {
+        "at_s": 6.005462859,
+        "failing": 0
+      },
+      {
+        "at_s": 6.505396243,
+        "failing": 0
+      },
+      {
+        "at_s": 7.005751384,
+        "failing": 0
+      },
+      {
+        "at_s": 7.503438122,
+        "failing": 0
+      },
+      {
+        "at_s": 8.004688455,
+        "failing": 0
+      },
+      {
+        "at_s": 8.503897906,
+        "failing": 0
+      },
+      {
+        "at_s": 9.006393462,
+        "failing": 0
+      },
+      {
+        "at_s": 9.503924514,
+        "failing": 0
+      },
+      {
+        "at_s": 10.00584168,
+        "failing": 0
+      },
+      {
+        "at_s": 10.50318533,
+        "failing": 0
+      },
+      {
+        "at_s": 11.00448114,
+        "failing": 0
+      },
+      {
+        "at_s": 11.503284312,
+        "failing": 0
+      },
+      {
+        "at_s": 12.004405911,
+        "failing": 0
+      },
+      {
+        "at_s": 12.506764429,
+        "failing": 0
+      },
+      {
+        "at_s": 13.003926782,
+        "failing": 0
+      },
+      {
+        "at_s": 13.504037793,
+        "failing": 0
+      },
+      {
+        "at_s": 14.010068815,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503899496,
+        "failing": 0
+      },
+      {
+        "at_s": 15.003806605,
+        "failing": 0
+      },
+      {
+        "at_s": 15.505648634,
+        "failing": 0
+      },
+      {
+        "at_s": 16.003662342,
+        "failing": 0
+      },
+      {
+        "at_s": 16.504295481,
+        "failing": 0
+      },
+      {
+        "at_s": 17.003270878,
+        "failing": 0
+      },
+      {
+        "at_s": 17.507083842,
+        "failing": 0
+      },
+      {
+        "at_s": 18.004124111,
+        "failing": 0
+      },
+      {
+        "at_s": 18.505703458,
+        "failing": 0
+      },
+      {
+        "at_s": 19.003123354,
+        "failing": 0
+      },
+      {
+        "at_s": 19.505125428,
+        "failing": 0
+      },
+      {
+        "at_s": 20.00408926,
+        "failing": 0
+      },
+      {
+        "at_s": 20.506814684,
+        "failing": 0
+      },
+      {
+        "at_s": 21.003590885,
+        "failing": 0
+      },
+      {
+        "at_s": 21.507859592,
+        "failing": 0
+      },
+      {
+        "at_s": 22.004328749,
+        "failing": 0
+      },
+      {
+        "at_s": 22.504085789,
+        "failing": 0
+      },
+      {
+        "at_s": 23.005370479,
+        "failing": 0
+      },
+      {
+        "at_s": 23.505823308,
+        "failing": 0
+      },
+      {
+        "at_s": 24.004670151,
+        "failing": 0
+      },
+      {
+        "at_s": 24.504886826,
+        "failing": 0
+      },
+      {
+        "at_s": 25.004859372,
+        "failing": 0
+      },
+      {
+        "at_s": 25.50589729,
+        "failing": 0
+      },
+      {
+        "at_s": 26.006411386,
+        "failing": 0
+      },
+      {
+        "at_s": 26.503167953,
+        "failing": 0
+      },
+      {
+        "at_s": 27.003566023,
+        "failing": 0
+      },
+      {
+        "at_s": 27.50340617,
+        "failing": 0
+      },
+      {
+        "at_s": 28.005285493,
+        "failing": 0
+      },
+      {
+        "at_s": 28.503007412,
+        "failing": 0
+      },
+      {
+        "at_s": 29.004033892,
+        "failing": 0
+      },
+      {
+        "at_s": 29.503197481,
+        "failing": 0
+      },
+      {
+        "at_s": 30.005038183,
+        "failing": 0
+      },
+      {
+        "at_s": 30.506109934,
+        "failing": 0
+      },
+      {
+        "at_s": 31.005232407,
+        "failing": 0
+      },
+      {
+        "at_s": 31.505300056,
+        "failing": 0
+      },
+      {
+        "at_s": 32.006759059,
+        "failing": 0
+      },
+      {
+        "at_s": 32.50338096,
+        "failing": 0
+      },
+      {
+        "at_s": 33.00595519,
+        "failing": 0
+      },
+      {
+        "at_s": 33.50387905,
+        "failing": 0
+      },
+      {
+        "at_s": 34.003227524,
+        "failing": 0
+      },
+      {
+        "at_s": 34.505673688,
+        "failing": 0
+      },
+      {
+        "at_s": 35.003681914,
+        "failing": 0
+      },
+      {
+        "at_s": 35.504640346,
+        "failing": 0
+      },
+      {
+        "at_s": 36.005427318,
+        "failing": 0
+      },
+      {
+        "at_s": 36.505902271,
+        "failing": 0
+      },
+      {
+        "at_s": 37.007836137,
+        "failing": 0
+      },
+      {
+        "at_s": 37.503444617,
+        "failing": 0
+      },
+      {
+        "at_s": 38.006642481,
+        "failing": 0
+      },
+      {
+        "at_s": 38.5032696,
+        "failing": 0
+      },
+      {
+        "at_s": 39.00627167,
+        "failing": 0
+      },
+      {
+        "at_s": 39.504839606,
+        "failing": 0
+      },
+      {
+        "at_s": 40.003166574,
+        "failing": 0
+      },
+      {
+        "at_s": 40.505773787,
+        "failing": 0
+      },
+      {
+        "at_s": 41.005630235,
+        "failing": 0
+      },
+      {
+        "at_s": 41.506087418999996,
+        "failing": 0
+      },
+      {
+        "at_s": 42.00317953,
+        "failing": 0
+      },
+      {
+        "at_s": 42.503808714,
+        "failing": 0
+      },
+      {
+        "at_s": 43.003108654,
+        "failing": 0
+      },
+      {
+        "at_s": 43.505529261,
+        "failing": 0
+      },
+      {
+        "at_s": 44.004532573,
+        "failing": 0
+      },
+      {
+        "at_s": 44.50371768,
+        "failing": 0
+      },
+      {
+        "at_s": 45.008887702,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v42": 1,
+      "v43": 1,
+      "v44": 2
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b3",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 400,
+    "push": {
+      "id": "20261104T091337.528Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b3",
+      "config_version": "feat-20261104T091139Z-43f5d134d6",
+      "started": "2026-11-04T09:13:37.528057742Z",
+      "status": "rejected",
+      "reason": "gate check failed: Held: v41 (20 of 400 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128; v42, v43, v44 (380 of 400 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200; feature count 220 vs 110 in last known good (+100%); 220 rows share a feature name with another row (e.g. feat_000); last known good had 0",
+      "fleet": 0,
+      "exposed": 0,
+      "exposed_share": 0,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 3,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 225,
+          "kind": "validate_fail",
+          "detail": "gate: Held: v41 (20 of 400 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128; v42, v43, v44 (380 of 400 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200; feature count 220 vs 110 in last known good (+100%); 220 rows share a feature name with another row (e.g. feat_000); last known good had 0"
+        },
+        {
+          "at_ms": 225,
+          "kind": "finish",
+          "detail": "rejected"
+        }
+      ],
+      "exposed_by_version": {},
+      "checks": {
+        "gate": {
+          "consumer": "bot-proxy",
+          "candidate": "feat-20261104T091139Z-43f5d134d6",
+          "last_known_good": "feat-20261104T091139Z-94ed8b2c00",
+          "layers": [
+            "diff",
+            "sandbox"
+          ],
+          "verdict": "hold",
+          "findings": [
+            {
+              "layer": "diff",
+              "check": "row-count",
+              "severity": "hold",
+              "detail": "feature count 220 vs 110 in last known good (+100%)"
+            },
+            {
+              "layer": "diff",
+              "check": "duplicates",
+              "severity": "hold",
+              "detail": "220 rows share a feature name with another row (e.g. feat_000); last known good had 0"
+            },
+            {
+              "layer": "diff",
+              "check": "drift",
+              "severity": "info",
+              "detail": "weight distribution PSI 0.000"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 41,
+              "detail": "v41 (20 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 42,
+              "detail": "v42 (60 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 43,
+              "detail": "v43 (120 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 44,
+              "detail": "v44 (200 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200"
+            }
+          ],
+          "versions": [
+            {
+              "version": 41,
+              "instances": 20,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.152,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3512
+            },
+            {
+              "version": 42,
+              "instances": 60,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.347,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3464
+            },
+            {
+              "version": 43,
+              "instances": 120,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.066,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3412
+            },
+            {
+              "version": 44,
+              "instances": 200,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.304,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3476
+            }
+          ],
+          "duration_ms": 221
+        }
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 0,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 70307,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.506067969,
+        "failing": 0
+      },
+      {
+        "at_s": 1.005537063,
+        "failing": 0
+      },
+      {
+        "at_s": 1.5131697069999999,
+        "failing": 0
+      },
+      {
+        "at_s": 2.005409734,
+        "failing": 0
+      },
+      {
+        "at_s": 2.504721264,
+        "failing": 0
+      },
+      {
+        "at_s": 3.005038401,
+        "failing": 0
+      },
+      {
+        "at_s": 3.5050369139999997,
+        "failing": 0
+      },
+      {
+        "at_s": 4.004707677,
+        "failing": 0
+      },
+      {
+        "at_s": 4.505370908,
+        "failing": 0
+      },
+      {
+        "at_s": 5.005142809,
+        "failing": 0
+      },
+      {
+        "at_s": 5.508019877,
+        "failing": 0
+      },
+      {
+        "at_s": 6.004341967,
+        "failing": 0
+      },
+      {
+        "at_s": 6.503282211,
+        "failing": 0
+      },
+      {
+        "at_s": 7.004664246,
+        "failing": 0
+      },
+      {
+        "at_s": 7.503178646,
+        "failing": 0
+      },
+      {
+        "at_s": 8.005059782,
+        "failing": 0
+      },
+      {
+        "at_s": 8.503381753,
+        "failing": 0
+      },
+      {
+        "at_s": 9.003684739,
+        "failing": 0
+      },
+      {
+        "at_s": 9.505011533,
+        "failing": 0
+      },
+      {
+        "at_s": 10.003666823,
+        "failing": 0
+      },
+      {
+        "at_s": 10.506062095,
+        "failing": 0
+      },
+      {
+        "at_s": 11.003517035,
+        "failing": 0
+      },
+      {
+        "at_s": 11.505534791,
+        "failing": 0
+      },
+      {
+        "at_s": 12.003161143,
+        "failing": 0
+      },
+      {
+        "at_s": 12.504162475,
+        "failing": 0
+      },
+      {
+        "at_s": 13.003255343,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503658946,
+        "failing": 0
+      },
+      {
+        "at_s": 14.004476035,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503808595,
+        "failing": 0
+      },
+      {
+        "at_s": 15.004843687,
+        "failing": 0
+      },
+      {
+        "at_s": 15.503807432,
+        "failing": 0
+      },
+      {
+        "at_s": 16.00430503,
+        "failing": 0
+      },
+      {
+        "at_s": 16.503973479,
+        "failing": 0
+      },
+      {
+        "at_s": 17.003603064,
+        "failing": 0
+      },
+      {
+        "at_s": 17.5043113,
+        "failing": 0
+      },
+      {
+        "at_s": 18.007948539,
+        "failing": 0
+      },
+      {
+        "at_s": 18.504248696,
+        "failing": 0
+      },
+      {
+        "at_s": 19.003784498,
+        "failing": 0
+      },
+      {
+        "at_s": 19.505652405,
+        "failing": 0
+      },
+      {
+        "at_s": 20.003973791,
+        "failing": 0
+      },
+      {
+        "at_s": 20.504379042,
+        "failing": 0
+      },
+      {
+        "at_s": 21.003993568,
+        "failing": 0
+      },
+      {
+        "at_s": 21.504238767,
+        "failing": 0
+      },
+      {
+        "at_s": 22.00379879,
+        "failing": 0
+      },
+      {
+        "at_s": 22.504019822,
+        "failing": 0
+      },
+      {
+        "at_s": 23.003258454,
+        "failing": 0
+      },
+      {
+        "at_s": 23.503653656,
+        "failing": 0
+      },
+      {
+        "at_s": 24.003137982,
+        "failing": 0
+      },
+      {
+        "at_s": 24.504100347,
+        "failing": 0
+      },
+      {
+        "at_s": 25.003360823,
+        "failing": 0
+      },
+      {
+        "at_s": 25.504920723,
+        "failing": 0
+      },
+      {
+        "at_s": 26.004161647,
+        "failing": 0
+      },
+      {
+        "at_s": 26.504143781,
+        "failing": 0
+      },
+      {
+        "at_s": 27.003480439,
+        "failing": 0
+      },
+      {
+        "at_s": 27.503934139,
+        "failing": 0
+      },
+      {
+        "at_s": 28.003227416,
+        "failing": 0
+      },
+      {
+        "at_s": 28.504885463,
+        "failing": 0
+      },
+      {
+        "at_s": 29.004557538,
+        "failing": 0
+      },
+      {
+        "at_s": 29.504024798,
+        "failing": 0
+      },
+      {
+        "at_s": 30.004371194,
+        "failing": 0
+      },
+      {
+        "at_s": 30.503522416,
+        "failing": 0
+      },
+      {
+        "at_s": 31.004576551,
+        "failing": 0
+      },
+      {
+        "at_s": 31.506231269,
+        "failing": 0
+      },
+      {
+        "at_s": 32.003092286,
+        "failing": 0
+      },
+      {
+        "at_s": 32.504878301,
+        "failing": 0
+      },
+      {
+        "at_s": 33.003593071,
+        "failing": 0
+      },
+      {
+        "at_s": 33.504354931,
+        "failing": 0
+      },
+      {
+        "at_s": 34.0046454,
+        "failing": 0
+      },
+      {
+        "at_s": 34.506956441,
+        "failing": 0
+      },
+      {
+        "at_s": 35.006108931,
+        "failing": 0
+      },
+      {
+        "at_s": 35.505250565,
+        "failing": 0
+      },
+      {
+        "at_s": 36.005837235,
+        "failing": 0
+      },
+      {
+        "at_s": 36.505060643,
+        "failing": 0
+      },
+      {
+        "at_s": 37.004373829,
+        "failing": 0
+      },
+      {
+        "at_s": 37.504585244,
+        "failing": 0
+      },
+      {
+        "at_s": 38.005008788,
+        "failing": 0
+      },
+      {
+        "at_s": 38.504684405,
+        "failing": 0
+      },
+      {
+        "at_s": 39.003715404,
+        "failing": 0
+      },
+      {
+        "at_s": 39.504574715,
+        "failing": 0
+      },
+      {
+        "at_s": 40.004169083,
+        "failing": 0
+      },
+      {
+        "at_s": 40.504819848,
+        "failing": 0
+      },
+      {
+        "at_s": 41.004765245,
+        "failing": 0
+      },
+      {
+        "at_s": 41.504166977,
+        "failing": 0
+      },
+      {
+        "at_s": 42.011039174,
+        "failing": 0
+      },
+      {
+        "at_s": 42.504368329,
+        "failing": 0
+      },
+      {
+        "at_s": 43.003944332,
+        "failing": 0
+      },
+      {
+        "at_s": 43.504636273,
+        "failing": 0
+      },
+      {
+        "at_s": 44.003776559,
+        "failing": 0
+      },
+      {
+        "at_s": 44.505281757,
+        "failing": 0
+      },
+      {
+        "at_s": 45.004432824,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {},
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b0",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 200,
+    "push": {
+      "id": "20261104T091428.692Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b0",
+      "config_version": "feat-20261104T091140Z-90c598411e",
+      "started": "2026-11-04T09:14:28.692245748Z",
+      "status": "completed",
+      "fleet": 400,
+      "exposed": 400,
+      "exposed_share": 1,
+      "time_to_full_ms": 68,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 68,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 400,
+          "detail": "400 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 68,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 20,
+        "v42": 60,
+        "v43": 120,
+        "v44": 200
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 200,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 70484,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.505594016,
+        "failing": 0
+      },
+      {
+        "at_s": 1.003808249,
+        "failing": 0
+      },
+      {
+        "at_s": 1.503787273,
+        "failing": 0
+      },
+      {
+        "at_s": 2.010219133,
+        "failing": 0
+      },
+      {
+        "at_s": 2.504335911,
+        "failing": 0
+      },
+      {
+        "at_s": 3.003727271,
+        "failing": 0
+      },
+      {
+        "at_s": 3.508237915,
+        "failing": 0
+      },
+      {
+        "at_s": 4.005643064,
+        "failing": 0
+      },
+      {
+        "at_s": 4.508812709,
+        "failing": 0
+      },
+      {
+        "at_s": 5.00637108,
+        "failing": 0
+      },
+      {
+        "at_s": 5.505107633,
+        "failing": 0
+      },
+      {
+        "at_s": 6.003596713,
+        "failing": 0
+      },
+      {
+        "at_s": 6.5062603249999995,
+        "failing": 0
+      },
+      {
+        "at_s": 7.004124288,
+        "failing": 0
+      },
+      {
+        "at_s": 7.506914129,
+        "failing": 0
+      },
+      {
+        "at_s": 8.003674451,
+        "failing": 0
+      },
+      {
+        "at_s": 8.506363821,
+        "failing": 0
+      },
+      {
+        "at_s": 9.005491347,
+        "failing": 0
+      },
+      {
+        "at_s": 9.506127881,
+        "failing": 0
+      },
+      {
+        "at_s": 10.003503183,
+        "failing": 0
+      },
+      {
+        "at_s": 10.505581669,
+        "failing": 0
+      },
+      {
+        "at_s": 11.003268423,
+        "failing": 0
+      },
+      {
+        "at_s": 11.507151085,
+        "failing": 0
+      },
+      {
+        "at_s": 12.003835293,
+        "failing": 0
+      },
+      {
+        "at_s": 12.506032006,
+        "failing": 0
+      },
+      {
+        "at_s": 13.003515226,
+        "failing": 0
+      },
+      {
+        "at_s": 13.50505287,
+        "failing": 0
+      },
+      {
+        "at_s": 14.004117738,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503485081000001,
+        "failing": 0
+      },
+      {
+        "at_s": 15.005706447,
+        "failing": 0
+      },
+      {
+        "at_s": 15.503347528,
+        "failing": 0
+      },
+      {
+        "at_s": 16.006565084,
+        "failing": 0
+      },
+      {
+        "at_s": 16.503392643,
+        "failing": 0
+      },
+      {
+        "at_s": 17.007708432,
+        "failing": 0
+      },
+      {
+        "at_s": 17.505825779,
+        "failing": 0
+      },
+      {
+        "at_s": 18.004273182,
+        "failing": 0
+      },
+      {
+        "at_s": 18.503341335000002,
+        "failing": 0
+      },
+      {
+        "at_s": 19.004943215,
+        "failing": 0
+      },
+      {
+        "at_s": 19.503360238,
+        "failing": 0
+      },
+      {
+        "at_s": 20.008656708,
+        "failing": 0
+      },
+      {
+        "at_s": 20.512185361,
+        "failing": 0
+      },
+      {
+        "at_s": 21.006792423,
+        "failing": 0
+      },
+      {
+        "at_s": 21.503309675,
+        "failing": 0
+      },
+      {
+        "at_s": 22.004445385,
+        "failing": 0
+      },
+      {
+        "at_s": 22.504953781,
+        "failing": 0
+      },
+      {
+        "at_s": 23.005697052,
+        "failing": 0
+      },
+      {
+        "at_s": 23.503218008,
+        "failing": 0
+      },
+      {
+        "at_s": 24.006302774,
+        "failing": 0
+      },
+      {
+        "at_s": 24.503309624,
+        "failing": 0
+      },
+      {
+        "at_s": 25.005307451,
+        "failing": 0
+      },
+      {
+        "at_s": 25.505308059,
+        "failing": 0
+      },
+      {
+        "at_s": 26.005478129,
+        "failing": 0
+      },
+      {
+        "at_s": 26.503342934,
+        "failing": 0
+      },
+      {
+        "at_s": 27.009795104,
+        "failing": 0
+      },
+      {
+        "at_s": 27.505460746,
+        "failing": 0
+      },
+      {
+        "at_s": 28.00822204,
+        "failing": 0
+      },
+      {
+        "at_s": 28.506318037,
+        "failing": 0
+      },
+      {
+        "at_s": 29.007423755,
+        "failing": 0
+      },
+      {
+        "at_s": 29.503488388,
+        "failing": 0
+      },
+      {
+        "at_s": 30.006421807,
+        "failing": 0
+      },
+      {
+        "at_s": 30.504589884,
+        "failing": 0
+      },
+      {
+        "at_s": 31.006550988,
+        "failing": 0
+      },
+      {
+        "at_s": 31.503640918,
+        "failing": 0
+      },
+      {
+        "at_s": 32.007248367,
+        "failing": 0
+      },
+      {
+        "at_s": 32.505223941,
+        "failing": 0
+      },
+      {
+        "at_s": 33.004843951,
+        "failing": 0
+      },
+      {
+        "at_s": 33.5034568,
+        "failing": 0
+      },
+      {
+        "at_s": 34.005528448,
+        "failing": 0
+      },
+      {
+        "at_s": 34.503773711,
+        "failing": 0
+      },
+      {
+        "at_s": 35.007495173,
+        "failing": 0
+      },
+      {
+        "at_s": 35.503358098,
+        "failing": 0
+      },
+      {
+        "at_s": 36.005891609,
+        "failing": 0
+      },
+      {
+        "at_s": 36.503786286,
+        "failing": 0
+      },
+      {
+        "at_s": 37.005966199,
+        "failing": 0
+      },
+      {
+        "at_s": 37.504000484,
+        "failing": 0
+      },
+      {
+        "at_s": 38.00468844,
+        "failing": 0
+      },
+      {
+        "at_s": 38.504178839,
+        "failing": 0
+      },
+      {
+        "at_s": 39.003697981,
+        "failing": 0
+      },
+      {
+        "at_s": 39.504104337,
+        "failing": 0
+      },
+      {
+        "at_s": 40.003839906,
+        "failing": 0
+      },
+      {
+        "at_s": 40.504830929,
+        "failing": 0
+      },
+      {
+        "at_s": 41.005323969,
+        "failing": 0
+      },
+      {
+        "at_s": 41.50338533,
+        "failing": 0
+      },
+      {
+        "at_s": 42.006075503,
+        "failing": 0
+      },
+      {
+        "at_s": 42.503586168,
+        "failing": 0
+      },
+      {
+        "at_s": 43.005302329,
+        "failing": 0
+      },
+      {
+        "at_s": 43.505543741,
+        "failing": 0
+      },
+      {
+        "at_s": 44.005608623,
+        "failing": 0
+      },
+      {
+        "at_s": 44.504817044,
+        "failing": 0
+      },
+      {
+        "at_s": 45.006168018,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 20,
+      "v42": 60,
+      "v43": 120,
+      "v44": 200
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b2",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 200,
+    "push": {
+      "id": "20261104T091520.512Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b2",
+      "config_version": "feat-20261104T091140Z-90c598411e",
+      "started": "2026-11-04T09:15:20.512376638Z",
+      "status": "rolled_back",
+      "reason": "rejection alarm: 2 of 4 exposed instances crashed, refused the file or are not serving (e.g. bp-ap-south-041 v43 up, refused feat-20261104T091140Z-90c598411e: feature 0 (feat_000) has 21 match fields; this release reads 20 input slots)",
+      "fleet": 400,
+      "exposed": 4,
+      "exposed_share": 0.01,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 3013,
+      "time_to_revert_ms": 3015,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 1,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 9,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 4,
+          "detail": "4 of 400 instances now have the file"
+        },
+        {
+          "at_ms": 3013,
+          "kind": "alarm",
+          "detail": "rejection alarm: 2 of 4 exposed instances crashed, refused the file or are not serving (e.g. bp-ap-south-041 v43 up, refused feat-20261104T091140Z-90c598411e: feature 0 (feat_000) has 21 match fields; this release reads 20 input slots)"
+        },
+        {
+          "at_ms": 3015,
+          "kind": "rollback_delivered",
+          "count": 4,
+          "detail": "last known good feat-20261104T091140Z-94ed8b2c00"
+        },
+        {
+          "at_ms": 3015,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v42": 1,
+        "v43": 1,
+        "v44": 2
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 2,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 70378,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.504799728,
+        "failing": 0
+      },
+      {
+        "at_s": 1.005041011,
+        "failing": 0
+      },
+      {
+        "at_s": 1.505690096,
+        "failing": 0
+      },
+      {
+        "at_s": 2.003174676,
+        "failing": 0
+      },
+      {
+        "at_s": 2.504779878,
+        "failing": 0
+      },
+      {
+        "at_s": 3.005394057,
+        "failing": 0
+      },
+      {
+        "at_s": 3.504973772,
+        "failing": 0
+      },
+      {
+        "at_s": 4.005245125,
+        "failing": 0
+      },
+      {
+        "at_s": 4.504258003,
+        "failing": 0
+      },
+      {
+        "at_s": 5.003475589,
+        "failing": 0
+      },
+      {
+        "at_s": 5.507087517,
+        "failing": 0
+      },
+      {
+        "at_s": 6.003368246,
+        "failing": 0
+      },
+      {
+        "at_s": 6.504249967,
+        "failing": 0
+      },
+      {
+        "at_s": 7.005386475,
+        "failing": 0
+      },
+      {
+        "at_s": 7.503609411,
+        "failing": 0
+      },
+      {
+        "at_s": 8.003520043,
+        "failing": 0
+      },
+      {
+        "at_s": 8.503707917,
+        "failing": 0
+      },
+      {
+        "at_s": 9.004104056,
+        "failing": 0
+      },
+      {
+        "at_s": 9.503321103,
+        "failing": 0
+      },
+      {
+        "at_s": 10.005455735,
+        "failing": 0
+      },
+      {
+        "at_s": 10.50379947,
+        "failing": 0
+      },
+      {
+        "at_s": 11.004428847,
+        "failing": 0
+      },
+      {
+        "at_s": 11.503486093,
+        "failing": 0
+      },
+      {
+        "at_s": 12.003548602,
+        "failing": 0
+      },
+      {
+        "at_s": 12.503492969,
+        "failing": 0
+      },
+      {
+        "at_s": 13.003042225,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503944972,
+        "failing": 0
+      },
+      {
+        "at_s": 14.003402335,
+        "failing": 0
+      },
+      {
+        "at_s": 14.505380994,
+        "failing": 0
+      },
+      {
+        "at_s": 15.003965703,
+        "failing": 0
+      },
+      {
+        "at_s": 15.505690325,
+        "failing": 0
+      },
+      {
+        "at_s": 16.00303741,
+        "failing": 0
+      },
+      {
+        "at_s": 16.505562139,
+        "failing": 0
+      },
+      {
+        "at_s": 17.003689343,
+        "failing": 0
+      },
+      {
+        "at_s": 17.503527665,
+        "failing": 0
+      },
+      {
+        "at_s": 18.003019507,
+        "failing": 0
+      },
+      {
+        "at_s": 18.503788083,
+        "failing": 0
+      },
+      {
+        "at_s": 19.003111187,
+        "failing": 0
+      },
+      {
+        "at_s": 19.504067213,
+        "failing": 0
+      },
+      {
+        "at_s": 20.003467607,
+        "failing": 0
+      },
+      {
+        "at_s": 20.505116314,
+        "failing": 0
+      },
+      {
+        "at_s": 21.003119192,
+        "failing": 0
+      },
+      {
+        "at_s": 21.504401096,
+        "failing": 0
+      },
+      {
+        "at_s": 22.002955675,
+        "failing": 0
+      },
+      {
+        "at_s": 22.506184268,
+        "failing": 0
+      },
+      {
+        "at_s": 23.003338594,
+        "failing": 0
+      },
+      {
+        "at_s": 23.505121214,
+        "failing": 0
+      },
+      {
+        "at_s": 24.003451971,
+        "failing": 0
+      },
+      {
+        "at_s": 24.503275168000002,
+        "failing": 0
+      },
+      {
+        "at_s": 25.00551584,
+        "failing": 0
+      },
+      {
+        "at_s": 25.503139899,
+        "failing": 0
+      },
+      {
+        "at_s": 26.004711203,
+        "failing": 0
+      },
+      {
+        "at_s": 26.503034036,
+        "failing": 0
+      },
+      {
+        "at_s": 27.003939847,
+        "failing": 0
+      },
+      {
+        "at_s": 27.503752578,
+        "failing": 0
+      },
+      {
+        "at_s": 28.003674656,
+        "failing": 0
+      },
+      {
+        "at_s": 28.50351946,
+        "failing": 0
+      },
+      {
+        "at_s": 29.006397021,
+        "failing": 0
+      },
+      {
+        "at_s": 29.503587047,
+        "failing": 0
+      },
+      {
+        "at_s": 30.007304258,
+        "failing": 0
+      },
+      {
+        "at_s": 30.511145041,
+        "failing": 0
+      },
+      {
+        "at_s": 31.00445686,
+        "failing": 0
+      },
+      {
+        "at_s": 31.503346862,
+        "failing": 0
+      },
+      {
+        "at_s": 32.007594294,
+        "failing": 0
+      },
+      {
+        "at_s": 32.503402275,
+        "failing": 0
+      },
+      {
+        "at_s": 33.004300245,
+        "failing": 0
+      },
+      {
+        "at_s": 33.503089552,
+        "failing": 0
+      },
+      {
+        "at_s": 34.003590746,
+        "failing": 0
+      },
+      {
+        "at_s": 34.502903738,
+        "failing": 0
+      },
+      {
+        "at_s": 35.003114647,
+        "failing": 0
+      },
+      {
+        "at_s": 35.504760963,
+        "failing": 0
+      },
+      {
+        "at_s": 36.00312763,
+        "failing": 0
+      },
+      {
+        "at_s": 36.504858686,
+        "failing": 0
+      },
+      {
+        "at_s": 37.003700269,
+        "failing": 0
+      },
+      {
+        "at_s": 37.502950269,
+        "failing": 0
+      },
+      {
+        "at_s": 38.005052339,
+        "failing": 0
+      },
+      {
+        "at_s": 38.503966037,
+        "failing": 0
+      },
+      {
+        "at_s": 39.003955034,
+        "failing": 0
+      },
+      {
+        "at_s": 39.502992475,
+        "failing": 0
+      },
+      {
+        "at_s": 40.003839736,
+        "failing": 0
+      },
+      {
+        "at_s": 40.503452727,
+        "failing": 0
+      },
+      {
+        "at_s": 41.005102571,
+        "failing": 0
+      },
+      {
+        "at_s": 41.503026127,
+        "failing": 0
+      },
+      {
+        "at_s": 42.005045952,
+        "failing": 0
+      },
+      {
+        "at_s": 42.502975741,
+        "failing": 0
+      },
+      {
+        "at_s": 43.003517784,
+        "failing": 0
+      },
+      {
+        "at_s": 43.503755282,
+        "failing": 0
+      },
+      {
+        "at_s": 44.003723143,
+        "failing": 0
+      },
+      {
+        "at_s": 44.50306714,
+        "failing": 0
+      },
+      {
+        "at_s": 45.004890377,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v42": 1,
+      "v43": 1,
+      "v44": 2
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b3",
+    "consumer": "bot-proxy",
+    "fleet": 400,
+    "vulnerable": 200,
+    "push": {
+      "id": "20261104T091611.684Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b3",
+      "config_version": "feat-20261104T091140Z-90c598411e",
+      "started": "2026-11-04T09:16:11.684031838Z",
+      "status": "rejected",
+      "reason": "gate check failed: Held: v41, v42, v43 (200 of 400 instances) crashes on replayed traffic: panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20 (also 1 warning(s): 5 rules use a 21-field template; last known good only has [20]-field templates)",
+      "fleet": 0,
+      "exposed": 0,
+      "exposed_share": 0,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 2,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 253,
+          "kind": "validate_fail",
+          "detail": "gate: Held: v41, v42, v43 (200 of 400 instances) crashes on replayed traffic: panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20 (also 1 warning(s): 5 rules use a 21-field template; last known good only has [20]-field templates)"
+        },
+        {
+          "at_ms": 253,
+          "kind": "finish",
+          "detail": "rejected"
+        }
+      ],
+      "exposed_by_version": {},
+      "checks": {
+        "gate": {
+          "consumer": "bot-proxy",
+          "candidate": "feat-20261104T091140Z-90c598411e",
+          "last_known_good": "feat-20261104T091140Z-94ed8b2c00",
+          "layers": [
+            "diff",
+            "sandbox"
+          ],
+          "verdict": "hold",
+          "findings": [
+            {
+              "layer": "diff",
+              "check": "row-count",
+              "severity": "info",
+              "detail": "feature count 110 vs 110 in last known good (+0%)"
+            },
+            {
+              "layer": "diff",
+              "check": "new-shape",
+              "severity": "warn",
+              "detail": "5 rules use a 21-field template; last known good only has [20]-field templates"
+            },
+            {
+              "layer": "diff",
+              "check": "drift",
+              "severity": "info",
+              "detail": "weight distribution PSI 0.000"
+            },
+            {
+              "layer": "sandbox",
+              "check": "replay",
+              "severity": "hold",
+              "version": 41,
+              "detail": "v41 (20 instances) crashed on replayed request 6 of 1000 (/score?f0=go-http-client\u0026f1=HEAD\u0026f2=US\u0026f3=mobile\u0026f4=v0\u0026f5...): panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "cause": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20"
+            },
+            {
+              "layer": "sandbox",
+              "check": "replay",
+              "severity": "hold",
+              "version": 42,
+              "detail": "v42 (60 instances) crashed on replayed request 6 of 1000 (/score?f0=go-http-client\u0026f1=HEAD\u0026f2=US\u0026f3=mobile\u0026f4=v0\u0026f5...): panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "cause": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20"
+            },
+            {
+              "layer": "sandbox",
+              "check": "replay",
+              "severity": "hold",
+              "version": 43,
+              "detail": "v43 (120 instances) crashed on replayed request 6 of 1000 (/score?f0=go-http-client\u0026f1=HEAD\u0026f2=US\u0026f3=mobile\u0026f4=v0\u0026f5...): panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "cause": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20"
+            }
+          ],
+          "versions": [
+            {
+              "version": 41,
+              "instances": 20,
+              "loaded": true,
+              "crashed": true,
+              "crashed_on_request": 6,
+              "request": "/score?f0=go-http-client\u0026f1=HEAD\u0026f2=US\u0026f3=mobile\u0026f4=v0\u0026f5=v1\u0026f6=v0\u0026f7=v1\u0026f8=v0\u0026f9=v0\u0026f10=v0\u0026f11=v0\u0026f12=v1\u0026f13=v1\u0026f14=v1\u0026f15=v0\u0026f16=v1\u0026f17=v1\u0026f18=v1\u0026f19=v0\u0026f20=v1",
+              "panic": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "requests": 5,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.169,
+              "p99_ms": 0.222,
+              "lkg_p99_ms": 1.335,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3504
+            },
+            {
+              "version": 42,
+              "instances": 60,
+              "loaded": true,
+              "crashed": true,
+              "crashed_on_request": 6,
+              "request": "/score?f0=go-http-client\u0026f1=HEAD\u0026f2=US\u0026f3=mobile\u0026f4=v0\u0026f5=v1\u0026f6=v0\u0026f7=v1\u0026f8=v0\u0026f9=v0\u0026f10=v0\u0026f11=v0\u0026f12=v1\u0026f13=v1\u0026f14=v1\u0026f15=v0\u0026f16=v1\u0026f17=v1\u0026f18=v1\u0026f19=v0\u0026f20=v1",
+              "panic": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "requests": 5,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.151,
+              "p99_ms": 0.404,
+              "lkg_p99_ms": 1.069,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3436
+            },
+            {
+              "version": 43,
+              "instances": 120,
+              "loaded": true,
+              "crashed": true,
+              "crashed_on_request": 6,
+              "request": "/score?f0=go-http-client\u0026f1=HEAD\u0026f2=US\u0026f3=mobile\u0026f4=v0\u0026f5=v1\u0026f6=v0\u0026f7=v1\u0026f8=v0\u0026f9=v0\u0026f10=v0\u0026f11=v0\u0026f12=v1\u0026f13=v1\u0026f14=v1\u0026f15=v0\u0026f16=v1\u0026f17=v1\u0026f18=v1\u0026f19=v0\u0026f20=v1",
+              "panic": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "requests": 5,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.24,
+              "p99_ms": 0.268,
+              "lkg_p99_ms": 1.214,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3448
+            },
+            {
+              "version": 44,
+              "instances": 200,
+              "loaded": true,
+              "crashed": false,
+              "requests": 1000,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.133,
+              "p99_ms": 1.758,
+              "lkg_p99_ms": 1.281,
+              "rss_kb": 3472,
+              "lkg_rss_kb": 3444
+            }
+          ],
+          "duration_ms": 250
+        }
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 0,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 70318,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.505899747,
+        "failing": 0
+      },
+      {
+        "at_s": 1.004817842,
+        "failing": 0
+      },
+      {
+        "at_s": 1.505927493,
+        "failing": 0
+      },
+      {
+        "at_s": 2.003819795,
+        "failing": 0
+      },
+      {
+        "at_s": 2.505794998,
+        "failing": 0
+      },
+      {
+        "at_s": 3.004219828,
+        "failing": 0
+      },
+      {
+        "at_s": 3.506508083,
+        "failing": 0
+      },
+      {
+        "at_s": 4.004888076,
+        "failing": 0
+      },
+      {
+        "at_s": 4.504725324,
+        "failing": 0
+      },
+      {
+        "at_s": 5.005644333,
+        "failing": 0
+      },
+      {
+        "at_s": 5.504442794,
+        "failing": 0
+      },
+      {
+        "at_s": 6.005535767,
+        "failing": 0
+      },
+      {
+        "at_s": 6.505166568,
+        "failing": 0
+      },
+      {
+        "at_s": 7.007696395,
+        "failing": 0
+      },
+      {
+        "at_s": 7.503439469,
+        "failing": 0
+      },
+      {
+        "at_s": 8.004554184,
+        "failing": 0
+      },
+      {
+        "at_s": 8.50412864,
+        "failing": 0
+      },
+      {
+        "at_s": 9.004565706,
+        "failing": 0
+      },
+      {
+        "at_s": 9.504337244,
+        "failing": 0
+      },
+      {
+        "at_s": 10.004488442,
+        "failing": 0
+      },
+      {
+        "at_s": 10.505716472,
+        "failing": 0
+      },
+      {
+        "at_s": 11.005211745,
+        "failing": 0
+      },
+      {
+        "at_s": 11.505514025,
+        "failing": 0
+      },
+      {
+        "at_s": 12.004320442,
+        "failing": 0
+      },
+      {
+        "at_s": 12.505958694,
+        "failing": 0
+      },
+      {
+        "at_s": 13.004592091,
+        "failing": 0
+      },
+      {
+        "at_s": 13.50529527,
+        "failing": 0
+      },
+      {
+        "at_s": 14.005617281,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503837942,
+        "failing": 0
+      },
+      {
+        "at_s": 15.004206984,
+        "failing": 0
+      },
+      {
+        "at_s": 15.504390903000001,
+        "failing": 0
+      },
+      {
+        "at_s": 16.003726166,
+        "failing": 0
+      },
+      {
+        "at_s": 16.50401392,
+        "failing": 0
+      },
+      {
+        "at_s": 17.004597232,
+        "failing": 0
+      },
+      {
+        "at_s": 17.506267436999998,
+        "failing": 0
+      },
+      {
+        "at_s": 18.004402123,
+        "failing": 0
+      },
+      {
+        "at_s": 18.506224812,
+        "failing": 0
+      },
+      {
+        "at_s": 19.005670406,
+        "failing": 0
+      },
+      {
+        "at_s": 19.502959006,
+        "failing": 0
+      },
+      {
+        "at_s": 20.005548719,
+        "failing": 0
+      },
+      {
+        "at_s": 20.504472274,
+        "failing": 0
+      },
+      {
+        "at_s": 21.005117731,
+        "failing": 0
+      },
+      {
+        "at_s": 21.505134975,
+        "failing": 0
+      },
+      {
+        "at_s": 22.003933745,
+        "failing": 0
+      },
+      {
+        "at_s": 22.509377878,
+        "failing": 0
+      },
+      {
+        "at_s": 23.004680805,
+        "failing": 0
+      },
+      {
+        "at_s": 23.504563364,
+        "failing": 0
+      },
+      {
+        "at_s": 24.004930287,
+        "failing": 0
+      },
+      {
+        "at_s": 24.505875936,
+        "failing": 0
+      },
+      {
+        "at_s": 25.004492822,
+        "failing": 0
+      },
+      {
+        "at_s": 25.506360294,
+        "failing": 0
+      },
+      {
+        "at_s": 26.004260119,
+        "failing": 0
+      },
+      {
+        "at_s": 26.505880339,
+        "failing": 0
+      },
+      {
+        "at_s": 27.004079551,
+        "failing": 0
+      },
+      {
+        "at_s": 27.505602905,
+        "failing": 0
+      },
+      {
+        "at_s": 28.003998959,
+        "failing": 0
+      },
+      {
+        "at_s": 28.505266295,
+        "failing": 0
+      },
+      {
+        "at_s": 29.003525206,
+        "failing": 0
+      },
+      {
+        "at_s": 29.50682825,
+        "failing": 0
+      },
+      {
+        "at_s": 30.003695892,
+        "failing": 0
+      },
+      {
+        "at_s": 30.504335387,
+        "failing": 0
+      },
+      {
+        "at_s": 31.005324887,
+        "failing": 0
+      },
+      {
+        "at_s": 31.505437124,
+        "failing": 0
+      },
+      {
+        "at_s": 32.005139038,
+        "failing": 0
+      },
+      {
+        "at_s": 32.506154577,
+        "failing": 0
+      },
+      {
+        "at_s": 33.004818811,
+        "failing": 0
+      },
+      {
+        "at_s": 33.505620685,
+        "failing": 0
+      },
+      {
+        "at_s": 34.003938097,
+        "failing": 0
+      },
+      {
+        "at_s": 34.505232838,
+        "failing": 0
+      },
+      {
+        "at_s": 35.006241568,
+        "failing": 0
+      },
+      {
+        "at_s": 35.506719598,
+        "failing": 0
+      },
+      {
+        "at_s": 36.004354198,
+        "failing": 0
+      },
+      {
+        "at_s": 36.506744197,
+        "failing": 0
+      },
+      {
+        "at_s": 37.004880756,
+        "failing": 0
+      },
+      {
+        "at_s": 37.506066787,
+        "failing": 0
+      },
+      {
+        "at_s": 38.004342811,
+        "failing": 0
+      },
+      {
+        "at_s": 38.505874156,
+        "failing": 0
+      },
+      {
+        "at_s": 39.004615982,
+        "failing": 0
+      },
+      {
+        "at_s": 39.505999653,
+        "failing": 0
+      },
+      {
+        "at_s": 40.006023699,
+        "failing": 0
+      },
+      {
+        "at_s": 40.506739363,
+        "failing": 0
+      },
+      {
+        "at_s": 41.004489535,
+        "failing": 0
+      },
+      {
+        "at_s": 41.505005765,
+        "failing": 0
+      },
+      {
+        "at_s": 42.005605077,
+        "failing": 0
+      },
+      {
+        "at_s": 42.504940884,
+        "failing": 0
+      },
+      {
+        "at_s": 43.005748549,
+        "failing": 0
+      },
+      {
+        "at_s": 43.50371772,
+        "failing": 0
+      },
+      {
+        "at_s": 44.005491216,
+        "failing": 0
+      },
+      {
+        "at_s": 44.504247986,
+        "failing": 0
+      },
+      {
+        "at_s": 45.005176302,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {},
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b0",
+    "consumer": "go-policy",
+    "fleet": 100,
+    "vulnerable": 68,
+    "push": {
+      "id": "20261104T091702.805Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b0",
+      "config_version": "pol-20261104T091140Z-8d717807c3",
+      "started": "2026-11-04T09:17:02.80534755Z",
+      "status": "completed",
+      "fleet": 100,
+      "exposed": 100,
+      "exposed_share": 1,
+      "time_to_full_ms": 31,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 31,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 100,
+          "detail": "100 of 100 instances now have the file"
+        },
+        {
+          "at_ms": 31,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 12,
+        "v42": 20,
+        "v43": 28,
+        "v44": 40
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 68,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 17696,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.504490629,
+        "failing": 0
+      },
+      {
+        "at_s": 1.005189823,
+        "failing": 0
+      },
+      {
+        "at_s": 1.504524387,
+        "failing": 0
+      },
+      {
+        "at_s": 2.005154545,
+        "failing": 0
+      },
+      {
+        "at_s": 2.505321636,
+        "failing": 0
+      },
+      {
+        "at_s": 3.00508534,
+        "failing": 0
+      },
+      {
+        "at_s": 3.5049590139999998,
+        "failing": 0
+      },
+      {
+        "at_s": 4.005072797,
+        "failing": 0
+      },
+      {
+        "at_s": 4.505368367,
+        "failing": 0
+      },
+      {
+        "at_s": 5.004880981,
+        "failing": 0
+      },
+      {
+        "at_s": 5.5043616570000005,
+        "failing": 0
+      },
+      {
+        "at_s": 6.004652835,
+        "failing": 0
+      },
+      {
+        "at_s": 6.506546195,
+        "failing": 0
+      },
+      {
+        "at_s": 7.004508378,
+        "failing": 0
+      },
+      {
+        "at_s": 7.505698074,
+        "failing": 0
+      },
+      {
+        "at_s": 8.00498008,
+        "failing": 0
+      },
+      {
+        "at_s": 8.505957581,
+        "failing": 0
+      },
+      {
+        "at_s": 9.003841279,
+        "failing": 0
+      },
+      {
+        "at_s": 9.506217778,
+        "failing": 0
+      },
+      {
+        "at_s": 10.004330982,
+        "failing": 0
+      },
+      {
+        "at_s": 10.506487171,
+        "failing": 0
+      },
+      {
+        "at_s": 11.004572335,
+        "failing": 0
+      },
+      {
+        "at_s": 11.506017772,
+        "failing": 0
+      },
+      {
+        "at_s": 12.004924807,
+        "failing": 0
+      },
+      {
+        "at_s": 12.504511254,
+        "failing": 0
+      },
+      {
+        "at_s": 13.004972697,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503945817,
+        "failing": 0
+      },
+      {
+        "at_s": 14.005436629,
+        "failing": 0
+      },
+      {
+        "at_s": 14.504685042,
+        "failing": 0
+      },
+      {
+        "at_s": 15.007657549,
+        "failing": 0
+      },
+      {
+        "at_s": 15.504460886,
+        "failing": 0
+      },
+      {
+        "at_s": 16.005457124,
+        "failing": 0
+      },
+      {
+        "at_s": 16.504620771,
+        "failing": 0
+      },
+      {
+        "at_s": 17.005518109,
+        "failing": 0
+      },
+      {
+        "at_s": 17.505403316,
+        "failing": 0
+      },
+      {
+        "at_s": 18.006232047,
+        "failing": 0
+      },
+      {
+        "at_s": 18.505272673,
+        "failing": 0
+      },
+      {
+        "at_s": 19.016046929,
+        "failing": 0
+      },
+      {
+        "at_s": 19.504819098,
+        "failing": 0
+      },
+      {
+        "at_s": 20.005792651,
+        "failing": 0
+      },
+      {
+        "at_s": 20.505363362,
+        "failing": 0
+      },
+      {
+        "at_s": 21.004825459,
+        "failing": 0
+      },
+      {
+        "at_s": 21.505096529,
+        "failing": 0
+      },
+      {
+        "at_s": 22.005088358,
+        "failing": 0
+      },
+      {
+        "at_s": 22.505369265,
+        "failing": 0
+      },
+      {
+        "at_s": 23.005716789,
+        "failing": 0
+      },
+      {
+        "at_s": 23.505503754,
+        "failing": 0
+      },
+      {
+        "at_s": 24.007890968,
+        "failing": 0
+      },
+      {
+        "at_s": 24.506033129,
+        "failing": 0
+      },
+      {
+        "at_s": 25.004844965,
+        "failing": 0
+      },
+      {
+        "at_s": 25.504726166,
+        "failing": 0
+      },
+      {
+        "at_s": 26.004865938,
+        "failing": 0
+      },
+      {
+        "at_s": 26.504599282,
+        "failing": 0
+      },
+      {
+        "at_s": 27.005305589,
+        "failing": 0
+      },
+      {
+        "at_s": 27.505165462,
+        "failing": 0
+      },
+      {
+        "at_s": 28.005146736,
+        "failing": 0
+      },
+      {
+        "at_s": 28.504918416,
+        "failing": 0
+      },
+      {
+        "at_s": 29.005005096,
+        "failing": 0
+      },
+      {
+        "at_s": 29.505829256,
+        "failing": 0
+      },
+      {
+        "at_s": 30.00411327,
+        "failing": 0
+      },
+      {
+        "at_s": 30.504790845,
+        "failing": 0
+      },
+      {
+        "at_s": 31.007878865,
+        "failing": 0
+      },
+      {
+        "at_s": 31.504492462,
+        "failing": 0
+      },
+      {
+        "at_s": 32.006075994,
+        "failing": 0
+      },
+      {
+        "at_s": 32.504312537,
+        "failing": 0
+      },
+      {
+        "at_s": 33.005811188,
+        "failing": 0
+      },
+      {
+        "at_s": 33.505932616,
+        "failing": 0
+      },
+      {
+        "at_s": 34.005972479,
+        "failing": 0
+      },
+      {
+        "at_s": 34.505426941,
+        "failing": 0
+      },
+      {
+        "at_s": 35.006703491,
+        "failing": 0
+      },
+      {
+        "at_s": 35.505749585,
+        "failing": 0
+      },
+      {
+        "at_s": 36.005803904,
+        "failing": 0
+      },
+      {
+        "at_s": 36.5050931,
+        "failing": 0
+      },
+      {
+        "at_s": 37.005446985,
+        "failing": 0
+      },
+      {
+        "at_s": 37.504246842,
+        "failing": 0
+      },
+      {
+        "at_s": 38.005344,
+        "failing": 0
+      },
+      {
+        "at_s": 38.504650015,
+        "failing": 0
+      },
+      {
+        "at_s": 39.005089883,
+        "failing": 0
+      },
+      {
+        "at_s": 39.506158136,
+        "failing": 0
+      },
+      {
+        "at_s": 40.005248688,
+        "failing": 0
+      },
+      {
+        "at_s": 40.504972995,
+        "failing": 0
+      },
+      {
+        "at_s": 41.005245914,
+        "failing": 0
+      },
+      {
+        "at_s": 41.505078989,
+        "failing": 0
+      },
+      {
+        "at_s": 42.004240271,
+        "failing": 0
+      },
+      {
+        "at_s": 42.50641546,
+        "failing": 0
+      },
+      {
+        "at_s": 43.004947943,
+        "failing": 0
+      },
+      {
+        "at_s": 43.506510396,
+        "failing": 0
+      },
+      {
+        "at_s": 44.004967213,
+        "failing": 0
+      },
+      {
+        "at_s": 44.505910039,
+        "failing": 0
+      },
+      {
+        "at_s": 45.004802635,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 12,
+      "v42": 20,
+      "v43": 28,
+      "v44": 40
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b2",
+    "consumer": "go-policy",
+    "fleet": 100,
+    "vulnerable": 68,
+    "push": {
+      "id": "20261104T091753.981Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b2",
+      "config_version": "pol-20261104T091140Z-8d717807c3",
+      "started": "2026-11-04T09:17:53.981457099Z",
+      "status": "rolled_back",
+      "reason": "rejection alarm: 1 of 1 exposed instances crashed, refused the file or are not serving (e.g. gp-eu-west-023 v43 up, refused pol-20261104T091140Z-8d717807c3: panic while loading: runtime error: invalid memory address or nil pointer dereference at main.go:101)",
+      "fleet": 100,
+      "exposed": 1,
+      "exposed_share": 0.01,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 2013,
+      "time_to_revert_ms": 2013,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 2,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 9,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 1,
+          "detail": "1 of 100 instances now have the file"
+        },
+        {
+          "at_ms": 2013,
+          "kind": "alarm",
+          "detail": "rejection alarm: 1 of 1 exposed instances crashed, refused the file or are not serving (e.g. gp-eu-west-023 v43 up, refused pol-20261104T091140Z-8d717807c3: panic while loading: runtime error: invalid memory address or nil pointer dereference at main.go:101)"
+        },
+        {
+          "at_ms": 2013,
+          "kind": "rollback_delivered",
+          "count": 1,
+          "detail": "last known good pol-20261104T091140Z-f73c747980"
+        },
+        {
+          "at_ms": 2013,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v43": 1
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 1,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 17332,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.502965347,
+        "failing": 0
+      },
+      {
+        "at_s": 1.009461143,
+        "failing": 0
+      },
+      {
+        "at_s": 1.504365619,
+        "failing": 0
+      },
+      {
+        "at_s": 2.004773572,
+        "failing": 0
+      },
+      {
+        "at_s": 2.506532999,
+        "failing": 0
+      },
+      {
+        "at_s": 3.00409923,
+        "failing": 0
+      },
+      {
+        "at_s": 3.503653111,
+        "failing": 0
+      },
+      {
+        "at_s": 4.00320682,
+        "failing": 0
+      },
+      {
+        "at_s": 4.504082071,
+        "failing": 0
+      },
+      {
+        "at_s": 5.003279959,
+        "failing": 0
+      },
+      {
+        "at_s": 5.503328721,
+        "failing": 0
+      },
+      {
+        "at_s": 6.003704715,
+        "failing": 0
+      },
+      {
+        "at_s": 6.50390917,
+        "failing": 0
+      },
+      {
+        "at_s": 7.005352441,
+        "failing": 0
+      },
+      {
+        "at_s": 7.504212884,
+        "failing": 0
+      },
+      {
+        "at_s": 8.004587839,
+        "failing": 0
+      },
+      {
+        "at_s": 8.504714733,
+        "failing": 0
+      },
+      {
+        "at_s": 9.002847168,
+        "failing": 0
+      },
+      {
+        "at_s": 9.503643617,
+        "failing": 0
+      },
+      {
+        "at_s": 10.0029938,
+        "failing": 0
+      },
+      {
+        "at_s": 10.504050524,
+        "failing": 0
+      },
+      {
+        "at_s": 11.002891662,
+        "failing": 0
+      },
+      {
+        "at_s": 11.503688785,
+        "failing": 0
+      },
+      {
+        "at_s": 12.004093438,
+        "failing": 0
+      },
+      {
+        "at_s": 12.503940455,
+        "failing": 0
+      },
+      {
+        "at_s": 13.003489211,
+        "failing": 0
+      },
+      {
+        "at_s": 13.50380083,
+        "failing": 0
+      },
+      {
+        "at_s": 14.002840089,
+        "failing": 0
+      },
+      {
+        "at_s": 14.503611911,
+        "failing": 0
+      },
+      {
+        "at_s": 15.002843706,
+        "failing": 0
+      },
+      {
+        "at_s": 15.503441205,
+        "failing": 0
+      },
+      {
+        "at_s": 16.003052535,
+        "failing": 0
+      },
+      {
+        "at_s": 16.503978888,
+        "failing": 0
+      },
+      {
+        "at_s": 17.003207666,
+        "failing": 0
+      },
+      {
+        "at_s": 17.503736837,
+        "failing": 0
+      },
+      {
+        "at_s": 18.002910968,
+        "failing": 0
+      },
+      {
+        "at_s": 18.503841461,
+        "failing": 0
+      },
+      {
+        "at_s": 19.003051149,
+        "failing": 0
+      },
+      {
+        "at_s": 19.50377413,
+        "failing": 0
+      },
+      {
+        "at_s": 20.003074707,
+        "failing": 0
+      },
+      {
+        "at_s": 20.506801414999998,
+        "failing": 0
+      },
+      {
+        "at_s": 21.00321124,
+        "failing": 0
+      },
+      {
+        "at_s": 21.503946065,
+        "failing": 0
+      },
+      {
+        "at_s": 22.003979367,
+        "failing": 0
+      },
+      {
+        "at_s": 22.504485673,
+        "failing": 0
+      },
+      {
+        "at_s": 23.003170394,
+        "failing": 0
+      },
+      {
+        "at_s": 23.503471325,
+        "failing": 0
+      },
+      {
+        "at_s": 24.004188601,
+        "failing": 0
+      },
+      {
+        "at_s": 24.503389002,
+        "failing": 0
+      },
+      {
+        "at_s": 25.004545218,
+        "failing": 0
+      },
+      {
+        "at_s": 25.506463558,
+        "failing": 0
+      },
+      {
+        "at_s": 26.00550469,
+        "failing": 0
+      },
+      {
+        "at_s": 26.503267984,
+        "failing": 0
+      },
+      {
+        "at_s": 27.003957879,
+        "failing": 0
+      },
+      {
+        "at_s": 27.503725467,
+        "failing": 0
+      },
+      {
+        "at_s": 28.004262486,
+        "failing": 0
+      },
+      {
+        "at_s": 28.503329377,
+        "failing": 0
+      },
+      {
+        "at_s": 29.005145715,
+        "failing": 0
+      },
+      {
+        "at_s": 29.503243038,
+        "failing": 0
+      },
+      {
+        "at_s": 30.008854461,
+        "failing": 0
+      },
+      {
+        "at_s": 30.503930046,
+        "failing": 0
+      },
+      {
+        "at_s": 31.004176037,
+        "failing": 0
+      },
+      {
+        "at_s": 31.503907621,
+        "failing": 0
+      },
+      {
+        "at_s": 32.004045743,
+        "failing": 0
+      },
+      {
+        "at_s": 32.504434914,
+        "failing": 0
+      },
+      {
+        "at_s": 33.003526491,
+        "failing": 0
+      },
+      {
+        "at_s": 33.504381553,
+        "failing": 0
+      },
+      {
+        "at_s": 34.003384808,
+        "failing": 0
+      },
+      {
+        "at_s": 34.504347318,
+        "failing": 0
+      },
+      {
+        "at_s": 35.004057923,
+        "failing": 0
+      },
+      {
+        "at_s": 35.503133777,
+        "failing": 0
+      },
+      {
+        "at_s": 36.004189422,
+        "failing": 0
+      },
+      {
+        "at_s": 36.504007865,
+        "failing": 0
+      },
+      {
+        "at_s": 37.003619501,
+        "failing": 0
+      },
+      {
+        "at_s": 37.502906677,
+        "failing": 0
+      },
+      {
+        "at_s": 38.004640246,
+        "failing": 0
+      },
+      {
+        "at_s": 38.503403554,
+        "failing": 0
+      },
+      {
+        "at_s": 39.004286345,
+        "failing": 0
+      },
+      {
+        "at_s": 39.503099715,
+        "failing": 0
+      },
+      {
+        "at_s": 40.003929007,
+        "failing": 0
+      },
+      {
+        "at_s": 40.503846329,
+        "failing": 0
+      },
+      {
+        "at_s": 41.00290726,
+        "failing": 0
+      },
+      {
+        "at_s": 41.50528218,
+        "failing": 0
+      },
+      {
+        "at_s": 42.003073989,
+        "failing": 0
+      },
+      {
+        "at_s": 42.503963514,
+        "failing": 0
+      },
+      {
+        "at_s": 43.003267962,
+        "failing": 0
+      },
+      {
+        "at_s": 43.503805087,
+        "failing": 0
+      },
+      {
+        "at_s": 44.004053951,
+        "failing": 0
+      },
+      {
+        "at_s": 44.503097051,
+        "failing": 0
+      },
+      {
+        "at_s": 45.003742749,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v43": 1
+    },
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b3",
+    "consumer": "go-policy",
+    "fleet": 100,
+    "vulnerable": 68,
+    "push": {
+      "id": "20261104T091845.160Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b3",
+      "config_version": "pol-20261104T091140Z-8d717807c3",
+      "started": "2026-11-04T09:18:45.160037159Z",
+      "status": "rejected",
+      "reason": "gate check failed: Held: v43, v44 (68 of 100 instances) crashes loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101 (also 1 warning(s): 3 policies enforce quota with a blank quota block; last known good had 0)",
+      "fleet": 0,
+      "exposed": 0,
+      "exposed_share": 0,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 3,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 395,
+          "kind": "validate_fail",
+          "detail": "gate: Held: v43, v44 (68 of 100 instances) crashes loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101 (also 1 warning(s): 3 policies enforce quota with a blank quota block; last known good had 0)"
+        },
+        {
+          "at_ms": 395,
+          "kind": "finish",
+          "detail": "rejected"
+        }
+      ],
+      "exposed_by_version": {},
+      "checks": {
+        "gate": {
+          "consumer": "go-policy",
+          "candidate": "pol-20261104T091140Z-8d717807c3",
+          "last_known_good": "pol-20261104T091140Z-f73c747980",
+          "layers": [
+            "diff",
+            "sandbox"
+          ],
+          "verdict": "hold",
+          "findings": [
+            {
+              "layer": "diff",
+              "check": "row-count",
+              "severity": "info",
+              "detail": "policy count 200 vs 200 in last known good (+0%)"
+            },
+            {
+              "layer": "diff",
+              "check": "nulls",
+              "severity": "warn",
+              "detail": "3 policies enforce quota with a blank quota block; last known good had 0"
+            },
+            {
+              "layer": "diff",
+              "check": "drift",
+              "severity": "info",
+              "detail": "quota limit distribution PSI 0.000"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 43,
+              "detail": "v43 (28 instances) crashed loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "cause": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 44,
+              "detail": "v44 (40 instances) crashed loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "cause": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101"
+            }
+          ],
+          "versions": [
+            {
+              "version": 41,
+              "instances": 12,
+              "loaded": true,
+              "crashed": false,
+              "requests": 1000,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.19,
+              "p99_ms": 2.048,
+              "lkg_p99_ms": 1.939,
+              "rss_kb": 11984,
+              "lkg_rss_kb": 11920
+            },
+            {
+              "version": 42,
+              "instances": 20,
+              "loaded": true,
+              "crashed": false,
+              "requests": 1000,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.183,
+              "p99_ms": 1.663,
+              "lkg_p99_ms": 1.751,
+              "rss_kb": 11828,
+              "lkg_rss_kb": 11944
+            },
+            {
+              "version": 43,
+              "instances": 28,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.749,
+              "rss_kb": 0,
+              "lkg_rss_kb": 11808
+            },
+            {
+              "version": 44,
+              "instances": 40,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 2.004,
+              "rss_kb": 0,
+              "lkg_rss_kb": 11640
+            }
+          ],
+          "duration_ms": 392
+        }
+      }
+    },
+    "window_s": 45,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 0,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 17645,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.504204011,
+        "failing": 0
+      },
+      {
+        "at_s": 1.004186122,
+        "failing": 0
+      },
+      {
+        "at_s": 1.5038045690000001,
+        "failing": 0
+      },
+      {
+        "at_s": 2.005371933,
+        "failing": 0
+      },
+      {
+        "at_s": 2.50392595,
+        "failing": 0
+      },
+      {
+        "at_s": 3.005071956,
+        "failing": 0
+      },
+      {
+        "at_s": 3.5051597880000003,
+        "failing": 0
+      },
+      {
+        "at_s": 4.005380811,
+        "failing": 0
+      },
+      {
+        "at_s": 4.503892381,
+        "failing": 0
+      },
+      {
+        "at_s": 5.005143548,
+        "failing": 0
+      },
+      {
+        "at_s": 5.504884201,
+        "failing": 0
+      },
+      {
+        "at_s": 6.005008855,
+        "failing": 0
+      },
+      {
+        "at_s": 6.504150766,
+        "failing": 0
+      },
+      {
+        "at_s": 7.005561852,
+        "failing": 0
+      },
+      {
+        "at_s": 7.503693156,
+        "failing": 0
+      },
+      {
+        "at_s": 8.004805717,
+        "failing": 0
+      },
+      {
+        "at_s": 8.504574924,
+        "failing": 0
+      },
+      {
+        "at_s": 9.005244226,
+        "failing": 0
+      },
+      {
+        "at_s": 9.512910189,
+        "failing": 0
+      },
+      {
+        "at_s": 10.005928053,
+        "failing": 0
+      },
+      {
+        "at_s": 10.504529562,
+        "failing": 0
+      },
+      {
+        "at_s": 11.004387165,
+        "failing": 0
+      },
+      {
+        "at_s": 11.505279744,
+        "failing": 0
+      },
+      {
+        "at_s": 12.004331026,
+        "failing": 0
+      },
+      {
+        "at_s": 12.505256761,
+        "failing": 0
+      },
+      {
+        "at_s": 13.005077238,
+        "failing": 0
+      },
+      {
+        "at_s": 13.503893854,
+        "failing": 0
+      },
+      {
+        "at_s": 14.005345821,
+        "failing": 0
+      },
+      {
+        "at_s": 14.505007783,
+        "failing": 0
+      },
+      {
+        "at_s": 15.005710508,
+        "failing": 0
+      },
+      {
+        "at_s": 15.504362222,
+        "failing": 0
+      },
+      {
+        "at_s": 16.005127336,
+        "failing": 0
+      },
+      {
+        "at_s": 16.504002327,
+        "failing": 0
+      },
+      {
+        "at_s": 17.004785314,
+        "failing": 0
+      },
+      {
+        "at_s": 17.504669768,
+        "failing": 0
+      },
+      {
+        "at_s": 18.006545784,
+        "failing": 0
+      },
+      {
+        "at_s": 18.504113439,
+        "failing": 0
+      },
+      {
+        "at_s": 19.005720153,
+        "failing": 0
+      },
+      {
+        "at_s": 19.50401365,
+        "failing": 0
+      },
+      {
+        "at_s": 20.00516973,
+        "failing": 0
+      },
+      {
+        "at_s": 20.506381167,
+        "failing": 0
+      },
+      {
+        "at_s": 21.004072104,
+        "failing": 0
+      },
+      {
+        "at_s": 21.506485431,
+        "failing": 0
+      },
+      {
+        "at_s": 22.006560011,
+        "failing": 0
+      },
+      {
+        "at_s": 22.505619262,
+        "failing": 0
+      },
+      {
+        "at_s": 23.00452674,
+        "failing": 0
+      },
+      {
+        "at_s": 23.50589483,
+        "failing": 0
+      },
+      {
+        "at_s": 24.006624183,
+        "failing": 0
+      },
+      {
+        "at_s": 24.504514343,
+        "failing": 0
+      },
+      {
+        "at_s": 25.004023229,
+        "failing": 0
+      },
+      {
+        "at_s": 25.506130723,
+        "failing": 0
+      },
+      {
+        "at_s": 26.00574988,
+        "failing": 0
+      },
+      {
+        "at_s": 26.50732266,
+        "failing": 0
+      },
+      {
+        "at_s": 27.005731041,
+        "failing": 0
+      },
+      {
+        "at_s": 27.508558117,
+        "failing": 0
+      },
+      {
+        "at_s": 28.004745009,
+        "failing": 0
+      },
+      {
+        "at_s": 28.508209663,
+        "failing": 0
+      },
+      {
+        "at_s": 29.005373426,
+        "failing": 0
+      },
+      {
+        "at_s": 29.50536621,
+        "failing": 0
+      },
+      {
+        "at_s": 30.004203974,
+        "failing": 0
+      },
+      {
+        "at_s": 30.505286697,
+        "failing": 0
+      },
+      {
+        "at_s": 31.003646634,
+        "failing": 0
+      },
+      {
+        "at_s": 31.504863875,
+        "failing": 0
+      },
+      {
+        "at_s": 32.005281056,
+        "failing": 0
+      },
+      {
+        "at_s": 32.505055854,
+        "failing": 0
+      },
+      {
+        "at_s": 33.003985647,
+        "failing": 0
+      },
+      {
+        "at_s": 33.505611622,
+        "failing": 0
+      },
+      {
+        "at_s": 34.004330141,
+        "failing": 0
+      },
+      {
+        "at_s": 34.503951124,
+        "failing": 0
+      },
+      {
+        "at_s": 35.005435942,
+        "failing": 0
+      },
+      {
+        "at_s": 35.504053203,
+        "failing": 0
+      },
+      {
+        "at_s": 36.004806915,
+        "failing": 0
+      },
+      {
+        "at_s": 36.504223351,
+        "failing": 0
+      },
+      {
+        "at_s": 37.004114543,
+        "failing": 0
+      },
+      {
+        "at_s": 37.505050935,
+        "failing": 0
+      },
+      {
+        "at_s": 38.004020045,
+        "failing": 0
+      },
+      {
+        "at_s": 38.505231009,
+        "failing": 0
+      },
+      {
+        "at_s": 39.004227612,
+        "failing": 0
+      },
+      {
+        "at_s": 39.504702251,
+        "failing": 0
+      },
+      {
+        "at_s": 40.00368935,
+        "failing": 0
+      },
+      {
+        "at_s": 40.507055903,
+        "failing": 0
+      },
+      {
+        "at_s": 41.006161849,
+        "failing": 0
+      },
+      {
+        "at_s": 41.504286034,
+        "failing": 0
+      },
+      {
+        "at_s": 42.004655947,
+        "failing": 0
+      },
+      {
+        "at_s": 42.505162698,
+        "failing": 0
+      },
+      {
+        "at_s": 43.004404559,
+        "failing": 0
+      },
+      {
+        "at_s": 43.504907545,
+        "failing": 0
+      },
+      {
+        "at_s": 44.004178715,
+        "failing": 0
+      },
+      {
+        "at_s": 44.505258255,
+        "failing": 0
+      },
+      {
+        "at_s": 45.003683761,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {},
+    "env": {
+      "bake": "10s",
+      "cpus": "4",
+      "rate": "2000"
+    }
+  }
+]

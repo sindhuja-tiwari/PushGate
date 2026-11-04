@@ -12,8 +12,12 @@
 //!   is past the end of that array panics, but only when a request actually
 //!   reaches that field (wildcards are skipped).
 //!
-//! Week 4 adds the last-known-good library. Until then this consumer has no
-//! safety net, which is what baselines B0 to B2 measure.
+//! By default it has no safety net, which is what baselines B0 to B2
+//! measure. With `--on-bad-file keep_last_good|fail_closed` it loads through
+//! PushGate's last-known-good library (`lib/rust/lkg`) instead: the release's
+//! limits are declared and checked at load, a bad file is rejected, and the
+//! process keeps serving (or, fail-closed, stops answering) instead of
+//! panicking.
 
 use serde::Deserialize;
 use std::fs;
@@ -36,8 +40,7 @@ struct FeatureFile {
 
 #[derive(Debug, Deserialize, Clone)]
 struct FeatureSpec {
-    /// Not used for scoring. Kept so later reports can name a feature.
-    #[allow(dead_code)]
+    /// Not used for scoring. Named in rejection reports.
     name: String,
     weight: f64,
     /// Match template. `"*"` is a wildcard. Field `i` is compared with request
@@ -79,8 +82,12 @@ impl FeatureTable {
     }
 
     fn load(path: &PathBuf) -> Result<FeatureTable, LoadError> {
-        let raw = fs::read_to_string(path).map_err(|e| LoadError::Io(e.to_string()))?;
-        let file: FeatureFile = serde_json::from_str(&raw).map_err(|e| LoadError::Parse(e.to_string()))?;
+        let raw = fs::read(path).map_err(|e| LoadError::Io(e.to_string()))?;
+        FeatureTable::from_bytes(&raw)
+    }
+
+    fn from_bytes(raw: &[u8]) -> Result<FeatureTable, LoadError> {
+        let file: FeatureFile = serde_json::from_slice(raw).map_err(|e| LoadError::Parse(e.to_string()))?;
         if file.schema != "bot-features/1" {
             return Err(LoadError::WrongSchema(file.schema));
         }
@@ -91,6 +98,22 @@ impl FeatureTable {
         table.config_version = file.config_version;
         table.slots.extend(file.features);
         Ok(table)
+    }
+
+    /// The safe loader: every limit `score` relies on is declared and checked
+    /// here, so a file that would break it is rejected instead of panicking
+    /// later on a request. Used only with --on-bad-file.
+    fn from_bytes_checked(raw: &[u8]) -> Result<FeatureTable, String> {
+        let t = FeatureTable::from_bytes(raw).map_err(|e| e.to_string())?;
+        if let Some((i, f)) = t.slots.iter().enumerate().find(|(_, f)| f.fields.len() > INPUT_SLOTS) {
+            return Err(format!(
+                "feature {} ({}) has {} match fields; this release reads {INPUT_SLOTS} input slots",
+                i,
+                f.name,
+                f.fields.len()
+            ));
+        }
+        Ok(t)
     }
 
     /// Score one request. `inputs` has exactly INPUT_SLOTS entries.
@@ -131,10 +154,11 @@ struct Args {
     config: PathBuf,
     poll_ms: u64,
     threads: usize,
+    on_bad_file: Option<lkg::Mode>,
 }
 
 fn parse_args() -> Args {
-    let mut a = Args { id: "local".into(), port: 8080, config: PathBuf::from("feature.json"), poll_ms: 500, threads: 2 };
+    let mut a = Args { id: "local".into(), port: 8080, config: PathBuf::from("feature.json"), poll_ms: 500, threads: 2, on_bad_file: None };
     let mut it = std::env::args().skip(1);
     while let Some(k) = it.next() {
         let mut v = || it.next().unwrap_or_else(|| die(&format!("missing value for {k}")));
@@ -144,6 +168,7 @@ fn parse_args() -> Args {
             "--config" => a.config = PathBuf::from(v()),
             "--poll-ms" => a.poll_ms = v().parse().unwrap_or_else(|_| die("bad --poll-ms")),
             "--threads" => a.threads = v().parse().unwrap_or_else(|_| die("bad --threads")),
+            "--on-bad-file" => a.on_bad_file = Some(lkg::Mode::parse(&v()).unwrap_or_else(|e| die(&e))),
             "--version" => {
                 println!("bot-proxy v{BUILD_VERSION} max_features={MAX_FEATURES} input_slots={INPUT_SLOTS}");
                 std::process::exit(0);
@@ -177,9 +202,30 @@ fn parse_inputs(query: &str) -> [String; INPUT_SLOTS] {
     inputs
 }
 
-fn main() {
-    let args = parse_args();
+/// Where requests get the current table: the original naive loader, or the
+/// last-known-good library.
+#[derive(Clone)]
+enum Source {
+    Naive(Arc<RwLock<Arc<FeatureTable>>>),
+    Safe(Arc<lkg::Loader<FeatureTable>>),
+}
 
+impl Source {
+    fn get(&self) -> Option<Arc<FeatureTable>> {
+        match self {
+            Source::Naive(t) => Some(Arc::clone(&t.read().unwrap())),
+            Source::Safe(l) => l.current(),
+        }
+    }
+    fn loads(&self, naive_loads: &AtomicU64) -> u64 {
+        match self {
+            Source::Naive(_) => naive_loads.load(Ordering::Relaxed),
+            Source::Safe(l) => l.status().loads,
+        }
+    }
+}
+
+fn start_naive(args: &Args, stats: &Arc<Stats>) -> Source {
     // Initial load. Same naive unwrap as the reload path: a bad file on disk
     // means the process cannot start, which is how a crash loop forms.
     let table = FeatureTable::load(&args.config)
@@ -190,46 +236,70 @@ fn main() {
         table.slots.len(),
         table.config_version
     );
-    let table = Arc::new(RwLock::new(table));
-    let stats = Arc::new(Stats { requests: AtomicU64::new(0), loads: AtomicU64::new(1), started: SystemTime::now() });
+    let table = Arc::new(RwLock::new(Arc::new(table)));
+    stats.loads.fetch_add(1, Ordering::Relaxed);
 
     // Reload loop: poll the file's mtime and swap the table on change.
-    {
-        let table = Arc::clone(&table);
-        let stats = Arc::clone(&stats);
-        let path = args.config.clone();
-        let id = args.id.clone();
-        let poll = Duration::from_millis(args.poll_ms);
-        thread::spawn(move || {
-            let mut last = mtime(&path);
-            loop {
-                thread::sleep(poll);
-                let now = mtime(&path);
-                if now.is_some() && now != last {
-                    last = now;
-                    // The Cloudflare bug: the error is unwrapped instead of
-                    // handled, so a bad file takes the process down.
-                    let fresh = FeatureTable::load(&path)
-                        .unwrap_or_else(|e| panic!("bot-proxy v{BUILD_VERSION} {id}: reload failed: {e}"));
-                    eprintln!("bot-proxy v{BUILD_VERSION} {id} reloaded {} features (config {})", fresh.slots.len(), fresh.config_version);
-                    *table.write().unwrap() = fresh;
-                    stats.loads.fetch_add(1, Ordering::Relaxed);
-                }
+    let t = Arc::clone(&table);
+    let stats = Arc::clone(stats);
+    let path = args.config.clone();
+    let id = args.id.clone();
+    let poll = Duration::from_millis(args.poll_ms);
+    thread::spawn(move || {
+        let mut last = mtime(&path);
+        loop {
+            thread::sleep(poll);
+            let now = mtime(&path);
+            if now.is_some() && now != last {
+                last = now;
+                // The Cloudflare bug: the error is unwrapped instead of
+                // handled, so a bad file takes the process down.
+                let fresh = FeatureTable::load(&path)
+                    .unwrap_or_else(|e| panic!("bot-proxy v{BUILD_VERSION} {id}: reload failed: {e}"));
+                eprintln!("bot-proxy v{BUILD_VERSION} {id} reloaded {} features (config {})", fresh.slots.len(), fresh.config_version);
+                *t.write().unwrap() = Arc::new(fresh);
+                stats.loads.fetch_add(1, Ordering::Relaxed);
             }
-        });
-    }
+        }
+    });
+    Source::Naive(table)
+}
+
+fn start_safe(args: &Args, mode: lkg::Mode) -> Source {
+    let mut opts = lkg::Options::new(&args.config, mode);
+    opts.poll = Duration::from_millis(args.poll_ms);
+    opts.jitter = opts.poll;
+    opts.limits.insert("max_features".into(), MAX_FEATURES.into());
+    opts.limits.insert("input_slots".into(), INPUT_SLOTS.into());
+    let id = args.id.clone();
+    let loader = lkg::Loader::open(opts, FeatureTable::from_bytes_checked, move |msg| {
+        eprintln!("bot-proxy v{BUILD_VERSION} {id} {msg}")
+    });
+    loader.watch();
+    Source::Safe(loader)
+}
+
+fn main() {
+    let args = parse_args();
+    let stats = Arc::new(Stats { requests: AtomicU64::new(0), loads: AtomicU64::new(0), started: SystemTime::now() });
+    let source = match args.on_bad_file {
+        None => start_naive(&args, &stats),
+        Some(mode) => start_safe(&args, mode),
+    };
 
     let server = Arc::new(
         Server::http(("127.0.0.1", args.port)).unwrap_or_else(|e| die(&format!("cannot bind port {}: {e}", args.port))),
     );
     let json = Header::from_bytes(&b"Content-Type"[..], &b"application/json"[..]).unwrap();
     let text = Header::from_bytes(&b"Content-Type"[..], &b"text/plain; version=0.0.4"[..]).unwrap();
+    let none = Arc::new(FeatureTable::with_capacity());
 
     let mut workers = Vec::new();
     for _ in 0..args.threads.max(1) {
         let server = Arc::clone(&server);
-        let table = Arc::clone(&table);
+        let source = source.clone();
         let stats = Arc::clone(&stats);
+        let none = Arc::clone(&none);
         let id = args.id.clone();
         let (json, text) = (json.clone(), text.clone());
         workers.push(thread::spawn(move || loop {
@@ -239,42 +309,67 @@ fn main() {
             };
             let url = req.url().to_string();
             let (path, query) = url.split_once('?').unwrap_or((url.as_str(), ""));
+            let current = source.get();
+            let lkg_status = match &source {
+                Source::Safe(l) => format!(r#","lkg":{}"#, l.status_json()),
+                Source::Naive(_) => String::new(),
+            };
             let resp = match (req.method(), path) {
                 (Method::Get, "/score") => {
                     stats.requests.fetch_add(1, Ordering::Relaxed);
-                    let inputs = parse_inputs(query);
-                    let t = table.read().unwrap();
-                    let (score, matched) = t.score(&inputs);
-                    let body = format!(
-                        r#"{{"score":{score:.4},"bot":{},"matched":{matched},"features":{},"config_version":"{}","version":{BUILD_VERSION}}}"#,
-                        score > 0.5,
-                        t.slots.len(),
-                        t.config_version
-                    );
-                    Response::from_string(body).with_header(json.clone())
+                    match &current {
+                        // Safe mode with nothing good to serve: refuse
+                        // rather than answer from no rules.
+                        None => Response::from_string(r#"{"error":"no good config loaded"}"#)
+                            .with_status_code(503)
+                            .with_header(json.clone()),
+                        Some(t) => {
+                            let inputs = parse_inputs(query);
+                            let (score, matched) = t.score(&inputs);
+                            let body = format!(
+                                r#"{{"score":{score:.4},"bot":{},"matched":{matched},"features":{},"config_version":"{}","version":{BUILD_VERSION}}}"#,
+                                score > 0.5,
+                                t.slots.len(),
+                                t.config_version
+                            );
+                            Response::from_string(body).with_header(json.clone())
+                        }
+                    }
                 }
                 (Method::Get, "/healthz") => {
-                    let t = table.read().unwrap();
+                    // The process is alive even when it refuses to score, so
+                    // health stays 200 and reports serving:false.
+                    let t = current.as_ref().unwrap_or(&none);
                     Response::from_string(format!(
-                        r#"{{"ok":true,"id":"{id}","version":{BUILD_VERSION},"config_version":"{}","features":{}}}"#,
+                        r#"{{"ok":true,"id":"{id}","version":{BUILD_VERSION},"config_version":"{}","features":{},"serving":{}{lkg_status}}}"#,
                         t.config_version,
-                        t.slots.len()
+                        t.slots.len(),
+                        current.is_some()
                     ))
                     .with_header(json.clone())
                 }
                 (Method::Get, "/metrics") => {
-                    let t = table.read().unwrap();
+                    let t = current.as_ref().unwrap_or(&none);
                     let up = stats.started.elapsed().map(|d| d.as_secs_f64()).unwrap_or(0.0);
+                    let (rejections, serving) = match &source {
+                        Source::Safe(l) => {
+                            let s = l.status();
+                            (s.rejections, s.serving as u8)
+                        }
+                        Source::Naive(_) => (0, 1),
+                    };
                     let body = format!(
                         "# TYPE pg_requests_total counter\npg_requests_total{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {r}\n\
                          # TYPE pg_config_loads_total counter\npg_config_loads_total{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {l}\n\
+                         # TYPE pg_config_rejections_total counter\npg_config_rejections_total{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {rejections}\n\
+                         # TYPE pg_config_serving gauge\npg_config_serving{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {serving}\n\
                          # TYPE pg_features_loaded gauge\npg_features_loaded{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {n}\n\
                          # TYPE pg_feature_capacity gauge\npg_feature_capacity{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {MAX_FEATURES}\n\
                          # TYPE pg_config_info gauge\npg_config_info{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\",config_version=\"{cv}\"}} 1\n\
                          # TYPE pg_uptime_seconds gauge\npg_uptime_seconds{{consumer=\"bot-proxy\",id=\"{id}\",version=\"{v}\"}} {up:.1}\n",
                         v = BUILD_VERSION,
                         r = stats.requests.load(Ordering::Relaxed),
-                        l = stats.loads.load(Ordering::Relaxed),
+                        l = source.loads(&stats.loads),
                         n = t.slots.len(),
                         cv = t.config_version,
                     );
@@ -322,6 +417,23 @@ mod tests {
             Err(LoadError::TooManyFeatures { got, max }) => assert_eq!((got, max), (MAX_FEATURES + 1, MAX_FEATURES)),
             other => panic!("expected TooManyFeatures, got {:?}", other.map(|t| t.slots.len())),
         }
+    }
+
+    #[test]
+    fn checked_loader_rejects_wide_rules() {
+        let p = write_file("wide", 3, INPUT_SLOTS + 1);
+        let raw = fs::read(&p).unwrap();
+        let err = FeatureTable::from_bytes_checked(&raw).err().expect("should reject");
+        assert!(err.contains("input slots"), "{err}");
+        // The naive loader accepts it, which is the CrowdStrike bug.
+        assert!(FeatureTable::from_bytes(&raw).is_ok());
+    }
+
+    #[test]
+    fn checked_loader_rejects_over_capacity() {
+        let raw = fs::read(write_file("cap2", MAX_FEATURES + 1, INPUT_SLOTS)).unwrap();
+        let err = FeatureTable::from_bytes_checked(&raw).err().expect("should reject");
+        assert!(err.contains("exceeds preallocated limit"), "{err}");
     }
 
     #[test]

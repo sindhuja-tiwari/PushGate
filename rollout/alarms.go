@@ -19,8 +19,9 @@ type AlarmConfig struct {
 	// Grace is how long after delivery an instance is ignored, so a normal
 	// reload is not counted as unhealthy.
 	Grace time.Duration
-	// CrashShare fires when this share of exposed instances crashed or are
-	// not serving (at least one instance).
+	// CrashShare fires when this share of exposed instances crashed, are
+	// not serving, or (with the last-known-good library) refused the file
+	// (at least one instance).
 	CrashShare float64
 	// ErrorRate fires when exposed instances fail more than this share of
 	// requests over ErrorWindow, given at least MinRequests requests.
@@ -56,8 +57,11 @@ type signal struct {
 }
 
 // evaluate checks the exposed instances once. It is a breach if either the
-// crash signal or the error-rate signal is over its threshold.
-func evaluate(cfg AlarmConfig, fleet Fleet, errs ErrorSource, exposed map[string]*exposure, now time.Time) (signal, error) {
+// crash signal or the error-rate signal is over its threshold. candidate is
+// the pushed file's config version: an instance whose library rejected it
+// keeps serving the old file and looks healthy, so a rejection counts as a
+// failure too.
+func evaluate(cfg AlarmConfig, fleet Fleet, errs ErrorSource, exposed map[string]*exposure, candidate string, now time.Time) (signal, error) {
 	snap, err := fleet.Snapshot()
 	if err != nil {
 		return signal{}, err
@@ -67,7 +71,7 @@ func evaluate(cfg AlarmConfig, fleet Fleet, errs ErrorSource, exposed map[string
 		live[i.ID] = i
 	}
 
-	considered, unhealthy := 0, 0
+	considered, unhealthy, rejected := 0, 0, 0
 	var example string
 	for id, e := range exposed {
 		if now.Sub(e.deliveredAt) < cfg.Grace {
@@ -78,8 +82,12 @@ func evaluate(cfg AlarmConfig, fleet Fleet, errs ErrorSource, exposed map[string
 		if !ok {
 			continue
 		}
-		if i.Restarts > e.baseline || i.State != registry.StateUp {
+		refused := candidate != "" && i.Rejected == candidate
+		if i.Restarts > e.baseline || i.State != registry.StateUp || i.NotServing || refused {
 			unhealthy++
+			if refused {
+				rejected++
+			}
 			if example == "" {
 				example = describe(i)
 			}
@@ -91,7 +99,11 @@ func evaluate(cfg AlarmConfig, fleet Fleet, errs ErrorSource, exposed map[string
 			need = 1
 		}
 		if unhealthy >= need {
-			return signal{Breach: true, Reason: fmt.Sprintf("crash alarm: %d of %d exposed instances crashed or not serving (e.g. %s)", unhealthy, considered, example)}, nil
+			kind := "crash alarm"
+			if rejected == unhealthy {
+				kind = "rejection alarm"
+			}
+			return signal{Breach: true, Reason: fmt.Sprintf("%s: %d of %d exposed instances crashed, refused the file or are not serving (e.g. %s)", kind, unhealthy, considered, example)}, nil
 		}
 	}
 
@@ -118,6 +130,13 @@ func evaluate(cfg AlarmConfig, fleet Fleet, errs ErrorSource, exposed map[string
 
 func describe(i registry.Instance) string {
 	s := fmt.Sprintf("%s v%d %s", i.ID, i.Version, i.State)
+	if i.Rejected != "" {
+		r := i.RejectReason
+		if len(r) > 160 {
+			r = r[:160] + "…"
+		}
+		return s + ", refused " + i.Rejected + ": " + r
+	}
 	if i.LastPanic != "" {
 		p := i.LastPanic
 		if len(p) > 160 {

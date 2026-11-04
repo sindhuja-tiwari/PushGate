@@ -14,7 +14,10 @@ import (
 // fakeFleet crashes an instance (restart count +1, state backoff) as soon as
 // it holds a file its release cannot load.
 type fakeFleet struct {
-	mu    sync.Mutex
+	// refuse makes instances behave as if they ran the last-known-good
+	// library: a file their release cannot load is refused, not crashed on.
+	refuse bool
+	mu     sync.Mutex
 	insts []registry.Instance
 	files map[string][]byte
 	// breaks reports whether data crashes a given release.
@@ -35,7 +38,12 @@ func (f *fakeFleet) Snapshot() ([]registry.Instance, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	for i := range f.insts {
-		if d := f.files[f.insts[i].ID]; d != nil && f.breaks(f.insts[i].Version, d) {
+		d := f.files[f.insts[i].ID]
+		f.insts[i].Rejected = ""
+		if d != nil && f.breaks(f.insts[i].Version, d) && f.refuse {
+			f.insts[i].State = registry.StateUp
+			f.insts[i].Rejected, f.insts[i].RejectReason = configVersion(d), "breaks a declared limit"
+		} else if d != nil && f.breaks(f.insts[i].Version, d) {
 			f.insts[i].Restarts++
 			f.insts[i].State = registry.StateBackoff
 		} else {
@@ -214,6 +222,32 @@ func TestParseRings(t *testing.T) {
 	for _, bad := range []string{"10,1,100", "1,10", "0,100", "a"} {
 		if _, err := ParseRings(bad); err == nil {
 			t.Errorf("%q should be rejected", bad)
+		}
+	}
+}
+
+// An instance whose library refuses the file stays up and serves the old
+// one. B2 must still treat that as a failed ring, or it would carry the file
+// to 100% while every vulnerable instance quietly serves stale config.
+func TestB2RollsBackOnRejection(t *testing.T) {
+	f := newFakeFleet(400, []int{41, 42, 43, 44}, tooMany)
+	f.refuse = true
+	rn := newRunner(t, f)
+	good := featureFile("good", 110)
+	_ = rn.Store.SetLKG("bot-proxy", good, "seed")
+	for _, i := range f.insts {
+		_ = f.Deliver(i, good)
+	}
+	r, err := rn.Push(context.Background(), fastB2(), "bot-proxy", featureFile("bad", 220))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r.Status != StatusRolledBack || r.Exposed != 4 || !strings.Contains(r.Reason, "rejection alarm") {
+		t.Fatalf("want a rejection alarm and rollback at ring 0, got %s, %d exposed (%s)", r.Status, r.Exposed, r.Reason)
+	}
+	for _, i := range f.insts {
+		if i.Restarts > 0 {
+			t.Fatal("a refusing instance must not count as restarted")
 		}
 	}
 }
