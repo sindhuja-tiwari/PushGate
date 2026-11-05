@@ -1,0 +1,48 @@
+{
+  "name": "growth-past-v41",
+  "kind": "bad",
+  "incident": "Normal growth, old release",
+  "consumer": "bot-proxy",
+  "summary": "Ordinary 18% growth (110 to 130 features). Safe for v42 to v44, fatal for v41, whose table holds 128. The kind of push that looks routine.",
+  "breaks": [
+    "v41"
+  ],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/big.duckdb",
+      "--features",
+      "130"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/big.duckdb",
+      "--out",
+      "{bad}"
+    ]
+  ]
+}

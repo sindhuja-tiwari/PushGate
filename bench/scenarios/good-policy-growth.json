@@ -1,0 +1,28 @@
+{
+  "name": "good-policy-growth",
+  "kind": "good",
+  "incident": "Good push: 5 new projects",
+  "consumer": "go-policy",
+  "summary": "Five new projects (200 to 220 policy rows), all with complete quota blocks. Nothing should hold or roll it back.",
+  "breaks": [],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "policy",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "policy",
+      "--out",
+      "{bad}",
+      "--projects",
+      "55"
+    ]
+  ]
+}

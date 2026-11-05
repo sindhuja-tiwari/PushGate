@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -44,7 +45,29 @@ type runResult struct {
 // sandboxRun starts bin with data as its config file, waits for it to serve,
 // replays requests one at a time and reports what happened. One process,
 // one file, nothing shared with the fleet.
+//
+// The port is picked free and then released before the process binds it, so
+// another process can take it in between. A run that fails to bind is
+// retried on a new port, and /healthz must answer with this run's own id,
+// so the gate never replays traffic against someone else's process.
 func sandboxRun(ctx context.Context, bin string, data []byte, requests []string, decision func([]byte) string) (*runResult, error) {
+	for attempt := 1; ; attempt++ {
+		res, err := sandboxOnce(ctx, bin, data, requests, decision)
+		if err != nil || attempt == bindAttempts || !res.crashed || res.loaded || !bindFailed(res.panic) {
+			return res, err
+		}
+	}
+}
+
+const bindAttempts = 5
+
+var runSeq atomic.Int64
+
+func bindFailed(msg string) bool {
+	return strings.Contains(strings.ToLower(msg), "address already in use")
+}
+
+func sandboxOnce(ctx context.Context, bin string, data []byte, requests []string, decision func([]byte) string) (*runResult, error) {
 	dir, err := os.MkdirTemp("", "pushgate-sandbox-*")
 	if err != nil {
 		return nil, err
@@ -59,7 +82,8 @@ func sandboxRun(ctx context.Context, bin string, data []byte, requests []string,
 		return nil, err
 	}
 
-	cmd := exec.CommandContext(ctx, bin, "--id", "sandbox", "--port", strconv.Itoa(port), "--config", cfg, "--poll-ms", "3600000")
+	id := fmt.Sprintf("sandbox-%d", runSeq.Add(1))
+	cmd := exec.CommandContext(ctx, bin, "--id", id, "--port", strconv.Itoa(port), "--config", cfg, "--poll-ms", "3600000")
 	cmd.Env = append(os.Environ(), "RUST_BACKTRACE=0")
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGKILL}
 	cmd.Stdout = io.Discard
@@ -118,8 +142,9 @@ func sandboxRun(ctx context.Context, bin string, data []byte, requests []string,
 		default:
 		}
 		if resp, err := client.Get(base + "/healthz"); err == nil {
+			body, _ := io.ReadAll(resp.Body)
 			resp.Body.Close()
-			if resp.StatusCode == 200 {
+			if resp.StatusCode == 200 && bytes.Contains(body, []byte(`"id":"`+id+`"`)) {
 				break
 			}
 		}

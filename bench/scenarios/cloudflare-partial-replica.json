@@ -1,0 +1,55 @@
+{
+  "name": "cloudflare-partial-replica",
+  "kind": "bad",
+  "incident": "Cloudflare variant",
+  "consumer": "bot-proxy",
+  "summary": "The same permission change, but the second schema holds only 30 of the 110 feature columns. The file grows to 140 features: under the 200 limit, over v41's 128. Only v41 (5% of the fleet) breaks.",
+  "breaks": [
+    "v41"
+  ],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "grant-r0",
+      "--db",
+      "{work}/producer.duckdb",
+      "--columns",
+      "30"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{bad}"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "revoke-r0",
+      "--db",
+      "{work}/producer.duckdb"
+    ]
+  ]
+}

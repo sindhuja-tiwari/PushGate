@@ -1,0 +1,44 @@
+{
+  "name": "wrong-type-weight",
+  "kind": "bad",
+  "incident": "Type error",
+  "consumer": "bot-proxy",
+  "summary": "One feature's weight is written as a string. The file is valid JSON with the right format, so B0 ships it; the schema (B1 and up) rejects it. Every bot-proxy's typed parser fails and the naive loader panics.",
+  "breaks": [
+    "v41",
+    "v42",
+    "v43",
+    "v44"
+  ],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{bad}",
+      "--corrupt",
+      "string-weight"
+    ]
+  ]
+}

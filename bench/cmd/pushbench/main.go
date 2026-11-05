@@ -27,6 +27,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -44,7 +45,10 @@ const (
 
 // Scenario is one bench/scenarios/*.json file.
 type Scenario struct {
-	Name     string     `json:"name"`
+	Name string `json:"name"`
+	// Kind is "bad" (an incident shape) or "good" (a safe push, which
+	// measures false rollbacks and push delay).
+	Kind     string     `json:"kind"`
 	Incident string     `json:"incident"`
 	Consumer string     `json:"consumer"`
 	Summary  string     `json:"summary"`
@@ -63,6 +67,8 @@ type Sample struct {
 // Run is the measured outcome of one scenario under one strategy.
 type Run struct {
 	Scenario         string          `json:"scenario"`
+	Kind             string          `json:"kind"`
+	Seed             int64           `json:"seed"`
 	Incident         string          `json:"incident"`
 	Strategy         string          `json:"strategy"`
 	Consumer         string          `json:"consumer"`
@@ -98,6 +104,7 @@ func main() {
 	out := flag.String("out", "bench/results/latest.json", "results JSON")
 	md := flag.String("md", "bench/results/latest.md", "results table (Markdown)")
 	manage := flag.Bool("manage", true, "start and stop the fleet and loadgen")
+	seedList := flag.String("seeds", "0", "comma-separated fleet layout seeds; each restarts the fleet with a different release-to-instance assignment (0: the layout's own seed)")
 	replay := flag.Int("replay", 1000, "b3: recorded requests the sandbox replays per release")
 	onBad := flag.String("on-bad-file", "", "run consumers with the last-known-good library: keep_last_good or fail_closed (default: the naive loaders)")
 	flag.Parse()
@@ -146,27 +153,41 @@ func main() {
 	}
 
 	jsonl := filepath.Join(*work, "load.jsonl")
-	if *manage {
-		stop, err := startFleet(*scale, *rate, *onBad, jsonl, traffic)
+	var seeds []int64
+	for _, f := range strings.Split(*seedList, ",") {
+		n, err := strconv.ParseInt(strings.TrimSpace(f), 10, 64)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("bad -seeds: %v", err)
 		}
-		defer stop()
+		seeds = append(seeds, n)
 	}
 
 	var runs []Run
-	for _, sc := range scenarios {
-		for _, s := range strats {
-			log.Printf("== %s / %s", sc.Name, s.Name)
-			r, err := runOne(fleet, sc, s, files[sc.Name][0], files[sc.Name][1], *window, *work, jsonl)
-			if err != nil {
-				log.Fatalf("%s/%s: %v", sc.Name, s.Name, err)
+	for _, seed := range seeds {
+		var stop func()
+		if *manage {
+			log.Printf("== fleet seed %d", seed)
+			if stop, err = startFleet(*scale, *rate, seed, *onBad, jsonl, traffic); err != nil {
+				log.Fatal(err)
 			}
-			r.OnBadFile = *onBad
-			r.Env = map[string]string{"cpus": fmt.Sprint(runtime.NumCPU()), "rate": fmt.Sprint(*rate), "bake": bake.String()}
-			runs = append(runs, *r)
-			log.Printf("   %s: exposed %d/%d, peak failing %d (%.0f%%), %.0f failed instance-seconds, %.1f%% requests failed",
-				r.Push.Status, r.Push.Exposed, r.Fleet, r.PeakFailing, 100*r.PeakFailingShare, r.FailedInstSec, 100*r.ReqFailShare)
+		}
+		for _, sc := range scenarios {
+			for _, s := range strats {
+				log.Printf("== seed %d / %s / %s", seed, sc.Name, s.Name)
+				r, err := runOne(fleet, sc, s, files[sc.Name][0], files[sc.Name][1], *window, *work, jsonl)
+				if err != nil {
+					log.Fatalf("%s/%s: %v", sc.Name, s.Name, err)
+				}
+				r.Seed, r.Kind = seed, sc.Kind
+				r.OnBadFile = *onBad
+				r.Env = map[string]string{"cpus": fmt.Sprint(runtime.NumCPU()), "rate": fmt.Sprint(*rate), "bake": bake.String()}
+				runs = append(runs, *r)
+				log.Printf("   %s: exposed %d/%d, peak failing %d (%.0f%%), %.0f failed instance-seconds, %.1f%% requests failed",
+					r.Push.Status, r.Push.Exposed, r.Fleet, r.PeakFailing, 100*r.PeakFailingShare, r.FailedInstSec, 100*r.ReqFailShare)
+			}
+		}
+		if stop != nil {
+			stop()
 		}
 	}
 
@@ -221,12 +242,15 @@ func runCmd(argv []string, vars map[string]string) error {
 	return nil
 }
 
-func startFleet(scale float64, rate int, onBad, jsonl, traffic string) (func(), error) {
+func startFleet(scale float64, rate int, seed int64, onBad, jsonl, traffic string) (func(), error) {
 	_ = os.Remove(jsonl)
 	_ = os.Remove(traffic)
 	args := []string{"-config", "deploy/fleet.json", "-fresh", "-scale", fmt.Sprint(scale)}
 	if onBad != "" {
 		args = append(args, "-on-bad-file", onBad)
+	}
+	if seed != 0 {
+		args = append(args, "-seed", fmt.Sprint(seed))
 	}
 	fl := exec.Command("bin/fleet", args...)
 	fl.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
@@ -349,9 +373,21 @@ func runOne(fleet rollout.SimFleet, sc Scenario, s rollout.Strategy, good, bad [
 
 	badVersion := configVersionOf(bad)
 	// Sample until the window ends.
+	// A push refused before any delivery cannot hurt the fleet, so the run
+	// ends as soon as that is known instead of watching an idle fleet.
+	var pushed *rollout.Result
 	tick := time.NewTicker(sampleEvery)
+sampling:
 	for time.Since(start) < window {
-		<-tick.C
+		select {
+		case pushed = <-done:
+			done = nil
+			if pushed != nil && pushed.Exposed == 0 {
+				break sampling
+			}
+			continue
+		case <-tick.C:
+		}
 		snap, err := fleet.Snapshot()
 		if err != nil {
 			continue
@@ -375,13 +411,17 @@ func runOne(fleet rollout.SimFleet, sc Scenario, s rollout.Strategy, good, bad [
 		run.Samples = append(run.Samples, Sample{At: time.Since(start).Seconds(), Failing: failing})
 	}
 	tick.Stop()
-	run.Push = <-done
+	end := time.Now()
+	if done != nil {
+		pushed = <-done
+	}
+	run.Push = pushed
 	if run.Push == nil {
 		return nil, fmt.Errorf("push returned no result")
 	}
 	run.ExposedByVersion = run.Push.ExposedByVer
 	summarize(run, sampleEvery)
-	run.ReqOK, run.ReqFail = requestsBetween(jsonl, sc.Consumer, start, start.Add(window))
+	run.ReqOK, run.ReqFail = requestsBetween(jsonl, sc.Consumer, start, end)
 	if t := run.ReqOK + run.ReqFail; t > 0 {
 		run.ReqFailShare = float64(run.ReqFail) / float64(t)
 	}

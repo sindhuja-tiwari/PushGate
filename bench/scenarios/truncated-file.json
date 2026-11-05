@@ -1,0 +1,44 @@
+{
+  "name": "truncated-file",
+  "kind": "bad",
+  "incident": "Half-written file",
+  "consumer": "bot-proxy",
+  "summary": "The producer dies mid-write and the file is cut in half. It is not valid JSON, so even B0's format check refuses it.",
+  "breaks": [
+    "v41",
+    "v42",
+    "v43",
+    "v44"
+  ],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{bad}",
+      "--corrupt",
+      "truncate"
+    ]
+  ]
+}
