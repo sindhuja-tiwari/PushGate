@@ -29,6 +29,10 @@ jobs:
         run: .venv/bin/python scripts/smoke.py --scale 0.2 --rate 500
       - name: PushBench dry run (100 instances, short windows)
         run: bin/pushbench -scale 0.2 -rate 500 -window 15s -bake 4s -out state/bench/ci.json -md state/bench/ci.md
+      - name: PushBench with the last-known-good library (B0 must crash nothing)
+        run: |
+          bin/pushbench -scale 0.2 -rate 500 -window 15s -bake 4s -strategies b0 -on-bad-file keep_last_good -out state/bench/ci-lkg.json -md state/bench/ci-lkg.md
+          python3 -c "import json,sys; runs=json.load(open('state/bench/ci-lkg.json')); bad=[r['scenario'] for r in runs if r['peak_failing']>0]; print('crashed:', bad); sys.exit(1 if bad else 0)"
       - name: Show PushBench table
         if: always()
-        run: cat state/bench/ci.md || true
+        run: cat state/bench/ci.md state/bench/ci-lkg.md || true

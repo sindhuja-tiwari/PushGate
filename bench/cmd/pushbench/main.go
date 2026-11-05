@@ -62,16 +62,20 @@ type Sample struct {
 
 // Run is the measured outcome of one scenario under one strategy.
 type Run struct {
-	Scenario         string            `json:"scenario"`
-	Incident         string            `json:"incident"`
-	Strategy         string            `json:"strategy"`
-	Consumer         string            `json:"consumer"`
-	Fleet            int               `json:"fleet"`
-	Vulnerable       int               `json:"vulnerable"` // instances whose release the bad file breaks
-	Push             *rollout.Result   `json:"push"`
-	WindowS          float64           `json:"window_s"`
-	PeakFailing      int               `json:"peak_failing"`
-	PeakFailingShare float64           `json:"peak_failing_share"`
+	Scenario         string          `json:"scenario"`
+	Incident         string          `json:"incident"`
+	Strategy         string          `json:"strategy"`
+	Consumer         string          `json:"consumer"`
+	Fleet            int             `json:"fleet"`
+	Vulnerable       int             `json:"vulnerable"` // instances whose release the bad file breaks
+	Push             *rollout.Result `json:"push"`
+	WindowS          float64         `json:"window_s"`
+	PeakFailing      int             `json:"peak_failing"`
+	PeakFailingShare float64         `json:"peak_failing_share"`
+	// PeakRefused is the most instances at once whose last-known-good
+	// library refused the bad file (and kept serving, unless fail-closed).
+	PeakRefused      int               `json:"peak_refused"`
+	OnBadFile        string            `json:"on_bad_file,omitempty"`
 	FailedInstSec    float64           `json:"failed_instance_seconds"`
 	ReqOK            int64             `json:"requests_ok"`
 	ReqFail          int64             `json:"requests_failed"`
@@ -95,6 +99,7 @@ func main() {
 	md := flag.String("md", "bench/results/latest.md", "results table (Markdown)")
 	manage := flag.Bool("manage", true, "start and stop the fleet and loadgen")
 	replay := flag.Int("replay", 1000, "b3: recorded requests the sandbox replays per release")
+	onBad := flag.String("on-bad-file", "", "run consumers with the last-known-good library: keep_last_good or fail_closed (default: the naive loaders)")
 	flag.Parse()
 
 	scenarios, err := loadScenarios(*scenarioGlob)
@@ -142,7 +147,7 @@ func main() {
 
 	jsonl := filepath.Join(*work, "load.jsonl")
 	if *manage {
-		stop, err := startFleet(*scale, *rate, jsonl, traffic)
+		stop, err := startFleet(*scale, *rate, *onBad, jsonl, traffic)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -157,6 +162,7 @@ func main() {
 			if err != nil {
 				log.Fatalf("%s/%s: %v", sc.Name, s.Name, err)
 			}
+			r.OnBadFile = *onBad
 			r.Env = map[string]string{"cpus": fmt.Sprint(runtime.NumCPU()), "rate": fmt.Sprint(*rate), "bake": bake.String()}
 			runs = append(runs, *r)
 			log.Printf("   %s: exposed %d/%d, peak failing %d (%.0f%%), %.0f failed instance-seconds, %.1f%% requests failed",
@@ -168,7 +174,7 @@ func main() {
 	if err := registry.WriteAtomic(*out, b); err != nil {
 		log.Fatal(err)
 	}
-	table := markdown(runs, *window, *bake, *rate)
+	table := markdown(runs, *window, *bake, *rate, *onBad)
 	if err := registry.WriteAtomic(*md, []byte(table)); err != nil {
 		log.Fatal(err)
 	}
@@ -215,10 +221,14 @@ func runCmd(argv []string, vars map[string]string) error {
 	return nil
 }
 
-func startFleet(scale float64, rate int, jsonl, traffic string) (func(), error) {
+func startFleet(scale float64, rate int, onBad, jsonl, traffic string) (func(), error) {
 	_ = os.Remove(jsonl)
 	_ = os.Remove(traffic)
-	fl := exec.Command("bin/fleet", "-config", "deploy/fleet.json", "-fresh", "-scale", fmt.Sprint(scale))
+	args := []string{"-config", "deploy/fleet.json", "-fresh", "-scale", fmt.Sprint(scale)}
+	if onBad != "" {
+		args = append(args, "-on-bad-file", onBad)
+	}
+	fl := exec.Command("bin/fleet", args...)
 	fl.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
 	if err := fl.Start(); err != nil {
 		return nil, err
@@ -337,6 +347,7 @@ func runOne(fleet rollout.SimFleet, sc Scenario, s rollout.Strategy, good, bad [
 		done <- r
 	}()
 
+	badVersion := configVersionOf(bad)
 	// Sample until the window ends.
 	tick := time.NewTicker(sampleEvery)
 	for time.Since(start) < window {
@@ -345,15 +356,21 @@ func runOne(fleet rollout.SimFleet, sc Scenario, s rollout.Strategy, good, bad [
 		if err != nil {
 			continue
 		}
-		failing := 0
+		failing, refused := 0, 0
 		for _, i := range snap {
 			if i.Consumer != sc.Consumer {
 				continue
 			}
-			if i.State != registry.StateUp || i.Restarts > prev[i.ID] {
+			if i.State != registry.StateUp || i.Restarts > prev[i.ID] || i.NotServing {
 				failing++
 			}
+			if i.Rejected != "" && i.Rejected == badVersion {
+				refused++
+			}
 			prev[i.ID] = i.Restarts
+		}
+		if refused > run.PeakRefused {
+			run.PeakRefused = refused
 		}
 		run.Samples = append(run.Samples, Sample{At: time.Since(start).Seconds(), Failing: failing})
 	}
@@ -432,13 +449,18 @@ func requestsBetween(path, consumer string, from, to time.Time) (ok, fail int64)
 	return ok, fail
 }
 
-func markdown(runs []Run, window, bake time.Duration, rate int) string {
+func markdown(runs []Run, window, bake time.Duration, rate int, onBad string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# PushBench results\n\n")
 	fmt.Fprintf(&b, "Generated %s on %d CPUs. Traffic %d req/s. Each run watched the fleet for %s after the push. B2 bake time %s per ring (rings 1%%, 10%%, 100%%).\n\n",
 		time.Now().UTC().Format("2006-01-02 15:04 MST"), runtime.NumCPU(), rate, window, bake)
-	b.WriteString("| Incident | Strategy | Outcome | Gate | Got the bad file | Peak failing | Failed instance-seconds | Failed requests | Alarm | Recovered |\n")
-	b.WriteString("|---|---|---|---|---|---|---|---|---|---|\n")
+	if onBad == "" {
+		b.WriteString("Consumers: original naive loaders (no last-known-good library).\n\n")
+	} else {
+		fmt.Fprintf(&b, "Consumers: last-known-good library on, mode %s.\n\n", onBad)
+	}
+	b.WriteString("| Incident | Strategy | Outcome | Gate | Got the bad file | Refused it | Peak failing | Failed instance-seconds | Failed requests | Alarm | Recovered |\n")
+	b.WriteString("|---|---|---|---|---|---|---|---|---|---|---|\n")
 	for _, r := range runs {
 		alarm := "–"
 		if r.Push.TimeToAlarm > 0 {
@@ -456,10 +478,15 @@ func markdown(runs []Run, window, bake time.Duration, rate int) string {
 		if r.Push.Status == rollout.StatusRejected {
 			outcome = "rejected before delivery"
 		}
-		fmt.Fprintf(&b, "| %s | %s | %s | %s | %d of %d (%.0f%%) | %d (%.0f%%) | %.0f | %.1f%% | %s | %s |\n",
+		refused := "–"
+		if r.OnBadFile != "" {
+			refused = fmt.Sprint(r.PeakRefused)
+		}
+		fmt.Fprintf(&b, "| %s | %s | %s | %s | %d of %d (%.0f%%) | %s | %d (%.0f%%) | %.0f | %.1f%% | %s | %s |\n",
 			r.Incident, strings.ToUpper(r.Strategy), outcome, gateCell(r.Push), r.Push.Exposed, r.Fleet, 100*r.Push.ExposedPeak,
-			r.PeakFailing, 100*r.PeakFailingShare, r.FailedInstSec, 100*r.ReqFailShare, alarm, rec)
+			refused, r.PeakFailing, 100*r.PeakFailingShare, r.FailedInstSec, 100*r.ReqFailShare, alarm, rec)
 	}
+	b.WriteString("\nRefused it: the most instances at once whose last-known-good library rejected the bad file. With keep_last_good they keep serving the old file, so they are not counted as failing; with fail_closed they stop answering and are.\n")
 	b.WriteString("\nGate: what B3's pre-exposure gate decided, which layer held the file, and how long the gate took. B3-DIFF and B3-SANDBOX run one layer each.\n")
 	b.WriteString("\nB0 and B1 have no health gate, so nothing rolls them back inside the window. In the real incidents people did, hours later. Failed instance-seconds for B0 and B1 therefore grow with the window length; compare strategies within one window, not across windows.\n")
 	return b.String()
@@ -492,4 +519,12 @@ func gateCell(r *rollout.Result) string {
 		return fmt.Sprintf("passed, %.1f s", secs)
 	}
 	return "–"
+}
+
+func configVersionOf(data []byte) string {
+	var head struct {
+		ConfigVersion string `json:"config_version"`
+	}
+	_ = json.Unmarshal(data, &head)
+	return head.ConfigVersion
 }

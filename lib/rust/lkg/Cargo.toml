@@ -1,0 +1,10 @@
+[package]
+name = "lkg"
+version = "0.1.0"
+edition = "2021"
+description = "PushGate consumer-side safety net: a config loader that keeps the last known good file. Same behavior and status format as lib/go/lkg."
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

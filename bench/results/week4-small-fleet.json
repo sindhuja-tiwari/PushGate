@@ -1,0 +1,2496 @@
+[
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b0",
+    "consumer": "bot-proxy",
+    "fleet": 80,
+    "vulnerable": 80,
+    "push": {
+      "id": "20261104T092505.696Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b0",
+      "config_version": "feat-20261104T092452Z-43f5d134d6",
+      "started": "2026-11-04T09:25:05.696255229Z",
+      "status": "completed",
+      "fleet": 80,
+      "exposed": 80,
+      "exposed_share": 1,
+      "time_to_full_ms": 14,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 14,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 80,
+          "detail": "80 of 80 instances now have the file"
+        },
+        {
+          "at_ms": 14,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 4,
+        "v42": 12,
+        "v43": 24,
+        "v44": 40
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 80,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 7555,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.502157789,
+        "failing": 0
+      },
+      {
+        "at_s": 1.00204547,
+        "failing": 0
+      },
+      {
+        "at_s": 1.5021350610000002,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001530633,
+        "failing": 0
+      },
+      {
+        "at_s": 2.5018867399999998,
+        "failing": 0
+      },
+      {
+        "at_s": 3.002509473,
+        "failing": 0
+      },
+      {
+        "at_s": 3.5025438209999997,
+        "failing": 0
+      },
+      {
+        "at_s": 4.002721976,
+        "failing": 0
+      },
+      {
+        "at_s": 4.50267444,
+        "failing": 0
+      },
+      {
+        "at_s": 5.002957172,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501853148,
+        "failing": 0
+      },
+      {
+        "at_s": 6.002183485,
+        "failing": 0
+      },
+      {
+        "at_s": 6.503147941,
+        "failing": 0
+      },
+      {
+        "at_s": 7.001797747,
+        "failing": 0
+      },
+      {
+        "at_s": 7.502863679,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001632632,
+        "failing": 0
+      },
+      {
+        "at_s": 8.502588471,
+        "failing": 0
+      },
+      {
+        "at_s": 9.002653394,
+        "failing": 0
+      },
+      {
+        "at_s": 9.503243591,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001996374,
+        "failing": 0
+      },
+      {
+        "at_s": 10.502630114,
+        "failing": 0
+      },
+      {
+        "at_s": 11.003017854,
+        "failing": 0
+      },
+      {
+        "at_s": 11.501669287,
+        "failing": 0
+      },
+      {
+        "at_s": 12.002526814,
+        "failing": 0
+      },
+      {
+        "at_s": 12.502375243,
+        "failing": 0
+      },
+      {
+        "at_s": 13.002280774,
+        "failing": 0
+      },
+      {
+        "at_s": 13.502927143,
+        "failing": 0
+      },
+      {
+        "at_s": 14.001629847,
+        "failing": 0
+      },
+      {
+        "at_s": 14.502890181,
+        "failing": 0
+      },
+      {
+        "at_s": 15.001607232,
+        "failing": 0
+      },
+      {
+        "at_s": 15.503172455,
+        "failing": 0
+      },
+      {
+        "at_s": 16.001608023,
+        "failing": 0
+      },
+      {
+        "at_s": 16.502886304,
+        "failing": 0
+      },
+      {
+        "at_s": 17.001977471,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501882481,
+        "failing": 0
+      },
+      {
+        "at_s": 18.002038931,
+        "failing": 0
+      },
+      {
+        "at_s": 18.502580376,
+        "failing": 0
+      },
+      {
+        "at_s": 19.002311729,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501898767,
+        "failing": 0
+      },
+      {
+        "at_s": 20.003036445,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 4,
+      "v42": 12,
+      "v43": 24,
+      "v44": 40
+    },
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b2",
+    "consumer": "bot-proxy",
+    "fleet": 80,
+    "vulnerable": 80,
+    "push": {
+      "id": "20261104T092531.735Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b2",
+      "config_version": "feat-20261104T092452Z-43f5d134d6",
+      "started": "2026-11-04T09:25:31.735726693Z",
+      "status": "rolled_back",
+      "reason": "rejection alarm: 1 of 1 exposed instances crashed, refused the file or are not serving (e.g. bp-ap-south-009 v44 up, refused feat-20261104T092452Z-43f5d134d6: feature count 220 exceeds preallocated limit 200)",
+      "fleet": 80,
+      "exposed": 1,
+      "exposed_share": 0.0125,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 2010,
+      "time_to_revert_ms": 2011,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 4,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 9,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 1,
+          "detail": "1 of 80 instances now have the file"
+        },
+        {
+          "at_ms": 2010,
+          "kind": "alarm",
+          "detail": "rejection alarm: 1 of 1 exposed instances crashed, refused the file or are not serving (e.g. bp-ap-south-009 v44 up, refused feat-20261104T092452Z-43f5d134d6: feature count 220 exceeds preallocated limit 200)"
+        },
+        {
+          "at_ms": 2011,
+          "kind": "rollback_delivered",
+          "count": 1,
+          "detail": "last known good feat-20261104T092452Z-94ed8b2c00"
+        },
+        {
+          "at_ms": 2011,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v44": 1
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 1,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 7618,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.502424265,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001500633,
+        "failing": 0
+      },
+      {
+        "at_s": 1.501346077,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001705972,
+        "failing": 0
+      },
+      {
+        "at_s": 2.501741339,
+        "failing": 0
+      },
+      {
+        "at_s": 3.002016506,
+        "failing": 0
+      },
+      {
+        "at_s": 3.502282911,
+        "failing": 0
+      },
+      {
+        "at_s": 4.002053416,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501824969,
+        "failing": 0
+      },
+      {
+        "at_s": 5.001888198,
+        "failing": 0
+      },
+      {
+        "at_s": 5.502140148,
+        "failing": 0
+      },
+      {
+        "at_s": 6.001353394,
+        "failing": 0
+      },
+      {
+        "at_s": 6.501479657,
+        "failing": 0
+      },
+      {
+        "at_s": 7.001382929,
+        "failing": 0
+      },
+      {
+        "at_s": 7.5019160110000005,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001442896,
+        "failing": 0
+      },
+      {
+        "at_s": 8.502301721,
+        "failing": 0
+      },
+      {
+        "at_s": 9.001984848,
+        "failing": 0
+      },
+      {
+        "at_s": 9.502005714,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001832306,
+        "failing": 0
+      },
+      {
+        "at_s": 10.50169839,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001608766,
+        "failing": 0
+      },
+      {
+        "at_s": 11.502390258,
+        "failing": 0
+      },
+      {
+        "at_s": 12.0019797,
+        "failing": 0
+      },
+      {
+        "at_s": 12.502329249,
+        "failing": 0
+      },
+      {
+        "at_s": 13.002017028,
+        "failing": 0
+      },
+      {
+        "at_s": 13.501692641,
+        "failing": 0
+      },
+      {
+        "at_s": 14.002409626,
+        "failing": 0
+      },
+      {
+        "at_s": 14.502648037,
+        "failing": 0
+      },
+      {
+        "at_s": 15.002445139,
+        "failing": 0
+      },
+      {
+        "at_s": 15.502154058,
+        "failing": 0
+      },
+      {
+        "at_s": 16.00175175,
+        "failing": 0
+      },
+      {
+        "at_s": 16.501932246,
+        "failing": 0
+      },
+      {
+        "at_s": 17.001468095,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501651708,
+        "failing": 0
+      },
+      {
+        "at_s": 18.001728444,
+        "failing": 0
+      },
+      {
+        "at_s": 18.502033201,
+        "failing": 0
+      },
+      {
+        "at_s": 19.002262495,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501922058,
+        "failing": 0
+      },
+      {
+        "at_s": 20.002198082,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v44": 1
+    },
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "cloudflare-duplicate-rows",
+    "incident": "Cloudflare, 18 Nov 2025",
+    "strategy": "b3",
+    "consumer": "bot-proxy",
+    "fleet": 80,
+    "vulnerable": 80,
+    "push": {
+      "id": "20261104T092557.859Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b3",
+      "config_version": "feat-20261104T092452Z-43f5d134d6",
+      "started": "2026-11-04T09:25:57.859024341Z",
+      "status": "rejected",
+      "reason": "gate check failed: Held: v41 (4 of 80 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128; v42, v43, v44 (76 of 80 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200; feature count 220 vs 110 in last known good (+100%); 220 rows share a feature name with another row (e.g. feat_000); last known good had 0",
+      "fleet": 0,
+      "exposed": 0,
+      "exposed_share": 0,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 3,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 192,
+          "kind": "validate_fail",
+          "detail": "gate: Held: v41 (4 of 80 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128; v42, v43, v44 (76 of 80 instances) crashes loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200; feature count 220 vs 110 in last known good (+100%); 220 rows share a feature name with another row (e.g. feat_000); last known good had 0"
+        },
+        {
+          "at_ms": 192,
+          "kind": "finish",
+          "detail": "rejected"
+        }
+      ],
+      "exposed_by_version": {},
+      "checks": {
+        "gate": {
+          "consumer": "bot-proxy",
+          "candidate": "feat-20261104T092452Z-43f5d134d6",
+          "last_known_good": "feat-20261104T092452Z-94ed8b2c00",
+          "layers": [
+            "diff",
+            "sandbox"
+          ],
+          "verdict": "hold",
+          "findings": [
+            {
+              "layer": "diff",
+              "check": "row-count",
+              "severity": "hold",
+              "detail": "feature count 220 vs 110 in last known good (+100%)"
+            },
+            {
+              "layer": "diff",
+              "check": "duplicates",
+              "severity": "hold",
+              "detail": "220 rows share a feature name with another row (e.g. feat_000); last known good had 0"
+            },
+            {
+              "layer": "diff",
+              "check": "drift",
+              "severity": "info",
+              "detail": "weight distribution PSI 0.000"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 41,
+              "detail": "v41 (4 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 42,
+              "detail": "v42 (12 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 43,
+              "detail": "v43 (24 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 44,
+              "detail": "v44 (40 instances) crashed loading the file: panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "cause": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200"
+            }
+          ],
+          "versions": [
+            {
+              "version": 41,
+              "instances": 4,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 128",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 0.575,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3544
+            },
+            {
+              "version": 42,
+              "instances": 12,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 0.619,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3452
+            },
+            {
+              "version": 43,
+              "instances": 24,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 0.668,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3448
+            },
+            {
+              "version": 44,
+              "instances": 40,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panicked at src/main.rs:232:29: failed to load \u003cfile\u003e: feature count 220 exceeds preallocated limit 200",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 0.516,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3492
+            }
+          ],
+          "duration_ms": 189
+        }
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 0,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 7648,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.501849107,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001371976,
+        "failing": 0
+      },
+      {
+        "at_s": 1.5019741629999999,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001593503,
+        "failing": 0
+      },
+      {
+        "at_s": 2.502312274,
+        "failing": 0
+      },
+      {
+        "at_s": 3.001763093,
+        "failing": 0
+      },
+      {
+        "at_s": 3.501972381,
+        "failing": 0
+      },
+      {
+        "at_s": 4.002050014,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501593005,
+        "failing": 0
+      },
+      {
+        "at_s": 5.002331585,
+        "failing": 0
+      },
+      {
+        "at_s": 5.5016585639999995,
+        "failing": 0
+      },
+      {
+        "at_s": 6.001862828,
+        "failing": 0
+      },
+      {
+        "at_s": 6.501411398,
+        "failing": 0
+      },
+      {
+        "at_s": 7.002090537,
+        "failing": 0
+      },
+      {
+        "at_s": 7.501322645,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001595793,
+        "failing": 0
+      },
+      {
+        "at_s": 8.502365364,
+        "failing": 0
+      },
+      {
+        "at_s": 9.002520997,
+        "failing": 0
+      },
+      {
+        "at_s": 9.501363691,
+        "failing": 0
+      },
+      {
+        "at_s": 10.0021396,
+        "failing": 0
+      },
+      {
+        "at_s": 10.501741686999999,
+        "failing": 0
+      },
+      {
+        "at_s": 11.002314725,
+        "failing": 0
+      },
+      {
+        "at_s": 11.502096731,
+        "failing": 0
+      },
+      {
+        "at_s": 12.001618011,
+        "failing": 0
+      },
+      {
+        "at_s": 12.502117269,
+        "failing": 0
+      },
+      {
+        "at_s": 13.001655332,
+        "failing": 0
+      },
+      {
+        "at_s": 13.502775703,
+        "failing": 0
+      },
+      {
+        "at_s": 14.001403708,
+        "failing": 0
+      },
+      {
+        "at_s": 14.501745798,
+        "failing": 0
+      },
+      {
+        "at_s": 15.001335422,
+        "failing": 0
+      },
+      {
+        "at_s": 15.501733496,
+        "failing": 0
+      },
+      {
+        "at_s": 16.001275791,
+        "failing": 0
+      },
+      {
+        "at_s": 16.501341342,
+        "failing": 0
+      },
+      {
+        "at_s": 17.002053939,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501311711,
+        "failing": 0
+      },
+      {
+        "at_s": 18.002467717,
+        "failing": 0
+      },
+      {
+        "at_s": 18.501730536,
+        "failing": 0
+      },
+      {
+        "at_s": 19.001700833,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501935988,
+        "failing": 0
+      },
+      {
+        "at_s": 20.002258709,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {},
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b0",
+    "consumer": "bot-proxy",
+    "fleet": 80,
+    "vulnerable": 40,
+    "push": {
+      "id": "20261104T092623.894Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b0",
+      "config_version": "feat-20261104T092453Z-90c598411e",
+      "started": "2026-11-04T09:26:23.894572398Z",
+      "status": "completed",
+      "fleet": 80,
+      "exposed": 80,
+      "exposed_share": 1,
+      "time_to_full_ms": 11,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 11,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 80,
+          "detail": "80 of 80 instances now have the file"
+        },
+        {
+          "at_ms": 11,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 4,
+        "v42": 12,
+        "v43": 24,
+        "v44": 40
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 40,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 7627,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.501699535,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001779725,
+        "failing": 0
+      },
+      {
+        "at_s": 1.501978646,
+        "failing": 0
+      },
+      {
+        "at_s": 2.002031093,
+        "failing": 0
+      },
+      {
+        "at_s": 2.501895869,
+        "failing": 0
+      },
+      {
+        "at_s": 3.002234451,
+        "failing": 0
+      },
+      {
+        "at_s": 3.501445644,
+        "failing": 0
+      },
+      {
+        "at_s": 4.001691011,
+        "failing": 0
+      },
+      {
+        "at_s": 4.502129033,
+        "failing": 0
+      },
+      {
+        "at_s": 5.002836183,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501541069,
+        "failing": 0
+      },
+      {
+        "at_s": 6.002389546,
+        "failing": 0
+      },
+      {
+        "at_s": 6.502143105,
+        "failing": 0
+      },
+      {
+        "at_s": 7.002178689,
+        "failing": 0
+      },
+      {
+        "at_s": 7.501899639,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001577333,
+        "failing": 0
+      },
+      {
+        "at_s": 8.502419244,
+        "failing": 0
+      },
+      {
+        "at_s": 9.002254029,
+        "failing": 0
+      },
+      {
+        "at_s": 9.502637386,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001408945,
+        "failing": 0
+      },
+      {
+        "at_s": 10.502166447,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001878095,
+        "failing": 0
+      },
+      {
+        "at_s": 11.501545067,
+        "failing": 0
+      },
+      {
+        "at_s": 12.002260292,
+        "failing": 0
+      },
+      {
+        "at_s": 12.501979156,
+        "failing": 0
+      },
+      {
+        "at_s": 13.002256677,
+        "failing": 0
+      },
+      {
+        "at_s": 13.502589596,
+        "failing": 0
+      },
+      {
+        "at_s": 14.00147205,
+        "failing": 0
+      },
+      {
+        "at_s": 14.502278545,
+        "failing": 0
+      },
+      {
+        "at_s": 15.002090654,
+        "failing": 0
+      },
+      {
+        "at_s": 15.501869179,
+        "failing": 0
+      },
+      {
+        "at_s": 16.001698932,
+        "failing": 0
+      },
+      {
+        "at_s": 16.501389895,
+        "failing": 0
+      },
+      {
+        "at_s": 17.002112572,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501896699,
+        "failing": 0
+      },
+      {
+        "at_s": 18.002026311,
+        "failing": 0
+      },
+      {
+        "at_s": 18.501461116,
+        "failing": 0
+      },
+      {
+        "at_s": 19.002260362,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501904996,
+        "failing": 0
+      },
+      {
+        "at_s": 20.002107291,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 4,
+      "v42": 12,
+      "v43": 24,
+      "v44": 40
+    },
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b2",
+    "consumer": "bot-proxy",
+    "fleet": 80,
+    "vulnerable": 40,
+    "push": {
+      "id": "20261104T092650.009Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b2",
+      "config_version": "feat-20261104T092453Z-90c598411e",
+      "started": "2026-11-04T09:26:50.009538558Z",
+      "status": "rolled_back",
+      "reason": "rejection alarm: 3 of 8 exposed instances crashed, refused the file or are not serving (e.g. bp-us-west-019 v42 up, refused feat-20261104T092453Z-90c598411e: feature 0 (feat_000) has 21 match fields; this release reads 20 input slots)",
+      "fleet": 80,
+      "exposed": 8,
+      "exposed_share": 0.1,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 8010,
+      "time_to_revert_ms": 8012,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 2,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 4,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 1,
+          "detail": "1 of 80 instances now have the file"
+        },
+        {
+          "at_ms": 5006,
+          "kind": "bake_ok",
+          "ring": 1,
+          "detail": "healthy for 5s"
+        },
+        {
+          "at_ms": 5008,
+          "kind": "ring_delivered",
+          "ring": 10,
+          "count": 7,
+          "detail": "8 of 80 instances now have the file"
+        },
+        {
+          "at_ms": 8010,
+          "kind": "alarm",
+          "detail": "rejection alarm: 3 of 8 exposed instances crashed, refused the file or are not serving (e.g. bp-us-west-019 v42 up, refused feat-20261104T092453Z-90c598411e: feature 0 (feat_000) has 21 match fields; this release reads 20 input slots)"
+        },
+        {
+          "at_ms": 8012,
+          "kind": "rollback_delivered",
+          "count": 8,
+          "detail": "last known good feat-20261104T092453Z-94ed8b2c00"
+        },
+        {
+          "at_ms": 8012,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v42": 1,
+        "v43": 2,
+        "v44": 5
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 3,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 7569,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.501286284,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001515974,
+        "failing": 0
+      },
+      {
+        "at_s": 1.501236536,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001510643,
+        "failing": 0
+      },
+      {
+        "at_s": 2.501514931,
+        "failing": 0
+      },
+      {
+        "at_s": 3.002049664,
+        "failing": 0
+      },
+      {
+        "at_s": 3.50134,
+        "failing": 0
+      },
+      {
+        "at_s": 4.001832275,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501262273,
+        "failing": 0
+      },
+      {
+        "at_s": 5.001472367,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501315163,
+        "failing": 0
+      },
+      {
+        "at_s": 6.002025766,
+        "failing": 0
+      },
+      {
+        "at_s": 6.50116788,
+        "failing": 0
+      },
+      {
+        "at_s": 7.001444394,
+        "failing": 0
+      },
+      {
+        "at_s": 7.50110302,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001628155,
+        "failing": 0
+      },
+      {
+        "at_s": 8.501215808,
+        "failing": 0
+      },
+      {
+        "at_s": 9.001505274,
+        "failing": 0
+      },
+      {
+        "at_s": 9.502041093,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001502425,
+        "failing": 0
+      },
+      {
+        "at_s": 10.502204279,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001486853,
+        "failing": 0
+      },
+      {
+        "at_s": 11.502044578,
+        "failing": 0
+      },
+      {
+        "at_s": 12.002052948,
+        "failing": 0
+      },
+      {
+        "at_s": 12.501228116,
+        "failing": 0
+      },
+      {
+        "at_s": 13.001170756,
+        "failing": 0
+      },
+      {
+        "at_s": 13.501139833,
+        "failing": 0
+      },
+      {
+        "at_s": 14.001160351,
+        "failing": 0
+      },
+      {
+        "at_s": 14.501130163,
+        "failing": 0
+      },
+      {
+        "at_s": 15.001372438,
+        "failing": 0
+      },
+      {
+        "at_s": 15.501175985,
+        "failing": 0
+      },
+      {
+        "at_s": 16.001184745,
+        "failing": 0
+      },
+      {
+        "at_s": 16.501219877,
+        "failing": 0
+      },
+      {
+        "at_s": 17.001243007,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501528586,
+        "failing": 0
+      },
+      {
+        "at_s": 18.003176191,
+        "failing": 0
+      },
+      {
+        "at_s": 18.501486409,
+        "failing": 0
+      },
+      {
+        "at_s": 19.002030186,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501460115,
+        "failing": 0
+      },
+      {
+        "at_s": 20.001476326,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v42": 1,
+      "v43": 2,
+      "v44": 5
+    },
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "crowdstrike-extra-field",
+    "incident": "CrowdStrike, 19 Jul 2024",
+    "strategy": "b3",
+    "consumer": "bot-proxy",
+    "fleet": 80,
+    "vulnerable": 40,
+    "push": {
+      "id": "20261104T092716.126Z-bot-proxy",
+      "consumer": "bot-proxy",
+      "strategy": "b3",
+      "config_version": "feat-20261104T092453Z-90c598411e",
+      "started": "2026-11-04T09:27:16.126780514Z",
+      "status": "rejected",
+      "reason": "gate check failed: Held: v41, v42, v43 (40 of 80 instances) crashes on replayed traffic: panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20 (also 1 warning(s): 5 rules use a 21-field template; last known good only has [20]-field templates)",
+      "fleet": 0,
+      "exposed": 0,
+      "exposed_share": 0,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 1,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 229,
+          "kind": "validate_fail",
+          "detail": "gate: Held: v41, v42, v43 (40 of 80 instances) crashes on replayed traffic: panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20 (also 1 warning(s): 5 rules use a 21-field template; last known good only has [20]-field templates)"
+        },
+        {
+          "at_ms": 229,
+          "kind": "finish",
+          "detail": "rejected"
+        }
+      ],
+      "exposed_by_version": {},
+      "checks": {
+        "gate": {
+          "consumer": "bot-proxy",
+          "candidate": "feat-20261104T092453Z-90c598411e",
+          "last_known_good": "feat-20261104T092453Z-94ed8b2c00",
+          "layers": [
+            "diff",
+            "sandbox"
+          ],
+          "verdict": "hold",
+          "findings": [
+            {
+              "layer": "diff",
+              "check": "row-count",
+              "severity": "info",
+              "detail": "feature count 110 vs 110 in last known good (+0%)"
+            },
+            {
+              "layer": "diff",
+              "check": "new-shape",
+              "severity": "warn",
+              "detail": "5 rules use a 21-field template; last known good only has [20]-field templates"
+            },
+            {
+              "layer": "diff",
+              "check": "drift",
+              "severity": "info",
+              "detail": "weight distribution PSI 0.000"
+            },
+            {
+              "layer": "sandbox",
+              "check": "replay",
+              "severity": "hold",
+              "version": 41,
+              "detail": "v41 (4 instances) crashed on replayed request 1 of 1000 (/score?f0=safari\u0026f1=GET\u0026f2=JP\u0026f3=university\u0026f4=v1\u0026f5=v0\u0026f...): panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "cause": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20"
+            },
+            {
+              "layer": "sandbox",
+              "check": "replay",
+              "severity": "hold",
+              "version": 42,
+              "detail": "v42 (12 instances) crashed on replayed request 1 of 1000 (/score?f0=safari\u0026f1=GET\u0026f2=JP\u0026f3=university\u0026f4=v1\u0026f5=v0\u0026f...): panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "cause": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20"
+            },
+            {
+              "layer": "sandbox",
+              "check": "replay",
+              "severity": "hold",
+              "version": 43,
+              "detail": "v43 (24 instances) crashed on replayed request 1 of 1000 (/score?f0=safari\u0026f1=GET\u0026f2=JP\u0026f3=university\u0026f4=v1\u0026f5=v0\u0026f...): panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "cause": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20"
+            }
+          ],
+          "versions": [
+            {
+              "version": 41,
+              "instances": 4,
+              "loaded": true,
+              "crashed": true,
+              "crashed_on_request": 1,
+              "request": "/score?f0=safari\u0026f1=GET\u0026f2=JP\u0026f3=university\u0026f4=v1\u0026f5=v0\u0026f6=v0\u0026f7=v0\u0026f8=v1\u0026f9=v1\u0026f10=v1\u0026f11=v0\u0026f12=v0\u0026f13=v0\u0026f14=v1\u0026f15=v1\u0026f16=v1\u0026f17=v0\u0026f18=v0\u0026f19=v1\u0026f20=v0",
+              "panic": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 0.858,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3536
+            },
+            {
+              "version": 42,
+              "instances": 12,
+              "loaded": true,
+              "crashed": true,
+              "crashed_on_request": 1,
+              "request": "/score?f0=safari\u0026f1=GET\u0026f2=JP\u0026f3=university\u0026f4=v1\u0026f5=v0\u0026f6=v0\u0026f7=v0\u0026f8=v1\u0026f9=v1\u0026f10=v1\u0026f11=v0\u0026f12=v0\u0026f13=v0\u0026f14=v1\u0026f15=v1\u0026f16=v1\u0026f17=v0\u0026f18=v0\u0026f19=v1\u0026f20=v0",
+              "panic": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 0.893,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3384
+            },
+            {
+              "version": 43,
+              "instances": 24,
+              "loaded": true,
+              "crashed": true,
+              "crashed_on_request": 1,
+              "request": "/score?f0=safari\u0026f1=GET\u0026f2=JP\u0026f3=university\u0026f4=v1\u0026f5=v0\u0026f6=v0\u0026f7=v0\u0026f8=v1\u0026f9=v1\u0026f10=v1\u0026f11=v0\u0026f12=v0\u0026f13=v0\u0026f14=v1\u0026f15=v1\u0026f16=v1\u0026f17=v0\u0026f18=v0\u0026f19=v1\u0026f20=v0",
+              "panic": "panicked at src/main.rs:131:20: index out of bounds: the len is 20 but the index is 20",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.004,
+              "rss_kb": 0,
+              "lkg_rss_kb": 3468
+            },
+            {
+              "version": 44,
+              "instances": 40,
+              "loaded": true,
+              "crashed": false,
+              "requests": 1000,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.126,
+              "p99_ms": 1.059,
+              "lkg_p99_ms": 0.847,
+              "rss_kb": 3488,
+              "lkg_rss_kb": 3524
+            }
+          ],
+          "duration_ms": 227
+        }
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 0,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 7568,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.50240508,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001790363,
+        "failing": 0
+      },
+      {
+        "at_s": 1.50137436,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001955558,
+        "failing": 0
+      },
+      {
+        "at_s": 2.501761887,
+        "failing": 0
+      },
+      {
+        "at_s": 3.001494232,
+        "failing": 0
+      },
+      {
+        "at_s": 3.502117757,
+        "failing": 0
+      },
+      {
+        "at_s": 4.001806221,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501413806,
+        "failing": 0
+      },
+      {
+        "at_s": 5.002752713,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501253436,
+        "failing": 0
+      },
+      {
+        "at_s": 6.001863799,
+        "failing": 0
+      },
+      {
+        "at_s": 6.501373751,
+        "failing": 0
+      },
+      {
+        "at_s": 7.002298646,
+        "failing": 0
+      },
+      {
+        "at_s": 7.502112924,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001315094,
+        "failing": 0
+      },
+      {
+        "at_s": 8.502092248,
+        "failing": 0
+      },
+      {
+        "at_s": 9.00191846,
+        "failing": 0
+      },
+      {
+        "at_s": 9.50171063,
+        "failing": 0
+      },
+      {
+        "at_s": 10.002160741,
+        "failing": 0
+      },
+      {
+        "at_s": 10.501240377,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001550616,
+        "failing": 0
+      },
+      {
+        "at_s": 11.502490697,
+        "failing": 0
+      },
+      {
+        "at_s": 12.001198229,
+        "failing": 0
+      },
+      {
+        "at_s": 12.501331778,
+        "failing": 0
+      },
+      {
+        "at_s": 13.001341022,
+        "failing": 0
+      },
+      {
+        "at_s": 13.501404971,
+        "failing": 0
+      },
+      {
+        "at_s": 14.001267945,
+        "failing": 0
+      },
+      {
+        "at_s": 14.501352759,
+        "failing": 0
+      },
+      {
+        "at_s": 15.001926488,
+        "failing": 0
+      },
+      {
+        "at_s": 15.501539824,
+        "failing": 0
+      },
+      {
+        "at_s": 16.00184909,
+        "failing": 0
+      },
+      {
+        "at_s": 16.5019888,
+        "failing": 0
+      },
+      {
+        "at_s": 17.002425906,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501363037,
+        "failing": 0
+      },
+      {
+        "at_s": 18.001241635,
+        "failing": 0
+      },
+      {
+        "at_s": 18.501554535,
+        "failing": 0
+      },
+      {
+        "at_s": 19.001288544,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501436216,
+        "failing": 0
+      },
+      {
+        "at_s": 20.002101725,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {},
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b0",
+    "consumer": "go-policy",
+    "fleet": 20,
+    "vulnerable": 12,
+    "push": {
+      "id": "20261104T092742.236Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b0",
+      "config_version": "pol-20261104T092453Z-8d717807c3",
+      "started": "2026-11-04T09:27:42.236137138Z",
+      "status": "completed",
+      "fleet": 20,
+      "exposed": 20,
+      "exposed_share": 1,
+      "time_to_full_ms": 4,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 4,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 20,
+          "detail": "20 of 20 instances now have the file"
+        },
+        {
+          "at_ms": 4,
+          "kind": "finish",
+          "detail": "completed"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 4,
+        "v42": 4,
+        "v43": 4,
+        "v44": 8
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 12,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 1880,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.501276695,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001870038,
+        "failing": 0
+      },
+      {
+        "at_s": 1.502027996,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001641862,
+        "failing": 0
+      },
+      {
+        "at_s": 2.50161986,
+        "failing": 0
+      },
+      {
+        "at_s": 3.001176753,
+        "failing": 0
+      },
+      {
+        "at_s": 3.501776155,
+        "failing": 0
+      },
+      {
+        "at_s": 4.001310714,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501796959,
+        "failing": 0
+      },
+      {
+        "at_s": 5.00132966,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501820926,
+        "failing": 0
+      },
+      {
+        "at_s": 6.002084718,
+        "failing": 0
+      },
+      {
+        "at_s": 6.5012536,
+        "failing": 0
+      },
+      {
+        "at_s": 7.001486299,
+        "failing": 0
+      },
+      {
+        "at_s": 7.501563544,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001678121,
+        "failing": 0
+      },
+      {
+        "at_s": 8.501792752,
+        "failing": 0
+      },
+      {
+        "at_s": 9.001948927,
+        "failing": 0
+      },
+      {
+        "at_s": 9.502059374,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001178768,
+        "failing": 0
+      },
+      {
+        "at_s": 10.501186743,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001750795,
+        "failing": 0
+      },
+      {
+        "at_s": 11.50126856,
+        "failing": 0
+      },
+      {
+        "at_s": 12.001842471,
+        "failing": 0
+      },
+      {
+        "at_s": 12.50145544,
+        "failing": 0
+      },
+      {
+        "at_s": 13.002040602,
+        "failing": 0
+      },
+      {
+        "at_s": 13.501725894,
+        "failing": 0
+      },
+      {
+        "at_s": 14.001341421,
+        "failing": 0
+      },
+      {
+        "at_s": 14.501450218,
+        "failing": 0
+      },
+      {
+        "at_s": 15.00220407,
+        "failing": 0
+      },
+      {
+        "at_s": 15.502342792,
+        "failing": 0
+      },
+      {
+        "at_s": 16.002226508,
+        "failing": 0
+      },
+      {
+        "at_s": 16.502841183,
+        "failing": 0
+      },
+      {
+        "at_s": 17.001297926,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501842867,
+        "failing": 0
+      },
+      {
+        "at_s": 18.00139459,
+        "failing": 0
+      },
+      {
+        "at_s": 18.502015809,
+        "failing": 0
+      },
+      {
+        "at_s": 19.001258331,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501941502,
+        "failing": 0
+      },
+      {
+        "at_s": 20.002405937,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 4,
+      "v42": 4,
+      "v43": 4,
+      "v44": 8
+    },
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b2",
+    "consumer": "go-policy",
+    "fleet": 20,
+    "vulnerable": 12,
+    "push": {
+      "id": "20261104T092808.277Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b2",
+      "config_version": "pol-20261104T092453Z-8d717807c3",
+      "started": "2026-11-04T09:28:08.277301369Z",
+      "status": "rolled_back",
+      "reason": "rejection alarm: 12 of 20 exposed instances crashed, refused the file or are not serving (e.g. gp-us-west-004 v44 up, refused pol-20261104T092453Z-8d717807c3: panic while loading: runtime error: invalid memory address or nil pointer dereference at main.go:101)",
+      "fleet": 20,
+      "exposed": 20,
+      "exposed_share": 1,
+      "time_to_full_ms": 10012,
+      "time_to_alarm_ms": 14014,
+      "time_to_revert_ms": 14016,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 1,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 3,
+          "kind": "ring_delivered",
+          "ring": 1,
+          "count": 1,
+          "detail": "1 of 20 instances now have the file"
+        },
+        {
+          "at_ms": 5005,
+          "kind": "bake_ok",
+          "ring": 1,
+          "detail": "healthy for 5s"
+        },
+        {
+          "at_ms": 5007,
+          "kind": "ring_delivered",
+          "ring": 10,
+          "count": 1,
+          "detail": "2 of 20 instances now have the file"
+        },
+        {
+          "at_ms": 10009,
+          "kind": "bake_ok",
+          "ring": 10,
+          "detail": "healthy for 5s"
+        },
+        {
+          "at_ms": 10012,
+          "kind": "ring_delivered",
+          "ring": 100,
+          "count": 18,
+          "detail": "20 of 20 instances now have the file"
+        },
+        {
+          "at_ms": 14014,
+          "kind": "alarm",
+          "detail": "rejection alarm: 12 of 20 exposed instances crashed, refused the file or are not serving (e.g. gp-us-west-004 v44 up, refused pol-20261104T092453Z-8d717807c3: panic while loading: runtime error: invalid memory address or nil pointer dereference at main.go:101)"
+        },
+        {
+          "at_ms": 14016,
+          "kind": "rollback_delivered",
+          "count": 20,
+          "detail": "last known good pol-20261104T092453Z-f73c747980"
+        },
+        {
+          "at_ms": 14016,
+          "kind": "finish",
+          "detail": "rolled_back"
+        }
+      ],
+      "exposed_by_version": {
+        "v41": 4,
+        "v42": 4,
+        "v43": 4,
+        "v44": 8
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 12,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 1931,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.501921701,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001850233,
+        "failing": 0
+      },
+      {
+        "at_s": 1.5017916279999999,
+        "failing": 0
+      },
+      {
+        "at_s": 2.002039583,
+        "failing": 0
+      },
+      {
+        "at_s": 2.501228795,
+        "failing": 0
+      },
+      {
+        "at_s": 3.00196497,
+        "failing": 0
+      },
+      {
+        "at_s": 3.50170884,
+        "failing": 0
+      },
+      {
+        "at_s": 4.002063925,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501224894,
+        "failing": 0
+      },
+      {
+        "at_s": 5.002420795,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501235324,
+        "failing": 0
+      },
+      {
+        "at_s": 6.001847713,
+        "failing": 0
+      },
+      {
+        "at_s": 6.501496167,
+        "failing": 0
+      },
+      {
+        "at_s": 7.002088774,
+        "failing": 0
+      },
+      {
+        "at_s": 7.501436871,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001956158,
+        "failing": 0
+      },
+      {
+        "at_s": 8.501607122,
+        "failing": 0
+      },
+      {
+        "at_s": 9.002158794,
+        "failing": 0
+      },
+      {
+        "at_s": 9.501718753,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001564439,
+        "failing": 0
+      },
+      {
+        "at_s": 10.502031049,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001640875,
+        "failing": 0
+      },
+      {
+        "at_s": 11.502030942,
+        "failing": 0
+      },
+      {
+        "at_s": 12.001831399,
+        "failing": 0
+      },
+      {
+        "at_s": 12.501210253,
+        "failing": 0
+      },
+      {
+        "at_s": 13.002067192,
+        "failing": 0
+      },
+      {
+        "at_s": 13.502209894,
+        "failing": 0
+      },
+      {
+        "at_s": 14.002156761,
+        "failing": 0
+      },
+      {
+        "at_s": 14.501268708,
+        "failing": 0
+      },
+      {
+        "at_s": 15.001879814,
+        "failing": 0
+      },
+      {
+        "at_s": 15.501620466,
+        "failing": 0
+      },
+      {
+        "at_s": 16.002087836,
+        "failing": 0
+      },
+      {
+        "at_s": 16.501597015,
+        "failing": 0
+      },
+      {
+        "at_s": 17.001927112,
+        "failing": 0
+      },
+      {
+        "at_s": 17.501580885,
+        "failing": 0
+      },
+      {
+        "at_s": 18.001742207,
+        "failing": 0
+      },
+      {
+        "at_s": 18.502632975,
+        "failing": 0
+      },
+      {
+        "at_s": 19.001724977,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501468716,
+        "failing": 0
+      },
+      {
+        "at_s": 20.00175066,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {
+      "v41": 4,
+      "v42": 4,
+      "v43": 4,
+      "v44": 8
+    },
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  },
+  {
+    "scenario": "google-blank-quota",
+    "incident": "Google Cloud, 12 Jun 2025",
+    "strategy": "b3",
+    "consumer": "go-policy",
+    "fleet": 20,
+    "vulnerable": 12,
+    "push": {
+      "id": "20261104T092834.299Z-go-policy",
+      "consumer": "go-policy",
+      "strategy": "b3",
+      "config_version": "pol-20261104T092453Z-8d717807c3",
+      "started": "2026-11-04T09:28:34.299269985Z",
+      "status": "rejected",
+      "reason": "gate check failed: Held: v43, v44 (12 of 20 instances) crashes loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101 (also 1 warning(s): 3 policies enforce quota with a blank quota block; last known good had 0)",
+      "fleet": 0,
+      "exposed": 0,
+      "exposed_share": 0,
+      "time_to_full_ms": 0,
+      "time_to_alarm_ms": 0,
+      "time_to_revert_ms": 0,
+      "events": [
+        {
+          "at_ms": 0,
+          "kind": "validate_ok",
+          "detail": "format"
+        },
+        {
+          "at_ms": 1,
+          "kind": "validate_ok",
+          "detail": "schema"
+        },
+        {
+          "at_ms": 274,
+          "kind": "validate_fail",
+          "detail": "gate: Held: v43, v44 (12 of 20 instances) crashes loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101 (also 1 warning(s): 3 policies enforce quota with a blank quota block; last known good had 0)"
+        },
+        {
+          "at_ms": 274,
+          "kind": "finish",
+          "detail": "rejected"
+        }
+      ],
+      "exposed_by_version": {},
+      "checks": {
+        "gate": {
+          "consumer": "go-policy",
+          "candidate": "pol-20261104T092453Z-8d717807c3",
+          "last_known_good": "pol-20261104T092453Z-f73c747980",
+          "layers": [
+            "diff",
+            "sandbox"
+          ],
+          "verdict": "hold",
+          "findings": [
+            {
+              "layer": "diff",
+              "check": "row-count",
+              "severity": "info",
+              "detail": "policy count 200 vs 200 in last known good (+0%)"
+            },
+            {
+              "layer": "diff",
+              "check": "nulls",
+              "severity": "warn",
+              "detail": "3 policies enforce quota with a blank quota block; last known good had 0"
+            },
+            {
+              "layer": "diff",
+              "check": "drift",
+              "severity": "info",
+              "detail": "quota limit distribution PSI 0.000"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 43,
+              "detail": "v43 (4 instances) crashed loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "cause": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101"
+            },
+            {
+              "layer": "sandbox",
+              "check": "load",
+              "severity": "hold",
+              "version": 44,
+              "detail": "v44 (8 instances) crashed loading the file: panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "cause": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101"
+            }
+          ],
+          "versions": [
+            {
+              "version": 41,
+              "instances": 4,
+              "loaded": true,
+              "crashed": false,
+              "requests": 1000,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.13,
+              "p99_ms": 1.069,
+              "lkg_p99_ms": 1.671,
+              "rss_kb": 11800,
+              "lkg_rss_kb": 11796
+            },
+            {
+              "version": 42,
+              "instances": 4,
+              "loaded": true,
+              "crashed": false,
+              "requests": 1000,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0.136,
+              "p99_ms": 0.947,
+              "lkg_p99_ms": 1.122,
+              "rss_kb": 11944,
+              "lkg_rss_kb": 11704
+            },
+            {
+              "version": 43,
+              "instances": 4,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.208,
+              "rss_kb": 0,
+              "lkg_rss_kb": 11888
+            },
+            {
+              "version": 44,
+              "instances": 8,
+              "loaded": false,
+              "crashed": true,
+              "panic": "panic: runtime error: invalid memory address or nil pointer dereference at main.go:101",
+              "requests": 0,
+              "errors": 0,
+              "output_diff_share": 0,
+              "p50_ms": 0,
+              "p99_ms": 0,
+              "lkg_p99_ms": 1.173,
+              "rss_kb": 0,
+              "lkg_rss_kb": 11748
+            }
+          ],
+          "duration_ms": 273
+        }
+      }
+    },
+    "window_s": 20,
+    "peak_failing": 0,
+    "peak_failing_share": 0,
+    "peak_refused": 0,
+    "on_bad_file": "keep_last_good",
+    "failed_instance_seconds": 0,
+    "requests_ok": 1903,
+    "requests_failed": 0,
+    "requests_failed_share": 0,
+    "recovered_at_s": 0,
+    "samples": [
+      {
+        "at_s": 0.50217707,
+        "failing": 0
+      },
+      {
+        "at_s": 1.001946099,
+        "failing": 0
+      },
+      {
+        "at_s": 1.501231376,
+        "failing": 0
+      },
+      {
+        "at_s": 2.001523334,
+        "failing": 0
+      },
+      {
+        "at_s": 2.502237626,
+        "failing": 0
+      },
+      {
+        "at_s": 3.001596992,
+        "failing": 0
+      },
+      {
+        "at_s": 3.5018079699999998,
+        "failing": 0
+      },
+      {
+        "at_s": 4.001397959,
+        "failing": 0
+      },
+      {
+        "at_s": 4.501828933,
+        "failing": 0
+      },
+      {
+        "at_s": 5.001340186,
+        "failing": 0
+      },
+      {
+        "at_s": 5.501942641,
+        "failing": 0
+      },
+      {
+        "at_s": 6.001587085,
+        "failing": 0
+      },
+      {
+        "at_s": 6.501304573,
+        "failing": 0
+      },
+      {
+        "at_s": 7.001521845,
+        "failing": 0
+      },
+      {
+        "at_s": 7.502107212,
+        "failing": 0
+      },
+      {
+        "at_s": 8.001594047,
+        "failing": 0
+      },
+      {
+        "at_s": 8.50186779,
+        "failing": 0
+      },
+      {
+        "at_s": 9.001477288,
+        "failing": 0
+      },
+      {
+        "at_s": 9.502125588,
+        "failing": 0
+      },
+      {
+        "at_s": 10.001319572,
+        "failing": 0
+      },
+      {
+        "at_s": 10.502528395,
+        "failing": 0
+      },
+      {
+        "at_s": 11.001281759,
+        "failing": 0
+      },
+      {
+        "at_s": 11.501379616,
+        "failing": 0
+      },
+      {
+        "at_s": 12.00116002,
+        "failing": 0
+      },
+      {
+        "at_s": 12.501333828,
+        "failing": 0
+      },
+      {
+        "at_s": 13.00126928,
+        "failing": 0
+      },
+      {
+        "at_s": 13.501367698,
+        "failing": 0
+      },
+      {
+        "at_s": 14.001199011,
+        "failing": 0
+      },
+      {
+        "at_s": 14.501436418,
+        "failing": 0
+      },
+      {
+        "at_s": 15.001172988,
+        "failing": 0
+      },
+      {
+        "at_s": 15.501679092,
+        "failing": 0
+      },
+      {
+        "at_s": 16.001278995,
+        "failing": 0
+      },
+      {
+        "at_s": 16.501482364,
+        "failing": 0
+      },
+      {
+        "at_s": 17.00158587,
+        "failing": 0
+      },
+      {
+        "at_s": 17.50125419,
+        "failing": 0
+      },
+      {
+        "at_s": 18.001229056,
+        "failing": 0
+      },
+      {
+        "at_s": 18.501318319,
+        "failing": 0
+      },
+      {
+        "at_s": 19.001475677,
+        "failing": 0
+      },
+      {
+        "at_s": 19.501584081,
+        "failing": 0
+      },
+      {
+        "at_s": 20.002079765,
+        "failing": 0
+      }
+    ],
+    "exposed_by_version": {},
+    "env": {
+      "bake": "5s",
+      "cpus": "4",
+      "rate": "500"
+    }
+  }
+]

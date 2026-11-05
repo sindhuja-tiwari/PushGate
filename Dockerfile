@@ -3,6 +3,7 @@
 
 FROM rust:1.82-bookworm AS rust
 WORKDIR /src/consumers/rust-proxy
+COPY lib/rust/ /src/lib/rust/
 COPY consumers/rust-proxy/ ./
 RUN for v in 41 42 43 44; do \
       cargo build --release --features v$v --target-dir target/v$v && \
@@ -18,6 +19,7 @@ COPY internal/ internal/
 COPY rollout/ rollout/
 COPY bench/ bench/
 COPY gate/ gate/
+COPY lib/go/ lib/go/
 RUN for v in 41 42 43 44; do \
       CGO_ENABLED=0 go build -ldflags "-X main.buildVersion=$v" -o /out/go-policy/v$v ./consumers/go-policy; \
     done && \

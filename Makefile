@@ -7,12 +7,13 @@
 #   make smoke        start the fleet, push a good and a bad file, check results
 #   make demo-week1   the Cloudflare-shaped push against B0 (push-all)
 #   make bench        B0 to B3 on every incident scenario (about 15 minutes)
+#   make bench-lkg    the same with the last-known-good library in every consumer
 
 VERSIONS   := 41 42 43 44
 PY         := .venv/bin/python
 CARGO_DIR  := consumers/rust-proxy
 
-.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench clean
+.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-lkg clean
 
 build: build-rust build-go tools
 
@@ -47,6 +48,7 @@ $(PY):
 
 test: producer-deps
 	cargo test --quiet --manifest-path $(CARGO_DIR)/Cargo.toml
+	cargo test --quiet --manifest-path lib/rust/lkg/Cargo.toml
 	go test ./...
 	$(PY) -m unittest discover -s producer -p 'test_*.py'
 
@@ -66,6 +68,9 @@ demo-week1: build producer-deps
 
 bench: build producer-deps
 	bin/pushbench -window 45s -bake 10s
+
+bench-lkg: build producer-deps
+	bin/pushbench -window 45s -bake 10s -on-bad-file keep_last_good -strategies b0,b2,b3
 
 clean:
 	rm -rf bin state

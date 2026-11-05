@@ -9,12 +9,18 @@
 // because the same file is still on disk. Releases v41 and v42 never read that
 // field, so the same file is harmless to them.
 //
+// With -on-bad-file keep_last_good|fail_closed it loads through PushGate's
+// last-known-good library (lib/go/lkg). The release code is unchanged: the
+// library catches the panic while loading, rejects the file and keeps
+// serving the previous one (or, fail-closed, stops answering).
+//
 // The release number is set at build time:
 //
 //	go build -ldflags "-X main.buildVersion=43" ./consumers/go-policy
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -25,6 +31,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/sindhuja-tiwari/pushgate/lib/go/lkg"
 )
 
 // buildVersion is overwritten with -ldflags at build time.
@@ -72,6 +80,10 @@ func load(path string) (*index, error) {
 	if err != nil {
 		return nil, err
 	}
+	return parse(raw)
+}
+
+func parse(raw []byte) (*index, error) {
 	var f PolicyFile
 	if err := json.Unmarshal(raw, &f); err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
@@ -98,6 +110,7 @@ func main() {
 	cfg := flag.String("config", "policy.json", "policy file to load and watch")
 	pollMS := flag.Int("poll-ms", 500, "how often to check the file for changes")
 	showVersion := flag.Bool("version", false, "print version and exit")
+	onBad := flag.String("on-bad-file", "", "load through the last-known-good library: keep_last_good or fail_closed (default: the naive loader)")
 	flag.Parse()
 
 	if *showVersion {
@@ -105,42 +118,39 @@ func main() {
 		return
 	}
 
-	var cur atomic.Pointer[index]
 	var loads, requests atomic.Uint64
 	started := time.Now()
 
-	idx, err := load(*cfg)
-	if err != nil {
-		log.Fatalf("go-policy v%s %s: failed to load %s: %v", buildVersion, *id, *cfg, err)
+	// current returns the index to serve, or nil when there is none.
+	var current func() *index
+	var lkgStatus func() []byte
+	loadCount := loads.Load
+	if *onBad == "" {
+		current = naive(*cfg, *id, *pollMS, &loads)
+	} else {
+		mode, err := lkg.ParseMode(*onBad)
+		if err != nil {
+			log.Fatal(err)
+		}
+		l := lkg.Open(lkg.Options{
+			Path: *cfg, Mode: mode, Poll: time.Duration(*pollMS) * time.Millisecond,
+			Limits: map[string]any{"quota_enforcement": version() >= quotaEnforcementSince},
+			Logf: func(f string, a ...any) {
+				log.Printf("go-policy v%s %s %s", buildVersion, *id, fmt.Sprintf(f, a...))
+			},
+		}, parse)
+		go l.Watch(context.Background())
+		current = func() *index {
+			ix, ok := l.Current()
+			if !ok {
+				return nil
+			}
+			return ix
+		}
+		lkgStatus = l.StatusJSON
+		loadCount = func() uint64 { return uint64(l.Status().Loads) }
 	}
-	cur.Store(idx)
-	loads.Add(1)
-	log.Printf("go-policy v%s %s loaded %d policies (config %s)", buildVersion, *id, idx.count, idx.configVersion)
-
-	go func() {
-		var last time.Time
-		if st, err := os.Stat(*cfg); err == nil {
-			last = st.ModTime()
-		}
-		for {
-			time.Sleep(time.Duration(*pollMS) * time.Millisecond)
-			st, err := os.Stat(*cfg)
-			if err != nil || st.ModTime().Equal(last) {
-				continue
-			}
-			last = st.ModTime()
-			fresh, err := load(*cfg)
-			if err != nil {
-				// A parse error keeps the old policy. Only the nil
-				// dereference above takes the process down.
-				log.Printf("go-policy v%s %s: reload rejected: %v", buildVersion, *id, err)
-				continue
-			}
-			cur.Store(fresh)
-			loads.Add(1)
-			log.Printf("go-policy v%s %s reloaded %d policies (config %s)", buildVersion, *id, fresh.count, fresh.configVersion)
-		}
-	}()
+	none := &index{configVersion: "none", allow: map[string]bool{}, quota: map[string]int{}}
 
 	// Per-minute request counts for quota checks.
 	var mu sync.Mutex
@@ -151,7 +161,11 @@ func main() {
 	mux.HandleFunc("/check", func(w http.ResponseWriter, r *http.Request) {
 		requests.Add(1)
 		key := r.URL.Query().Get("project") + "|" + r.URL.Query().Get("api")
-		ix := cur.Load()
+		ix := current()
+		if ix == nil {
+			http.Error(w, `{"error":"no good config loaded"}`, http.StatusServiceUnavailable)
+			return
+		}
 		allowed := ix.allow[key]
 		reason := "policy"
 		if limit, ok := ix.quota[key]; ok && allowed {
@@ -169,16 +183,26 @@ func main() {
 		fmt.Fprintf(w, `{"allow":%v,"reason":%q,"config_version":%q,"version":%s}`, allowed, reason, ix.configVersion, buildVersion)
 	})
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		ix := cur.Load()
+		ix, serving := current(), true
+		if ix == nil {
+			ix, serving = none, false
+		}
+		extra := ""
+		if lkgStatus != nil {
+			extra = `,"lkg":` + string(lkgStatus())
+		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, `{"ok":true,"id":%q,"version":%s,"config_version":%q,"policies":%d}`, *id, buildVersion, ix.configVersion, ix.count)
+		fmt.Fprintf(w, `{"ok":true,"id":%q,"version":%s,"config_version":%q,"policies":%d,"serving":%v%s}`, *id, buildVersion, ix.configVersion, ix.count, serving, extra)
 	})
 	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		ix := cur.Load()
+		ix := current()
+		if ix == nil {
+			ix = none
+		}
 		l := fmt.Sprintf(`consumer="go-policy",id=%q,version=%q`, *id, buildVersion)
 		w.Header().Set("Content-Type", "text/plain; version=0.0.4")
 		fmt.Fprintf(w, "# TYPE pg_requests_total counter\npg_requests_total{%s} %d\n", l, requests.Load())
-		fmt.Fprintf(w, "# TYPE pg_config_loads_total counter\npg_config_loads_total{%s} %d\n", l, loads.Load())
+		fmt.Fprintf(w, "# TYPE pg_config_loads_total counter\npg_config_loads_total{%s} %d\n", l, loadCount())
 		fmt.Fprintf(w, "# TYPE pg_policies_loaded gauge\npg_policies_loaded{%s} %d\n", l, ix.count)
 		fmt.Fprintf(w, "# TYPE pg_config_info gauge\npg_config_info{%s,config_version=%q} 1\n", l, ix.configVersion)
 		fmt.Fprintf(w, "# TYPE pg_uptime_seconds gauge\npg_uptime_seconds{%s} %.1f\n", l, time.Since(started).Seconds())
@@ -187,4 +211,43 @@ func main() {
 	addr := fmt.Sprintf("127.0.0.1:%d", *port)
 	srv := &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 	log.Fatal(srv.ListenAndServe())
+}
+
+// naive is the original loader: a load error at startup is fatal, and a
+// panic while loading (the blank quota block) takes the process down.
+func naive(path, id string, pollMS int, loads *atomic.Uint64) func() *index {
+	var cur atomic.Pointer[index]
+	idx, err := load(path)
+	if err != nil {
+		log.Fatalf("go-policy v%s %s: failed to load %s: %v", buildVersion, id, path, err)
+	}
+	cur.Store(idx)
+	loads.Add(1)
+	log.Printf("go-policy v%s %s loaded %d policies (config %s)", buildVersion, id, idx.count, idx.configVersion)
+
+	go func() {
+		var last time.Time
+		if st, err := os.Stat(path); err == nil {
+			last = st.ModTime()
+		}
+		for {
+			time.Sleep(time.Duration(pollMS) * time.Millisecond)
+			st, err := os.Stat(path)
+			if err != nil || st.ModTime().Equal(last) {
+				continue
+			}
+			last = st.ModTime()
+			fresh, err := load(path)
+			if err != nil {
+				// A parse error keeps the old policy. Only the nil
+				// dereference above takes the process down.
+				log.Printf("go-policy v%s %s: reload rejected: %v", buildVersion, id, err)
+				continue
+			}
+			cur.Store(fresh)
+			loads.Add(1)
+			log.Printf("go-policy v%s %s reloaded %d policies (config %s)", buildVersion, id, fresh.count, fresh.configVersion)
+		}
+	}()
+	return cur.Load
 }
