@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" width="760" height="320" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<rect width="100%" height="100%" fill="#fcfcfb"/>
+<text x="16" y="26" font-size="15" font-weight="600" fill="#0b0b0b">Failing go-policy instances after the push: Google Cloud, 12 Jun 2025</text>
+<text x="16" y="44" font-size="12" fill="#52514e">Fleet seed 1, the layout where B2 did worst. 20 instances; crashed, restarting or not serving counts as failing.</text>
+<line x1="56" x2="610" y1="280.0" y2="280.0" stroke="#e4e3df"/>
+<text x="50" y="284.0" font-size="11" fill="#52514e" text-anchor="end">0</text>
+<line x1="56" x2="610" y1="226.0" y2="226.0" stroke="#e4e3df"/>
+<text x="50" y="230.0" font-size="11" fill="#52514e" text-anchor="end">5</text>
+<line x1="56" x2="610" y1="172.0" y2="172.0" stroke="#e4e3df"/>
+<text x="50" y="176.0" font-size="11" fill="#52514e" text-anchor="end">10</text>
+<line x1="56" x2="610" y1="118.0" y2="118.0" stroke="#e4e3df"/>
+<text x="50" y="122.0" font-size="11" fill="#52514e" text-anchor="end">15</text>
+<line x1="56" x2="610" y1="64.0" y2="64.0" stroke="#e4e3df"/>
+<text x="50" y="68.0" font-size="11" fill="#52514e" text-anchor="end">20</text>
+<text x="56.0" y="298" font-size="11" fill="#52514e" text-anchor="middle">0 s</text>
+<text x="166.8" y="298" font-size="11" fill="#52514e" text-anchor="middle">5 s</text>
+<text x="277.6" y="298" font-size="11" fill="#52514e" text-anchor="middle">10 s</text>
+<text x="388.4" y="298" font-size="11" fill="#52514e" text-anchor="middle">15 s</text>
+<text x="499.2" y="298" font-size="11" fill="#52514e" text-anchor="middle">20 s</text>
+<text x="610.0" y="298" font-size="11" fill="#52514e" text-anchor="middle">25 s</text>
+<polyline points="56.0,280.0 67.1,150.4 78.2,150.4 89.3,150.4 100.4,150.4 111.4,150.4 122.5,150.4 133.6,150.4 144.7,150.4 155.8,150.4 166.9,150.4 177.9,150.4 189.0,150.4 200.1,150.4 211.2,150.4 222.2,150.4 233.3,150.4 244.4,150.4 255.5,150.4 266.6,150.4 277.7,150.4 288.7,150.4 299.8,150.4 310.9,150.4 322.0,150.4 333.0,150.4 344.1,150.4 355.2,150.4 366.3,150.4 377.4,150.4 388.5,150.4 399.5,150.4 410.6,150.4 421.7,150.4 432.8,150.4 443.8,150.4 454.9,150.4 466.0,150.4 477.1,150.4 488.2,150.4 499.2,150.4 510.3,150.4 521.4,150.4 532.5,150.4 543.6,150.4 554.6,150.4 565.7,150.4 576.8,150.4 587.9,150.4 599.0,150.4 610.0,150.4" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="610.0" cy="150.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="620.0" y="154.4" font-size="12" fill="#0b0b0b">B0 push-all</text>
+<polyline points="56.0,280.0 67.1,280.0 78.2,280.0 89.3,280.0 100.4,280.0 111.4,280.0 122.5,280.0 133.6,280.0 144.7,280.0 155.8,280.0 166.8,280.0 177.9,280.0 189.0,280.0 200.1,280.0 211.2,280.0 222.3,280.0 233.3,280.0 244.4,280.0 255.5,280.0 266.6,280.0 277.7,280.0 288.7,161.2 299.8,150.4 310.9,150.4 322.0,150.4 333.0,150.4 344.1,150.4 355.2,150.4 366.3,150.4 377.4,150.4 388.4,150.4 399.5,150.4 410.6,193.6 421.7,193.6 432.8,193.6 443.8,193.6 454.9,258.4 466.0,258.4 477.1,258.4 488.2,258.4 499.2,280.0 510.3,280.0 521.4,280.0 532.5,280.0 543.6,280.0 554.7,280.0 565.7,280.0 576.8,280.0 587.9,280.0 599.0,280.0 610.0,280.0" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="610.0" cy="280.0" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<text x="620.0" y="284.0" font-size="12" fill="#0b0b0b">B2 staged + alarms</text>
+<polyline points="56.0,280.0 610.0,280.0" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="610.0" cy="280.0" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="620.0" y="270.0" font-size="12" fill="#0b0b0b">B3 PushGate: held, 0</text>
+</svg>
