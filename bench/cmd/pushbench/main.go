@@ -93,7 +93,7 @@ type Run struct {
 }
 
 func main() {
-	scenarioGlob := flag.String("scenarios", "bench/scenarios/*.json", "scenario files")
+	scenarioGlob := flag.String("scenarios", "bench/scenarios/*.json", "scenario files: comma-separated globs or scenario names")
 	strategies := flag.String("strategies", "b0,b1,b2,b3", "comma-separated strategies (b0, b1, b2, b3, b3-diff, b3-sandbox)")
 	window := flag.Duration("window", 45*time.Second, "how long to watch the fleet after each push")
 	bake := flag.Duration("bake", 10*time.Second, "b2 bake time per ring")
@@ -202,10 +202,23 @@ func main() {
 	fmt.Print(table)
 }
 
+// loadScenarios takes a comma-separated list of globs or bare scenario names
+// (cloudflare-duplicate-rows means bench/scenarios/cloudflare-duplicate-rows.json).
 func loadScenarios(glob string) ([]Scenario, error) {
-	paths, err := filepath.Glob(glob)
-	if err != nil {
-		return nil, err
+	var paths []string
+	for _, g := range strings.Split(glob, ",") {
+		g = strings.TrimSpace(g)
+		if g == "" {
+			continue
+		}
+		if !strings.ContainsAny(g, "/*?[") {
+			g = filepath.Join("bench", "scenarios", g+".json")
+		}
+		m, err := filepath.Glob(g)
+		if err != nil {
+			return nil, err
+		}
+		paths = append(paths, m...)
 	}
 	sort.Strings(paths)
 	var out []Scenario
