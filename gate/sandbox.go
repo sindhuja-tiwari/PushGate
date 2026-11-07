@@ -293,6 +293,17 @@ func sandbox(ctx context.Context, r *Report, cfg Config, consumer string, cand, 
 		r.add(Finding{Layer: "sandbox", Check: "traffic", Severity: Warn, Detail: "no traffic sample for " + consumer + "; checked loading only"})
 		requests = nil
 	}
+	// Requests built to reach every new or changed entry go after the
+	// sample. They count for crashes, errors and latency, but not for the
+	// share of changed answers: a changed rule is meant to answer differently.
+	sampled := len(requests)
+	if !cfg.NoTargeted {
+		if t := targeted(consumer, cand, lkg, requests); len(t) > 0 {
+			requests = append(requests[:sampled:sampled], t...)
+			r.add(Finding{Layer: "sandbox", Check: "targeted", Severity: Info,
+				Detail: fmt.Sprintf("%d requests built to reach new or changed entries, replayed after %d sampled", len(t), sampled)})
+		}
+	}
 	dec := decisionFor(consumer)
 
 	results := make([]VersionResult, len(versions))
@@ -328,7 +339,7 @@ func sandbox(ctx context.Context, r *Report, cfg Config, consumer string, cand, 
 			vr.P50MS, vr.P99MS = percentile(cr.latencies, 0.5), percentile(cr.latencies, 0.99)
 			if lerr == nil && lr != nil && !lr.crashed {
 				vr.LKGP99MS, vr.LKGRSSKB = percentile(lr.latencies, 0.99), lr.rssKB
-				n, diff := min(len(cr.outputs), len(lr.outputs)), 0
+				n, diff := min(len(cr.outputs), len(lr.outputs), sampled), 0
 				for i := 0; i < n; i++ {
 					if cr.outputs[i] != lr.outputs[i] {
 						diff++
@@ -339,19 +350,23 @@ func sandbox(ctx context.Context, r *Report, cfg Config, consumer string, cand, 
 				}
 			}
 			results[idx] = vr
-			judge(r, cfg.Budgets, vr, counts[v], len(requests))
+			judge(r, cfg.Budgets, vr, counts[v], sampled, len(requests))
 		}(idx, v)
 	}
 	wg.Wait()
 	r.Versions = results
 }
 
-func judge(r *Report, b Budgets, v VersionResult, instances, planned int) {
+func judge(r *Report, b Budgets, v VersionResult, instances, sampled, planned int) {
 	who := fmt.Sprintf("v%d (%d instances)", v.Version, instances)
 	switch {
 	case v.Crashed && !v.Loaded:
 		r.addSafe(Finding{Layer: "sandbox", Check: "load", Severity: Hold, Version: v.Version, Cause: v.Panic,
 			Detail: fmt.Sprintf("%s crashed loading the file: %s", who, v.Panic)})
+		return
+	case v.Crashed && v.CrashedOn > sampled:
+		r.addSafe(Finding{Layer: "sandbox", Check: "replay", Severity: Hold, Version: v.Version, Cause: v.Panic,
+			Detail: fmt.Sprintf("%s crashed on a request built for a changed entry (%d of %d after the sample: %s): %s", who, v.CrashedOn-sampled, planned-sampled, shorten(v.Request, 60), v.Panic)})
 		return
 	case v.Crashed:
 		r.addSafe(Finding{Layer: "sandbox", Check: "replay", Severity: Hold, Version: v.Version, Cause: v.Panic,

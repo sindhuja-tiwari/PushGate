@@ -31,7 +31,10 @@ type Config struct {
 	Replay      int    // requests to replay per release
 	Diff        bool
 	Sandbox     bool
-	Budgets     Budgets
+	// NoTargeted turns off the requests built for new or changed entries,
+	// leaving only the sampled replay (the week 5 behavior).
+	NoTargeted bool
+	Budgets    Budgets
 	// LKG, if set, is used instead of the store's last known good file.
 	LKG []byte
 }
