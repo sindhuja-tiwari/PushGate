@@ -2,7 +2,7 @@
 // good-push corpus into the week 5 results: tables with 95% confidence
 // intervals and two SVG charts.
 //
-//	report -runs bench/results/week5.json -good bench/results/week5-good.json -out bench/results/week5
+//	report -runs bench/results/week7.json -good bench/results/week7-good.json -out bench/results/week7
 package main
 
 import (
@@ -67,18 +67,18 @@ type goodItem struct {
 }
 
 func main() {
-	runsPath := flag.String("runs", "bench/results/week5.json", "pushbench runs JSON")
-	goodPath := flag.String("good", "bench/results/week5-good.json", "goodcorpus JSON")
-	outDir := flag.String("out", "bench/results/week5", "directory for charts")
-	md := flag.String("md", "bench/results/week5.md", "report (Markdown)")
-	title = flag.String("title", "week 5", "which run this is, for the report's heading")
+	runsPath := flag.String("runs", "bench/results/week7.json", "pushbench runs JSON")
+	goodPathFlag = flag.String("good", "bench/results/week7-good.json", "goodcorpus JSON")
+	outDir := flag.String("out", "bench/results/week7", "directory for charts")
+	md := flag.String("md", "bench/results/week7.md", "report (Markdown)")
+	title = flag.String("title", "week 7", "which run this is, for the report's heading")
 	flag.Parse()
 
 	var runs []run
 	readJSON(*runsPath, &runs)
 	var good []goodItem
-	if *goodPath != "" {
-		readJSON(*goodPath, &good)
+	if *goodPathFlag != "" {
+		readJSON(*goodPathFlag, &good)
 	}
 	if err := os.MkdirAll(*outDir, 0o755); err != nil {
 		log.Fatal(err)
@@ -172,7 +172,7 @@ func fmtCI(mean, half float64, unit string, digits int) string {
 	return fmt.Sprintf(f+" ± "+f+"%s", mean, half, unit)
 }
 
-var title *string
+var title, goodPathFlag *string
 
 // --- grouping ---
 
@@ -355,7 +355,7 @@ func writeReport(b *strings.Builder, runs []run, good []goodItem, chartDir strin
 			}
 			return k
 		}
-		fmt.Fprintf(b, "\n## Good-push corpus (gate only)\n\n%d safe files, run through the checks without a fleet ([details](week5-good.md)).\n\n", n)
+		fmt.Fprintf(b, "\n## Good-push corpus (gate only)\n\n%d safe files, run through the checks without a fleet ([details](%s)).\n\n", n, filepath.Base(strings.TrimSuffix(*goodPathFlag, ".json")+".md"))
 		b.WriteString("| Check | False holds | Rate (95% CI) |\n|---|---|---|\n")
 		row := func(name string, k int) {
 			lo, hi := wilson(k, n)

@@ -206,8 +206,20 @@ func main() {
 				log.Fatal(err)
 			}
 		}
+		// A slow failure such as a memory leak leaves state in the processes
+		// that outlives a rollback, so runs of long scenarios, and the run
+		// after one, start on freshly started instances.
+		used, prevLong := false, false
 		for _, sc := range scenarios {
 			for _, s := range strats {
+				if *manage && used && (sc.Long || prevLong) {
+					stop()
+					log.Printf("== fleet seed %d, restarted for a clean run", seed)
+					if stop, err = startFleet(*scale, *rate, seed, *onBad, jsonl, traffic); err != nil {
+						log.Fatal(err)
+					}
+				}
+				used, prevLong = true, sc.Long
 				log.Printf("== seed %d / %s / %s", seed, sc.Name, s.Name)
 				w := *window
 				if sc.Window != "" {
@@ -603,21 +615,21 @@ func requestsBetween(path, consumer string, from, to time.Time) (ok, fail int64)
 func markdown(runs []Run, window, bake time.Duration, rate int, onBad string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# PushBench results\n\n")
-	fmt.Fprintf(&b, "Generated %s on %d CPUs. Traffic %d req/s. Each run watched the fleet for %s after the push. B2 bake time %s per ring (rings 1%%, 10%%, 100%%).\n\n",
+	fmt.Fprintf(&b, "Generated %s on %d CPUs. Traffic %d req/s. Each run watched the fleet for %s after the push, unless its scenario sets a longer window. B2 bake time %s per ring (rings 1%%, 10%%, 100%%).\n\n",
 		time.Now().UTC().Format("2006-01-02 15:04 MST"), runtime.NumCPU(), rate, window, bake)
 	if onBad == "" {
 		b.WriteString("Consumers: original naive loaders (no last-known-good library).\n\n")
 	} else {
 		fmt.Fprintf(&b, "Consumers: last-known-good library on, mode %s.\n\n", onBad)
 	}
-	b.WriteString("| Incident | Strategy | Outcome | Gate | Got the bad file | Refused it | Peak failing | Failed instance-seconds | Failed requests | Alarm | Recovered |\n")
-	b.WriteString("|---|---|---|---|---|---|---|---|---|---|---|\n")
+	b.WriteString("| Incident | Seed | Strategy | Outcome | Gate | Got the bad file | Refused it | Peak failing | Failed instance-seconds | Failed requests | Alarm | Recovered |\n")
+	b.WriteString("|---|---|---|---|---|---|---|---|---|---|---|---|\n")
 	for _, r := range runs {
 		alarm := "–"
 		if r.Push.TimeToAlarm > 0 {
 			alarm = fmt.Sprintf("%.1f s", time.Duration(r.Push.TimeToAlarm).Seconds())
 		}
-		rec := fmt.Sprintf("not within %s", window)
+		rec := fmt.Sprintf("not within %.0f s", r.WindowS)
 		if r.RecoveredAtS != nil {
 			if *r.RecoveredAtS == 0 {
 				rec = "never failed"
@@ -633,8 +645,8 @@ func markdown(runs []Run, window, bake time.Duration, rate int, onBad string) st
 		if r.OnBadFile != "" {
 			refused = fmt.Sprint(r.PeakRefused)
 		}
-		fmt.Fprintf(&b, "| %s | %s | %s | %s | %d of %d (%.0f%%) | %s | %d (%.0f%%) | %.0f | %.1f%% | %s | %s |\n",
-			r.Incident, strings.ToUpper(r.Strategy), outcome, gateCell(r.Push), r.Push.Exposed, r.Fleet, 100*r.Push.ExposedPeak,
+		fmt.Fprintf(&b, "| %s | %d | %s | %s | %s | %d of %d (%.0f%%) | %s | %d (%.0f%%) | %.0f | %.1f%% | %s | %s |\n",
+			r.Incident, r.Seed, strings.ToUpper(r.Strategy), outcome, gateCell(r.Push), r.Push.Exposed, r.Fleet, 100*r.Push.ExposedPeak,
 			refused, r.PeakFailing, 100*r.PeakFailingShare, r.FailedInstSec, 100*r.ReqFailShare, alarm, rec)
 	}
 	b.WriteString("\nRefused it: the most instances at once whose last-known-good library rejected the bad file. With keep_last_good they keep serving the old file, so they are not counted as failing; with fail_closed they stop answering and are.\n")
