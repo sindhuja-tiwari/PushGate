@@ -388,7 +388,9 @@ func writeReport(b *strings.Builder, runs []run, good []goodItem, chartDir strin
 			fmt.Fprintf(b, "- **%s**: B2 exposed between %.0f%% and %.0f%% of the fleet depending on the layout (%s).\n", sc.incident, lo, hi, strings.Join(exp, ", "))
 		}
 	}
-	if !any {
+	if len(seeds) < 2 {
+		b.WriteString("This takes at least two fleet layouts (-seeds).\n")
+	} else if !any {
 		b.WriteString("No scenario's B2 exposure varied by more than 5 points across seeds.\n")
 	}
 	fmt.Fprintf(b, "\n![Failing instances over time](%s/timeline.svg)\n", chartDir)

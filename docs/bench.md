@@ -18,7 +18,7 @@ bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3,4,5 -strategies b0,b1,b2,b3 \
 bin/report        # tables and charts: bench/results/week5.md, bench/results/week5/*.svg
 ```
 
-`make bench-week5` runs all three. On a 4-core machine the corpus takes under
+`make bench` runs all three, writing to `state/results/` (`make bench-quick`: one fleet layout and 100 safe files). On a 4-core machine the corpus takes under
 2 minutes and the matrix about 2 hours.
 
 **Fleet.** `-scale 0.2` gives 100 instances: 80 bot-proxy and 20 go-policy,
