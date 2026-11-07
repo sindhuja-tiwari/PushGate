@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Three of the largest outages of 2024 and 2025 (CrowdStrike, Google Cloud, Cloudflare) followed one pattern. A data or config file passed its format checks, crashed the program that loaded it, and reached every machine faster than a code release would have been allowed to. PushGate is an open-source gate for such pushes. Before any instance gets a new file, it loads the file into the actual consumer binary at every release currently deployed, replays sampled traffic, and compares the result with the last known good file. Only then does it roll out in rings with alarms and rollback. We evaluate it with PushBench, a benchmark of incidents rebuilt from public postmortems, on a live simulated fleet. Across 10 bad files and 5 fleet layouts, PushGate held 46 of 50 bad pushes before any instance got the file (92%, 95% CI 81 to 97%). Staged rollout with alarms held 10 of 50. PushGate held none of 500 safe files (0%, CI 0 to 0.8%) and cost 0.1 to 0.3 s and about 0.13 CPU-seconds per check. All four misses are one scenario: a crash that only a rare request triggers, which the gate catches only when its traffic sample happens to include that request.
+Three of the largest outages of 2024 and 2025 (CrowdStrike, Google Cloud, Cloudflare) followed one pattern. A data or config file passed its format checks, crashed the program that loaded it, and reached every machine faster than a code release would have been allowed to. PushGate is an open-source gate for such pushes. Before any instance gets a new file, it loads the file into the actual consumer binary at every release currently deployed, replays sampled traffic plus a request built for every changed rule, and compares the result with the last known good file. Only then does it roll out in rings with alarms and rollback. We evaluate it with PushBench, a benchmark of incidents rebuilt from public postmortems, on a live simulated fleet. Across 10 bad files and 5 fleet layouts, PushGate held all 50 bad pushes before any instance got the file (100%, 95% CI 93 to 100%). Staged rollout with alarms held 10 of 50. PushGate held none of 500 safe files (0%, CI 0 to 0.8%) and cost 0.1 to 0.3 s and about 0.14 CPU-seconds per check. Two slower failures, a memory leak that takes two minutes to kill a release and a producer that flips between a good and a bad file, are also held before exposure. The same gate runs as a GitHub Action on any repository's config files.
 
 ## 1. The problem
 
@@ -61,7 +61,7 @@ Hold in step 2 or 3 ─▶ report: which releases fail, how, and how much of the
 
 **Semantic diff** ([docs/gate.md](docs/gate.md)). Compares the candidate with the last known good file. It holds only on what is almost never legitimate (duplicate keys, the file doubling) and warns on what sometimes is (a new 21-field rule, a blank quota, drift), because only running the consumer shows whether those are fatal.
 
-**Consumer-in-the-loop sandbox** (the core idea). The fleet registry lists the releases running now, here v41 to v44. For each, PushGate starts that exact binary twice, with the candidate and with the last known good file, as isolated processes on private ports. It replays up to 1,000 recorded requests and compares crashes, error share, p99 latency, memory and answers. A crash, more than 1% errors or a large latency regression holds the push. Changed answers only warn, since changed behavior is often the point of a push. A held push reads like this:
+**Consumer-in-the-loop sandbox** (the core idea). The fleet registry lists the releases running now, here v41 to v44. For each, PushGate starts that exact binary twice, with the candidate and with the last known good file, as isolated processes on private ports. It replays up to 1,000 recorded requests and compares crashes, error share, p99 latency, memory and answers. After the sample it sends one request built for every new or changed rule, so a rule that only a rare request reaches is still exercised. A crash, more than 1% errors, a large latency regression or memory that grows with every request holds the push. Changed answers only warn, since changed behavior is often the point of a push. A held push reads like this:
 
 ```
 Held: v43, v44 (12 of 20 instances) crashes loading the file: panic: runtime error: invalid memory
@@ -71,6 +71,8 @@ blank quota block; last known good had 0)
 
 **Consumer-side safety net** ([docs/lkg.md](docs/lkg.md)). A small library in Go and Rust. If a file fails to load, breaks a declared limit or (in Go) panics while loading, the consumer keeps serving the last known good file, caches it for restarts and reports the reason on `/healthz`. Fail-open or fail-closed is a per-file setting. Rollout alarms count a refusal as a failure, so a rollout cannot carry a file to 100% while consumers quietly reject it.
 
+**In CI** ([docs/ci.md](docs/ci.md)). `gate ci` and the GitHub Action in `action.yml` run the same checks on any repository: a `pushgate.json` lists the config files and the command line of each deployed release, and every pull request that changes one of those files is checked against the base branch's version. A hold fails the check and the job summary says which releases fail and why. No simulated fleet is needed.
+
 **Rings and kill switch** ([docs/baselines.md](docs/baselines.md)). Rings of 1%, 10% and 100% with bake times, crash and error-rate alarms, rollback, and one command to freeze all pushes of a file type. Deliberately simple: AppConfig already does this well.
 
 ## 3. Evaluation setup
@@ -79,42 +81,44 @@ blank quota block; last known good had 0)
 
 **Strategies.** B0 pushes to everyone after a format check, like the fast paths in all three incidents. B1 adds a JSON Schema. B2 is a staged rollout with alarms and rollback. B3 is PushGate: B2 plus the gate.
 
-**Scenarios** ([docs/bench.md](docs/bench.md)). Ten bad files: the three incidents, a partial-replica Cloudflare variant, growth to 210 features, ordinary growth to 130 that only v41 cannot hold, a 21st field reached only by a rare request, a single-row Google variant, a half-written file and a wrong-type weight. Two good pushes through the fleet measure push delay. A corpus of 500 safe files (added, removed or retuned rules, flipped allows, new quotas) goes through the gate alone to measure false holds. A gate that holds everything scores perfectly on bad pushes and is useless, so the corpus keeps the result honest.
+**Scenarios** ([docs/bench.md](docs/bench.md)). Ten bad files: the three incidents, a partial-replica Cloudflare variant, growth to 210 features, ordinary growth to 130 that only v41 cannot hold, a 21st field reached only by a rare request, a single-row Google variant, a half-written file and a wrong-type weight. Two slow scenarios run separately with longer windows: a debug-tracing rule that makes v44 leak memory until the fleet's 64 MB limit kills it, and a producer that pushes the Cloudflare file and the good file in turn every 15 s. Two good pushes through the fleet measure push delay. A corpus of 500 safe files (added, removed or retuned rules, flipped allows, new quotas) goes through the gate alone to measure false holds. A gate that holds everything scores perfectly on bad pushes and is useless, so the corpus keeps the result honest.
 
 **Method.** Every scenario runs under every strategy on five fleet layouts. The layout seed decides which release each instance runs, and so which releases land in ring 0. The matrix uses a 100-instance fleet (80 bot-proxy, 20 go-policy) so that 240 runs fit in two hours on 4 cores. Each run watches the fleet for 25 s, with B2 baking 5 s per ring. Proportions get Wilson intervals and means over seeds get Student t intervals, both at 95%. A push counts as held when no instance received the file.
 
 ## 4. Results
 
-Full tables: [bench/results/week5.md](bench/results/week5.md). Corpus: [bench/results/week5-good.md](bench/results/week5-good.md).
+Full tables: [bench/results/week7.md](bench/results/week7.md). Corpus: [bench/results/week7-good.md](bench/results/week7-good.md). Slow scenarios: [bench/results/week7-long.md](bench/results/week7-long.md).
 
 | Strategy | Bad pushes held before exposure (95% CI) | Mean share of fleet that got a bad file | Mean failed instance-seconds per push |
 |---|---|---|---|
 | B0 push-all | 5 of 50, 10% (4 to 21%) | 90% | 778 ± 236 |
-| B1 schema | 10 of 50, 20% (11 to 33%) | 80% | 579 ± 213 |
-| B2 staged + alarms | 10 of 50, 20% (11 to 33%) | 26% | 13 ± 6 |
-| **B3 PushGate** | **46 of 50, 92% (81 to 97%)** | **8%** | **0** (3 runs had any failure) |
+| B1 schema | 10 of 50, 20% (11 to 33%) | 80% | 579 ± 214 |
+| B2 staged + alarms | 10 of 50, 20% (11 to 33%) | 26% | 12 ± 6 |
+| **B3 PushGate** | **50 of 50, 100% (93 to 100%)** | **0%** | **0** (no run had any failure) |
 
-![Share of the fleet that got each bad file](bench/results/week5/exposure.svg)
+![Share of the fleet that got each bad file](bench/results/week7/exposure.svg)
 
-**4.1 Staged rollout depends on the layout.** With the same Google file, B2 stopped at 5% of the fleet on two layouts and reached 100% on two others, where rings 0 and 1 held only v41 and v42. There, 12 of 20 go-policy instances crashed until the alarm rolled the file back. The two files that break only v41 reached the whole fleet on one layout in five. B2 still keeps damage low on average (13 failed instance-seconds per push against 778 for B0), because its alarm fires within seconds of exposure (median 7 s after the push). But how far a file gets is decided by where releases sit.
+**4.1 Staged rollout depends on the layout.** With the same Google file, B2 stopped at 5% of the fleet on two layouts and reached 100% on two others, where rings 0 and 1 held only v41 and v42. There, 12 of 20 go-policy instances crashed until the alarm rolled the file back. The two files that break only v41 reached the whole fleet on one layout in five. B2 still keeps damage low on average (12 failed instance-seconds per push against 778 for B0), because its alarm fires within seconds of exposure (median 7 s after the push). But how far a file gets is decided by where releases sit.
 
-![Failing go-policy instances after the Google-shaped push, on the layout where B2 did worst](bench/results/week5/timeline.svg)
+![Failing go-policy instances after the single-row Google push, on the layout where B2 did worst](bench/results/week7/timeline.svg)
 
-**4.2 The gate removes that variance.** B3 held every file that a deployed release fails on with ordinary traffic, on every layout, because it tests each release rather than a sample of instances. The ablations in the [development log](docs/history.md#what-week-3-shows) show which layer does the work. The diff alone holds only the Cloudflare file, which doubles and repeats every key. The 21-field rules and the blank quotas are legal changes in general, so the diff warns on them, and only running the releases shows which ones crash.
+**4.2 The gate removes that variance.** B3 held every bad file on every layout, because it tests each release rather than a sample of instances. The ablations in the [development log](docs/history.md#what-week-3-shows) show which layer does the work. The diff alone holds only the Cloudflare file, which doubles and repeats every key. The 21-field rules and the blank quotas are legal changes in general, so the diff warns on them, and only running the releases shows which ones crash.
 
-**4.3 What the gate misses.** The rare-request file breaks three releases but only on one request shape. The gate held it in 1 of 5 runs, when the recorded traffic sample happened to contain that request. In the other four it passed, and B3 behaved like B2: the crashes were too rare to trip the alarm, and the file reached the whole fleet. A sampled replay is only as good as its sample.
+**4.3 Rare requests.** One file breaks three releases, but only on one request shape. In week 5 the gate held it in 1 of 5 runs, when the recorded traffic sample happened to contain that request; in the other four, B3 behaved like B2 and the file reached the whole fleet. The gate now builds one request for every new or changed rule, filling wildcards from a sampled request, and replays those after the sample. It held the file in 5 of 5 runs: `v41, v42, v43 (40 of 80 instances) crashes on replayed traffic: index out of bounds: the len is 20 but the index is 20`. This covers rules the producer changed. A crash that depends on a request shape unrelated to any changed rule still needs it in the sample.
 
-**4.4 False holds and cost.** None of the 500 safe files was held by B1, by either gate layer alone, or by both (0%, CI 0 to 0.8%). 28% passed with a warning, mostly a new rule shape or changed answers. A check took 95 ms at p50 and 0.13 CPU-seconds with 8 sandboxed processes, or about 0.25 s on a machine also running the fleet. B3 added 0.3 s to a 10 s staged rollout for the good pushes, far under the 2-minute budget we set. The first corpus run did hold 9 safe files, which exposed a race in the gate itself: parallel sandbox processes competed for the same port. The fix (an id per run that `/healthz` must echo, and a retry on bind failure) came before the numbers above.
+**4.4 Slow failures** ([results](bench/results/week7-long.md), 3 layouts). *Memory leak:* a debug-tracing rule makes v44 keep 128 KB per matching request. Nothing crashes on load or on any request, so B2's 5 s bakes saw a healthy fleet and the push completed in 10 s on every layout. The first v44 instance hit the 64 MB memory limit about 137 s later, and every one of the 40 v44 instances was killed once in the 4-minute window. B3 held the file in 0.3 s: `v44 (40 of 80 instances) leaks memory: memory grows with every replayed request`. Rings cannot catch a failure that starts after the last bake; a sandbox that measures memory per request can. *Flapping producer:* six pushes, bad and good in turn, 15 s apart. Under B0 every bad push crashed all 80 instances again, for about 4,400 failed instance-seconds and 53% failed requests in 100 s. B2 rolled each bad push back at ring 0, so one instance failed each time (13 to 18 failed instance-seconds), but the fleet still took 246 file deliveries. B3 rejected the three bad pushes before delivery and delivered only the three good ones (240 deliveries, nothing failed).
 
-**4.5 The cheap checks still matter.** B0's format check stopped the half-written file and B1's schema stopped the wrong-type weight. Those are B0's 5 and B1's 10 holds. The gate adds to them rather than replacing them.
+**4.5 False holds and cost.** None of the 500 safe files was held by B1, by either gate layer alone, or by both (0%, CI 0 to 0.8%). 28% passed with a warning, mostly a new rule shape or changed answers. A check took 99 ms at p50 and 0.14 CPU-seconds with 8 sandboxed processes, or about 0.25 s on a machine also running the fleet. B3 added 0.3 s to a 10 s staged rollout for the good pushes, far under the 2-minute budget we set. The first corpus run did hold 9 safe files, which exposed a race in the gate itself: parallel sandbox processes competed for the same port. The fix (an id per run that `/healthz` must echo, and a retry on bind failure) came before the numbers above.
 
-**4.6 The safety net works without the gate** ([week 4 results](docs/history.md#what-week-4-shows)). With the last-known-good library in every consumer, even B0 pushing the three incident files to all 500 instances crashed nothing. Each vulnerable instance refused the file with the reason, for example `feature 0 has 21 match fields; this release reads 20 input slots`, and kept serving the old one. The library needs a code release to reach every consumer, though. The gate protects the releases already running.
+**4.6 The cheap checks still matter.** B0's format check stopped the half-written file and B1's schema stopped the wrong-type weight. Those are B0's 5 and B1's 10 holds. The gate adds to them rather than replacing them.
+
+**4.7 The safety net works without the gate** ([week 4 results](docs/history.md#what-week-4-shows)). With the last-known-good library in every consumer, even B0 pushing the three incident files to all 500 instances crashed nothing. Each vulnerable instance refused the file with the reason, for example `feature 0 has 21 match fields; this release reads 20 input slots`, and kept serving the old one. The library needs a code release to reach every consumer, though. The gate protects the releases already running.
 
 ## 5. Limitations and threats to validity
 
 - **A simulated fleet is not a real one.** Incidents are rebuilt from the shapes in public postmortems, not the companies' code or traffic. The consumers are small, so the sandbox is cheap. A large binary that takes seconds to start would raise the gate's cost.
 - **One machine.** Timings such as the 2 s alarm and the 0.1 s check come from one 4-core machine. The seeds vary the fleet layout, not the hardware. The seeded matrix runs on 100 instances, and the three incidents were also run on 500 ([development log](docs/history.md)).
-- **The scenarios were written by the same people as the gate.** Eight of ten bad files break at load time, where the sandbox is strongest. The rare-request scenario shows the main blind spot. Two planned scenarios, a slow memory leak and a rollback storm, were not built ([docs/bench.md](docs/bench.md)). The gate is not expected to catch a slow leak, and the rings and alarms remain for that.
+- **The scenarios were written by the same people as the gate.** Eight of ten bad files break at load time, where the sandbox is strongest. The rare-request and memory-leak scenarios were added to probe the gate's blind spots, and the gate was then extended to catch them, so they show the fix works, not that no blind spots remain. A leak that grows too slowly to show in 1,000 requests, or one triggered only by traffic the gate does not build, would still pass, and the rings and alarms remain for that.
 - **The safe corpus is synthetic.** Its mutations are routine by construction. Real producers make stranger safe changes, so 0 of 500 is an optimistic bound.
 - **Speed versus safety.** Security content has to move fast. At about 0.1 s per check the gate adds little delay here, but a fast lane for urgent content was not built.
 - **Failing open is not always safe.** For auth or security rule files it may let through traffic that should be blocked. The library's `fail_closed` mode exists for those.
@@ -131,6 +135,7 @@ Needs Go 1.24+, a recent stable Rust toolchain, Python 3.10+ and, for the video,
 ```bash
 make bench        # the full benchmark: corpus, 240 fleet runs, tables and charts (about 2 hours)
 make bench-quick  # one fleet layout and 100 safe files (about 25 minutes)
+make bench-long   # the memory-leak and flapping-producer scenarios (about an hour)
 make demo         # the demo run, live in the terminal (about 1 minute)
 make demo-video   # ...and render it to docs/demo.mp4
 ```
@@ -169,7 +174,9 @@ pushgate/
 ├── internal/registry/     fleet layout, live registry, stable rings
 ├── producer/              builds feature files from DuckDB, and policy files
 ├── scripts/               smoke test, demo and its video renderer
-├── docs/                  design notes, method, development log, demo video
+├── examples/ci/           a pushgate.json for gate ci, with a small Python consumer
+├── action.yml             the GitHub Action (gate ci on pull requests)
+├── docs/                  design notes, method, CI guide, development log, demo video
 ├── deploy/, seed/         fleet layout and the files every instance starts with
 └── Makefile
 ```
@@ -184,6 +191,8 @@ pushgate/
 | 4 ✅ | Consumer library: last-known-good fallback, declared limits, fail-open or fail-closed, randomized reload backoff |
 | 5 ✅ | PushBench runs: 10 bad scenarios (12 planned) and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, charts |
 | 6 ✅ | Write-up and demo: this README, a 90-second video, one-command `make bench` |
+| 7 ✅ | Close blind spots: a replayed request for every changed rule, memory-growth holds, and the memory-leak and flapping-producer scenarios (12 bad scenarios) |
+| 8 ✅ | Real CI use: `gate ci` and a GitHub Action for any repository's config files ([docs/ci.md](docs/ci.md)) |
 
 What each week found at the time is in [docs/history.md](docs/history.md).
 

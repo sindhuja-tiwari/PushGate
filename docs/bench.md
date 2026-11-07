@@ -87,6 +87,9 @@ nodes ran the query. The scenario pushes bad, good, bad, good, bad, good,
 counts the bad push that reached the most instances, and it also records how
 many file deliveries the fleet took in all.
 
+A leaking process keeps its memory after a rollback, so runs of a long
+scenario, and the run after one, each start on a freshly started fleet.
+
 ## Good-push corpus
 
 `bin/goodcorpus` builds 500 safe files from the seed files, half feature files

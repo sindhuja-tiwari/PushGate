@@ -83,3 +83,17 @@ Every scenario under B0 to B3 on five fleet layouts of 100 instances ([full tabl
 - **No false holds in 500 safe files** (0%, CI 0 to 0.8%). 28% passed with a warning, mostly a new 21-field shape or changed answers, which is the point of warn over hold. The gate cost 0.13 CPU-seconds and 95 ms per check.
 - **The corpus found a gate bug first.** The first run held 9 safe files: parallel sandbox processes raced for the same port, and once a replay hit the wrong process. The fix (own id per run, retry on bind failure) is in this week, and the numbers above are after it.
 - **The cheap checks still matter.** B0's format check stopped the half-written file and B1's schema stopped the wrong-type weight. The gate adds to them rather than replacing them.
+
+## What week 7 shows
+
+The rerun with targeted requests and the memory check ([full tables](../bench/results/week7.md), [slow scenarios](../bench/results/week7-long.md)):
+
+- **The rare-request miss is closed.** B3 held all 50 bad pushes (100%, CI 93 to 100%), up from 46. The gate now replays one request built for every new or changed rule after the sample, so the 21-field rule is reached on every layout, not only when the recorded sample happens to contain its request shape.
+- **No new false holds.** The 500 safe files still pass (0 of 500). A check took 99 ms at p50 and 0.14 CPU-seconds, against 95 ms and 0.13 in week 5.
+- **Rings cannot see a slow leak.** With debug tracing on, v44 grows about 0.5 MB a second under load. B2's bakes saw a healthy fleet and completed the push in 10 s; the first instance hit the 64 MB limit about 137 s later. The gate held it in 0.3 s because v44's memory grows with every replayed request while the last known good file's does not.
+- **A flapping producer multiplies the cost of every strategy without a gate.** B0 crashed the whole fleet three times in 100 s. B2 limited each bad push to one instance, but still delivered 246 files. B3 delivered only the three good files.
+- **A harness bug found on the way.** Runs of one seed share a fleet, and a leaking process keeps its memory after a rollback. The first B1 and B2 memory-leak runs therefore started half full and failed sooner. B2 was rerun on fresh fleets, and PushBench now restarts the fleet around every run of a long scenario.
+
+## What week 8 adds
+
+`gate ci` and a GitHub Action run the gate on any repository without the simulated fleet ([docs/ci.md](ci.md)). A `pushgate.json` lists config files and the command line of each deployed release; each pull request that changes one of those files is replayed against every release and compared with the base branch's version. `examples/ci/` has a 70-line Python rate limiter whose release 1 divides by a limit's `burst`, and `scripts/test_gate_ci.sh` (run in CI) checks that five known-bad files are held and two good ones pass. The `pushgate` workflow runs the action on pull requests that touch `examples/ci/`, the gate or the action itself.
