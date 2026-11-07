@@ -29,7 +29,7 @@ use std::time::{Duration, SystemTime};
 use tiny_http::{Header, Method, Response, Server};
 
 mod version;
-use version::{BUILD_VERSION, INPUT_SLOTS, MAX_FEATURES};
+use version::{BUILD_VERSION, INPUT_SLOTS, MAX_FEATURES, TRACES};
 
 #[derive(Debug, Deserialize)]
 struct FeatureFile {
@@ -46,7 +46,18 @@ struct FeatureSpec {
     /// Match template. `"*"` is a wildcard. Field `i` is compared with request
     /// input slot `i`.
     fields: Vec<String>,
+    /// Debug tracing, added in v44: keep a copy of every request the rule
+    /// matches, for a debug endpoint that was never wired up. Nothing drains
+    /// it, so a traced rule that matches real traffic leaks memory slowly.
+    /// Earlier releases ignore the flag.
+    #[serde(default)]
+    trace: bool,
 }
+
+/// Bytes kept per traced match: the request plus the context captured with it.
+const TRACE_BYTES: usize = 128 * 1024;
+
+static TRACE_LOG: std::sync::Mutex<Vec<Vec<u8>>> = std::sync::Mutex::new(Vec::new());
 
 #[derive(Debug)]
 enum LoadError {
@@ -136,6 +147,9 @@ impl FeatureTable {
             if all {
                 sum += f.weight;
                 matched += 1;
+                if TRACES && f.trace {
+                    TRACE_LOG.lock().unwrap().push(vec![1u8; TRACE_BYTES]);
+                }
             }
         }
         (1.0 / (1.0 + (-sum).exp()), matched)

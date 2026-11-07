@@ -107,7 +107,7 @@ RARE_PIN = {1: "HEAD", 2: "NG", 3: "university", 4: "v1", 5: "v1", 6: "v1"}
 
 
 def build_features(db: str, extra_field: str | None = None, extra_count: int = 0, rare: bool = False,
-                   corrupt: str | None = None) -> dict:
+                   corrupt: str | None = None, trace: bool = False) -> dict:
     con = duckdb.connect(db, read_only=True)
     rows = con.execute(FEATURE_QUERY).fetchall()
     con.close()
@@ -124,6 +124,11 @@ def build_features(db: str, extra_field: str | None = None, extra_count: int = 0
                 # sampled replay can easily miss it.
                 for i, v in RARE_PIN.items():
                     f["fields"][i] = v
+    if trace:
+        # Someone turns on debug tracing for a broad rule (every GET) to chase
+        # a scoring bug. v44 keeps a copy of every traced match and never
+        # frees it: a slow memory leak on half the fleet.
+        features.append({"name": "debug_trace_get", "weight": 0.0, "fields": ["*", "GET"], "trace": True})
     if corrupt == "string-weight":
         # A producer bug: one weight is written as a string. The JSON parses
         # and the format is right, but the consumer's typed parser rejects it.
@@ -134,7 +139,7 @@ def build_features(db: str, extra_field: str | None = None, extra_count: int = 0
 
 
 def cmd_features(a: argparse.Namespace) -> None:
-    doc = build_features(a.db, a.extra_field, a.extra_count, a.rare, a.corrupt)
+    doc = build_features(a.db, a.extra_field, a.extra_count, a.rare, a.corrupt, a.trace)
     text = json.dumps(doc, indent=1)
     if a.corrupt == "truncate":
         # A producer that died mid-write without an atomic rename.
@@ -214,6 +219,7 @@ def main() -> None:
         s.add_argument("--extra-count", type=int, default=5, help="how many rules get the extra field")
         s.add_argument("--rare", action="store_true", help="pin the extra-field rules to a rare request shape")
         s.add_argument("--corrupt", choices=["truncate", "string-weight"], default=None, help="write a broken file")
+        s.add_argument("--trace", action="store_true", help="add a debug-traced rule that leaks memory on v44")
         if name == "run":
             s.add_argument("--interval", type=float, default=300)
         s.set_defaults(fn=fn)

@@ -118,16 +118,28 @@ func (p *proc) run(ctx context.Context, rng *rand.Rand, rngMu *sync.Mutex) {
 			}()
 			waitErr := make(chan error, 1)
 			go func() { <-done; waitErr <- cmd.Wait() }()
+			stopWatch := make(chan struct{})
+			oom := make(chan string, 1)
+			go p.watchMemory(cmd.Process.Pid, stopWatch, oom)
 			select {
 			case err := <-waitErr:
+				close(stopWatch)
 				p.mu.Lock()
 				p.inst.PID = 0
+				p.inst.RSSKB = 0
 				p.inst.LastExit = exitText(err)
-				if s := registry.PanicSummary(p.tail); s != "" {
-					p.inst.LastPanic = s
+				select {
+				case msg := <-oom:
+					p.inst.LastExit = "killed: memory limit"
+					p.inst.LastPanic = msg
+				default:
+					if s := registry.PanicSummary(p.tail); s != "" {
+						p.inst.LastPanic = s
+					}
 				}
 				p.mu.Unlock()
 			case <-ctx.Done():
+				close(stopWatch)
 				_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
 				select {
 				case <-waitErr:
@@ -165,6 +177,50 @@ func (p *proc) run(ctx context.Context, rng *rand.Rand, rngMu *sync.Mutex) {
 		}
 	}
 	p.setState(registry.StateStopped)
+}
+
+// memLimitKB is the resident memory an instance may use before the
+// supervisor kills it, like a container's memory limit. 0 means no limit.
+var memLimitKB int
+
+// watchMemory samples the process's resident memory into the registry and,
+// over the limit, kills it the way an out-of-memory killer would.
+func (p *proc) watchMemory(pid int, stop <-chan struct{}, oom chan<- string) {
+	t := time.NewTicker(500 * time.Millisecond)
+	defer t.Stop()
+	for {
+		select {
+		case <-stop:
+			return
+		case <-t.C:
+		}
+		kb := residentKB(pid)
+		p.mu.Lock()
+		p.inst.RSSKB = kb
+		p.mu.Unlock()
+		if memLimitKB > 0 && kb > memLimitKB {
+			msg := fmt.Sprintf("out of memory: resident memory %d MB over the %d MB limit", kb/1024, memLimitKB/1024)
+			p.record("supervisor: killed: " + msg)
+			oom <- msg
+			_ = syscall.Kill(-pid, syscall.SIGKILL)
+			return
+		}
+	}
+}
+
+func residentKB(pid int) int {
+	raw, err := os.ReadFile(fmt.Sprintf("/proc/%d/status", pid))
+	if err != nil {
+		return 0
+	}
+	for _, line := range strings.Split(string(raw), "\n") {
+		if strings.HasPrefix(line, "VmRSS:") {
+			var kb int
+			fmt.Sscanf(strings.TrimSpace(strings.TrimPrefix(line, "VmRSS:")), "%d", &kb)
+			return kb
+		}
+	}
+	return 0
 }
 
 func exitText(err error) string {
@@ -287,8 +343,10 @@ func main() {
 	backtraces := flag.Bool("backtraces", false, "let Rust consumers print backtraces on panic. Costly in a crash loop: with 400 instances crash-looping, symbolizing backtraces alone can saturate a 4-core machine, much like the core dumps in Cloudflare's postmortem")
 	seed := flag.Int64("seed", 0, "override the layout seed, which decides which release each instance runs (and so which releases land in each ring)")
 	scale := flag.Float64("scale", 1, "multiply per_region counts, for quick local runs (e.g. 0.1)")
+	memLimit := flag.Int("mem-limit-mb", 0, "kill an instance whose resident memory exceeds this many MB, like a container memory limit (0: no limit)")
 	onBad := flag.String("on-bad-file", "", "run every consumer with the last-known-good library: keep_last_good or fail_closed, or off for the naive loader (default: each consumer's on_bad_file in the layout)")
 	flag.Parse()
+	memLimitKB = *memLimit * 1024
 
 	cfg, err := registry.LoadFleetConfig(*cfgPath)
 	if err != nil {

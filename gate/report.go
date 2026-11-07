@@ -45,6 +45,9 @@ type VersionResult struct {
 	LKGP99MS   float64 `json:"lkg_p99_ms"`
 	RSSKB      int     `json:"rss_kb"`
 	LKGRSSKB   int     `json:"lkg_rss_kb"`
+	// Memory added while replaying, from serving to the last request.
+	GrowthKB    int `json:"rss_growth_kb"`
+	LKGGrowthKB int `json:"lkg_rss_growth_kb"`
 }
 
 // Report is the gate's full answer for one candidate file.
@@ -107,12 +110,8 @@ func (r *Report) Summary() string {
 		g.n += inst[f.Version]
 	}
 	for _, g := range groups {
-		if strings.HasPrefix(g.check, "load: ") || strings.HasPrefix(g.check, "replay: ") {
-			verb, cause, _ := strings.Cut(g.check, ": ")
-			what := "crashes loading the file"
-			if verb == "replay" {
-				what = "crashes on replayed traffic"
-			}
+		verb, cause, _ := strings.Cut(g.check, ": ")
+		if what, ok := map[string]string{"load": "crashes loading the file", "replay": "crashes on replayed traffic", "memory-growth": "leaks memory"}[verb]; ok {
 			holds = append(holds, fmt.Sprintf("%s (%d of %d instances) %s: %s", strings.Join(g.versions, ", "), g.n, total, what, cause))
 		} else {
 			holds = append(holds, g.check)

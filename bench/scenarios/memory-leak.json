@@ -1,0 +1,42 @@
+{
+  "name": "memory-leak",
+  "kind": "bad",
+  "incident": "Slow memory leak",
+  "consumer": "bot-proxy",
+  "summary": "Debug tracing is turned on for a broad rule (every GET). v44 keeps a copy of every traced match and never frees it, so each v44 instance grows until the fleet's 64 MB memory limit kills it, about two minutes after it loads the file: long after B2's 5 s bakes. Nothing crashes on load or on any single request.",
+  "breaks": [
+    "v44"
+  ],
+  "long": true,
+  "window": "4m",
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{bad}",
+      "--trace"
+    ]
+  ]
+}

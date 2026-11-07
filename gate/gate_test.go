@@ -323,3 +323,22 @@ func TestTargetedPolicies(t *testing.T) {
 		}
 	}
 }
+
+// A traced rule leaks memory on v44 only. No release crashes, but the
+// replay shows v44's memory growing with every request.
+func TestSandboxMemoryLeakHolds(t *testing.T) {
+	g := sandboxGate(t, "bot-proxy", "feature-good.json", false)
+	r, err := g.Check(context.Background(), "bot-proxy", read(t, "feature-trace.json"))
+	if !errors.Is(err, ErrHeld) || !has(r, "sandbox", "memory-growth", Hold) || len(crashed(r)) != 0 {
+		t.Fatalf("want a memory-growth hold and no crash, got %v\n%s", err, r.Text())
+	}
+	for _, f := range r.Findings {
+		if f.Check == "memory-growth" && f.Version != 44 {
+			t.Fatalf("only v44 traces: %s", f.Detail)
+		}
+	}
+	t.Log(r.Text())
+	if !strings.Contains(r.Summary(), "v44 (50 of 100 instances) leaks memory") {
+		t.Fatalf("summary: %s", r.Summary())
+	}
+}

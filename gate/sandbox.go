@@ -40,6 +40,7 @@ type runResult struct {
 	latencies []time.Duration
 	outputs   []string
 	rssKB     int
+	startKB   int // resident memory once serving, before the replay
 }
 
 // sandboxRun starts bin with data as its config file, waits for it to serve,
@@ -156,6 +157,7 @@ func sandboxOnce(ctx context.Context, bin string, data []byte, requests []string
 		time.Sleep(20 * time.Millisecond)
 	}
 	res.loaded = true
+	res.startKB = rss(cmd.Process.Pid)
 
 	for i, path := range requests {
 		t0 := time.Now()
@@ -335,10 +337,10 @@ func sandbox(ctx context.Context, r *Report, cfg Config, consumer string, cand, 
 				return
 			}
 			vr.Loaded, vr.Crashed, vr.CrashedOn, vr.Request, vr.Panic = cr.loaded, cr.crashed, cr.crashedOn, cr.request, cleanPanic(cr.panic)
-			vr.Requests, vr.Errors, vr.RSSKB = len(cr.latencies), cr.errors, cr.rssKB
+			vr.Requests, vr.Errors, vr.RSSKB, vr.GrowthKB = len(cr.latencies), cr.errors, cr.rssKB, cr.rssKB-cr.startKB
 			vr.P50MS, vr.P99MS = percentile(cr.latencies, 0.5), percentile(cr.latencies, 0.99)
 			if lerr == nil && lr != nil && !lr.crashed {
-				vr.LKGP99MS, vr.LKGRSSKB = percentile(lr.latencies, 0.99), lr.rssKB
+				vr.LKGP99MS, vr.LKGRSSKB, vr.LKGGrowthKB = percentile(lr.latencies, 0.99), lr.rssKB, lr.rssKB-lr.startKB
 				n, diff := min(len(cr.outputs), len(lr.outputs), sampled), 0
 				for i := 0; i < n; i++ {
 					if cr.outputs[i] != lr.outputs[i] {
@@ -383,6 +385,17 @@ func judge(r *Report, b Budgets, v VersionResult, instances, sampled, planned in
 	}
 	if v.OutputDiff > b.OutputWarn {
 		r.addSafe(Finding{Layer: "sandbox", Check: "outputs", Severity: Warn, Version: v.Version, Detail: fmt.Sprintf("%s answers %.0f%% of replayed requests differently", who, 100*v.OutputDiff)})
+	}
+	// A leak per request shows in a short replay: 1,000 requests is minutes
+	// of one instance's traffic. Hold when memory grows steadily with the
+	// candidate and not with the last known good file.
+	if v.Requests >= 100 {
+		perReq := float64(v.GrowthKB) / float64(v.Requests)
+		if perReq > b.GrowthHoldKB && v.GrowthKB > 2048 && v.GrowthKB > 4*v.LKGGrowthKB {
+			r.addSafe(Finding{Layer: "sandbox", Check: "memory-growth", Severity: Hold, Version: v.Version, Cause: "memory grows with every replayed request",
+				Detail: fmt.Sprintf("%s memory grew %.1f MB over %d replayed requests (%.1f KB per request) vs %.1f MB with last known good; it will keep growing under fleet traffic",
+					who, float64(v.GrowthKB)/1024, v.Requests, perReq, float64(v.LKGGrowthKB)/1024)})
+		}
 	}
 	if v.LKGRSSKB > 0 && float64(v.RSSKB) > b.RSSWarnX*float64(v.LKGRSSKB) {
 		r.addSafe(Finding{Layer: "sandbox", Check: "memory", Severity: Warn, Version: v.Version, Detail: fmt.Sprintf("%s uses %d KB vs %d KB", who, v.RSSKB, v.LKGRSSKB)})

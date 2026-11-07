@@ -55,7 +55,21 @@ type Scenario struct {
 	Breaks   []string   `json:"breaks"`
 	Good     [][]string `json:"good"`
 	Bad      [][]string `json:"bad"`
-	path     string
+	// Window, if set, replaces -window for this scenario: a slow failure
+	// needs a longer look. Scenarios with Long run only with -long.
+	Window string `json:"window,omitempty"`
+	Long   bool   `json:"long,omitempty"`
+	// Flap, if set, makes the producer alternate: bad, good, bad, good...,
+	// one push every Interval, Pushes in all. This is the Cloudflare
+	// producer, whose output flipped as different database nodes ran the
+	// query, and it is what turns rollback into a rollback storm.
+	Flap *Flap `json:"flap,omitempty"`
+	path string
+}
+
+type Flap struct {
+	Interval string `json:"interval"`
+	Pushes   int    `json:"pushes"`
 }
 
 // Sample is one look at the consumer's instances during a run.
@@ -66,18 +80,24 @@ type Sample struct {
 
 // Run is the measured outcome of one scenario under one strategy.
 type Run struct {
-	Scenario         string          `json:"scenario"`
-	Kind             string          `json:"kind"`
-	Seed             int64           `json:"seed"`
-	Incident         string          `json:"incident"`
-	Strategy         string          `json:"strategy"`
-	Consumer         string          `json:"consumer"`
-	Fleet            int             `json:"fleet"`
-	Vulnerable       int             `json:"vulnerable"` // instances whose release the bad file breaks
-	Push             *rollout.Result `json:"push"`
-	WindowS          float64         `json:"window_s"`
-	PeakFailing      int             `json:"peak_failing"`
-	PeakFailingShare float64         `json:"peak_failing_share"`
+	Scenario   string          `json:"scenario"`
+	Kind       string          `json:"kind"`
+	Seed       int64           `json:"seed"`
+	Incident   string          `json:"incident"`
+	Strategy   string          `json:"strategy"`
+	Consumer   string          `json:"consumer"`
+	Fleet      int             `json:"fleet"`
+	Vulnerable int             `json:"vulnerable"` // instances whose release the bad file breaks
+	Push       *rollout.Result `json:"push"`
+	// Pushes holds every push of a flapping run, in order; Push is then
+	// the bad push that reached the most instances.
+	Pushes []*rollout.Result `json:"pushes,omitempty"`
+	// Deliveries counts files written to instances during the run, rollbacks
+	// included: the load a rollback storm puts on the fleet.
+	Deliveries       int     `json:"deliveries,omitempty"`
+	WindowS          float64 `json:"window_s"`
+	PeakFailing      int     `json:"peak_failing"`
+	PeakFailingShare float64 `json:"peak_failing_share"`
 	// PeakRefused is the most instances at once whose last-known-good
 	// library refused the bad file (and kept serving, unless fail-closed).
 	PeakRefused      int               `json:"peak_refused"`
@@ -106,6 +126,8 @@ func main() {
 	manage := flag.Bool("manage", true, "start and stop the fleet and loadgen")
 	seedList := flag.String("seeds", "0", "comma-separated fleet layout seeds; each restarts the fleet with a different release-to-instance assignment (0: the layout's own seed)")
 	replay := flag.Int("replay", 1000, "b3: recorded requests the sandbox replays per release")
+	long := flag.Bool("long", false, "also run scenarios marked long (slow failures with their own, longer window)")
+	memLimit := flag.Int("mem-limit-mb", 0, "fleet: kill instances over this resident memory, like a container limit (0: none)")
 	onBad := flag.String("on-bad-file", "", "run consumers with the last-known-good library: keep_last_good or fail_closed (default: the naive loaders)")
 	flag.Parse()
 
@@ -113,6 +135,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if !*long {
+		kept := scenarios[:0]
+		for _, sc := range scenarios {
+			if !sc.Long {
+				kept = append(kept, sc)
+			}
+		}
+		scenarios = kept
+	}
+	fleetMemLimitMB = *memLimit
 	fleet := rollout.SimFleet{Registry: registryURL}
 	traffic := filepath.Join(*work, "traffic.txt")
 	gcfg := gate.DefaultConfig(fleet, rollout.Store{Dir: filepath.Join(*work, "rollout")})
@@ -174,7 +206,13 @@ func main() {
 		for _, sc := range scenarios {
 			for _, s := range strats {
 				log.Printf("== seed %d / %s / %s", seed, sc.Name, s.Name)
-				r, err := runOne(fleet, sc, s, files[sc.Name][0], files[sc.Name][1], *window, *work, jsonl)
+				w := *window
+				if sc.Window != "" {
+					if w, err = time.ParseDuration(sc.Window); err != nil {
+						log.Fatalf("%s: bad window: %v", sc.Name, err)
+					}
+				}
+				r, err := runOne(fleet, sc, s, files[sc.Name][0], files[sc.Name][1], w, *work, jsonl)
 				if err != nil {
 					log.Fatalf("%s/%s: %v", sc.Name, s.Name, err)
 				}
@@ -255,6 +293,8 @@ func runCmd(argv []string, vars map[string]string) error {
 	return nil
 }
 
+var fleetMemLimitMB int
+
 func startFleet(scale float64, rate int, seed int64, onBad, jsonl, traffic string) (func(), error) {
 	_ = os.Remove(jsonl)
 	_ = os.Remove(traffic)
@@ -264,6 +304,9 @@ func startFleet(scale float64, rate int, seed int64, onBad, jsonl, traffic strin
 	}
 	if seed != 0 {
 		args = append(args, "-seed", fmt.Sprint(seed))
+	}
+	if fleetMemLimitMB > 0 {
+		args = append(args, "-mem-limit-mb", fmt.Sprint(fleetMemLimitMB))
 	}
 	fl := exec.Command("bin/fleet", args...)
 	fl.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
@@ -375,13 +418,45 @@ func runOne(fleet rollout.SimFleet, sc Scenario, s rollout.Strategy, good, bad [
 	start := time.Now()
 	ctx, cancel := context.WithTimeout(context.Background(), window)
 	defer cancel()
+	// The pushes: one bad file, or for a flapping producer bad and good in
+	// turn on a fixed schedule.
+	seq, every := [][]byte{bad}, time.Duration(0)
+	if sc.Flap != nil {
+		if every, err = time.ParseDuration(sc.Flap.Interval); err != nil {
+			return nil, fmt.Errorf("flap interval: %w", err)
+		}
+		seq = nil
+		for i := 0; i < sc.Flap.Pushes; i++ {
+			seq = append(seq, [][]byte{bad, good}[i%2])
+		}
+	}
+	all := make(chan []*rollout.Result, 1)
 	done := make(chan *rollout.Result, 1)
 	go func() {
-		r, err := rn.Push(ctx, s, sc.Consumer, bad)
-		if err != nil {
-			log.Printf("push error: %v", err)
+		var results []*rollout.Result
+		for i, file := range seq {
+			due := start.Add(time.Duration(i) * every)
+			select {
+			case <-time.After(time.Until(due)):
+			case <-ctx.Done():
+			}
+			if ctx.Err() != nil {
+				break
+			}
+			r, err := rn.Push(ctx, s, sc.Consumer, file)
+			if err != nil {
+				log.Printf("push error: %v", err)
+			}
+			if r != nil {
+				results = append(results, r)
+			}
 		}
-		done <- r
+		all <- results
+		if len(seq) == 1 && len(results) == 1 {
+			done <- results[0]
+		} else {
+			done <- nil
+		}
 	}()
 
 	badVersion := configVersionOf(bad)
@@ -427,6 +502,23 @@ sampling:
 	end := time.Now()
 	if done != nil {
 		pushed = <-done
+	}
+	results := <-all
+	if sc.Flap != nil {
+		run.Pushes = results
+		badCV := configVersionOf(bad)
+		for _, r := range results {
+			if r.ConfigVersion == badCV && (pushed == nil || r.Exposed > pushed.Exposed) {
+				pushed = r
+			}
+		}
+	}
+	for _, r := range results {
+		for _, e := range r.Events {
+			if strings.HasSuffix(e.Kind, "_delivered") {
+				run.Deliveries += e.Count
+			}
+		}
 	}
 	run.Push = pushed
 	if run.Push == nil {

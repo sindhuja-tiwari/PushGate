@@ -23,12 +23,13 @@ type Budgets struct {
 	LatencyHoldX  float64 // sandbox: p99 above this multiple of last known good holds...
 	LatencyHoldMS float64 // ...if also this many ms above it
 	RSSWarnX      float64 // sandbox: memory above this multiple warns
+	GrowthHoldKB  float64 // sandbox: memory growth per replayed request above this holds
 }
 
 func DefaultBudgets() Budgets {
 	return Budgets{
 		HoldGrowth: 0.5, WarnGrowth: 0.2, PSIWarn: 0.25, ChurnWarn: 0.5, FlipWarn: 0.2,
-		OutputWarn: 0.1, ErrorHold: 0.01, LatencyHoldX: 3, LatencyHoldMS: 20, RSSWarnX: 2,
+		OutputWarn: 0.1, ErrorHold: 0.01, LatencyHoldX: 3, LatencyHoldMS: 20, RSSWarnX: 2, GrowthHoldKB: 4,
 	}
 }
 
