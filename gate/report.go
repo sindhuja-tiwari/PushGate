@@ -208,3 +208,45 @@ func (r *Report) Text() string {
 	}
 	return b.String()
 }
+
+// Markdown renders the report for a CI job summary or a pull request
+// comment: the verdict and summary, findings above info, and what each
+// release did with the file.
+func (r *Report) Markdown(file string) string {
+	var b strings.Builder
+	icon := map[string]string{"pass": "✅", "hold": "⛔"}[r.Verdict]
+	fmt.Fprintf(&b, "### %s PushGate %s: `%s`\n\n", icon, r.Verdict, file)
+	fmt.Fprintf(&b, "Consumer **%s**, candidate `%s`, last known good `%s`, checked in %d ms.\n\n", r.Consumer, r.Candidate, r.LastKnownGood, r.DurationMS)
+	if r.Verdict == "hold" {
+		fmt.Fprintf(&b, "> %s\n\n", r.Summary())
+	}
+	var shown []Finding
+	for _, f := range r.Findings {
+		if f.Severity != Info {
+			shown = append(shown, f)
+		}
+	}
+	if len(shown) > 0 {
+		b.WriteString("| Severity | Layer | Check | Detail |\n|---|---|---|---|\n")
+		for _, f := range shown {
+			fmt.Fprintf(&b, "| %s | %s | %s | %s |\n", f.Severity, f.Layer, f.Check, strings.ReplaceAll(f.Detail, "|", "\\|"))
+		}
+		b.WriteString("\n")
+	}
+	if len(r.Versions) > 0 {
+		b.WriteString("| Release | Instances | Result | Requests | Errors | p99 ms (last known good) | Answers changed |\n|---|---|---|---|---|---|---|\n")
+		for _, v := range r.Versions {
+			res := "ok"
+			switch {
+			case v.Crashed && v.CrashedOn > 0:
+				res = fmt.Sprintf("crashed on request %d", v.CrashedOn)
+			case v.Crashed:
+				res = "crashed on load"
+			}
+			fmt.Fprintf(&b, "| v%d | %d | %s | %d | %d | %.2f (%.2f) | %.1f%% |\n",
+				v.Version, v.Instances, res, v.Requests, v.Errors, v.P99MS, v.LKGP99MS, 100*v.OutputDiff)
+		}
+		b.WriteString("\n")
+	}
+	return b.String()
+}

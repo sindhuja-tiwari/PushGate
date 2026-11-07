@@ -25,6 +25,8 @@ jobs:
         run: make build
       - name: Unit tests (gate sandbox tests use the binaries built above)
         run: make test
+      - name: gate ci self-test (known-bad files held, known-good pass)
+        run: scripts/test_gate_ci.sh
       - name: Smoke test (100-instance fleet, three incident shapes)
         run: .venv/bin/python scripts/smoke.py --scale 0.2 --rate 500
       - name: PushBench dry run (100 instances, short windows)

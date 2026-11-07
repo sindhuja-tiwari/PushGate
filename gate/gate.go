@@ -37,6 +37,40 @@ type Config struct {
 	Budgets    Budgets
 	// LKG, if set, is used instead of the store's last known good file.
 	LKG []byte
+
+	// For consumers outside PushBench (gate ci, from a pushgate.json spec):
+	// Releases replaces the fleet registry and bin/; Health is the path that
+	// answers 200 once the consumer serves (default /healthz); Answer is the
+	// JSON field compared between candidate and last known good; Format
+	// picks a built-in semantic diff (bot-features, quota-policy), and Rows
+	// and Key give a generic one: the top-level array of rows and the fields
+	// that identify a row.
+	Releases []Release
+	Health   string
+	Answer   string
+	Format   string
+	Rows     string
+	Key      []string
+}
+
+// kind maps a consumer to the built-in checks it gets.
+func (c Config) kind(consumer string) string {
+	switch c.Format {
+	case "bot-features":
+		return "bot-proxy"
+	case "quota-policy":
+		return "go-policy"
+	case "":
+		return consumer
+	}
+	return c.Format
+}
+
+func (c Config) answer(consumer string) string {
+	if c.Answer != "" {
+		return c.Answer
+	}
+	return consumer
 }
 
 // DefaultConfig runs both layers with the default budgets.
@@ -107,7 +141,7 @@ func (g *Gate) Check(ctx context.Context, consumer string, data []byte) (*Report
 	}
 	if g.Cfg.Diff {
 		r.Layers = append(r.Layers, "diff")
-		diff(r, consumer, data, lkg, g.Cfg.Budgets)
+		diff(r, g.Cfg.kind(consumer), data, lkg, g.Cfg)
 	}
 	if g.Cfg.Sandbox {
 		r.Layers = append(r.Layers, "sandbox")

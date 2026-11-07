@@ -1,0 +1,42 @@
+{
+  "consumers": [
+    {
+      "name": "ratelimiter",
+      "files": ["examples/ci/config/limits.json"],
+      "releases": [
+        {"version": "v1", "instances": 30, "command": ["python3", "examples/ci/ratelimiter/server.py", "--release", "1", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v2", "instances": 70, "command": ["python3", "examples/ci/ratelimiter/server.py", "--release", "2", "--port", "{port}", "--config", "{config}"]}
+      ],
+      "traffic": "examples/ci/ratelimiter/traffic.txt",
+      "answer": "allowed",
+      "rows": "limits",
+      "key": ["route"]
+    },
+    {
+      "name": "bot-proxy",
+      "files": ["examples/ci/config/features.json"],
+      "format": "bot-features",
+      "releases": [
+        {"version": "v41", "instances": 20, "command": ["bin/bot-proxy/v41", "--id", "{id}", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v42", "instances": 60, "command": ["bin/bot-proxy/v42", "--id", "{id}", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v43", "instances": 120, "command": ["bin/bot-proxy/v43", "--id", "{id}", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v44", "instances": 200, "command": ["bin/bot-proxy/v44", "--id", "{id}", "--port", "{port}", "--config", "{config}"]}
+      ],
+      "traffic": "gate/testdata/traffic.txt",
+      "answer": "bot"
+    },
+    {
+      "name": "go-policy",
+      "files": ["examples/ci/config/policy.json"],
+      "format": "quota-policy",
+      "releases": [
+        {"version": "v41", "instances": 10, "command": ["bin/go-policy/v41", "--id", "{id}", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v42", "instances": 20, "command": ["bin/go-policy/v42", "--id", "{id}", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v43", "instances": 30, "command": ["bin/go-policy/v43", "--id", "{id}", "--port", "{port}", "--config", "{config}"]},
+        {"version": "v44", "instances": 40, "command": ["bin/go-policy/v44", "--id", "{id}", "--port", "{port}", "--config", "{config}"]}
+      ],
+      "traffic": "gate/testdata/traffic.txt",
+      "answer": "allow"
+    }
+  ]
+}
