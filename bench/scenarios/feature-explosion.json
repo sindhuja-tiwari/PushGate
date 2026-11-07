@@ -1,0 +1,51 @@
+{
+  "name": "feature-explosion",
+  "kind": "bad",
+  "incident": "Growth past the limit",
+  "consumer": "bot-proxy",
+  "summary": "A legitimate-looking model update adds 100 new, distinct features (110 to 210). No duplicates, every rule well formed, but past the 200-feature preallocation on every release.",
+  "breaks": [
+    "v41",
+    "v42",
+    "v43",
+    "v44"
+  ],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/big.duckdb",
+      "--features",
+      "210"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/big.duckdb",
+      "--out",
+      "{bad}"
+    ]
+  ]
+}

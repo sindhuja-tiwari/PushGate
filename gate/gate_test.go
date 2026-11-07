@@ -149,6 +149,24 @@ func TestCleanPanic(t *testing.T) {
 	if got := cleanPanic(in); got != want {
 		t.Fatalf("got  %q\nwant %q", got, want)
 	}
+	// Each sandbox run has its own id, so /healthz can prove it is ours.
+	if got := cleanPanic(strings.Replace(in, "v44 sandbox:", "v44 sandbox-17:", 1)); got != want {
+		t.Fatalf("numbered id: got %q", got)
+	}
+}
+
+func TestBindFailed(t *testing.T) {
+	for _, s := range []string{
+		"bot-proxy: cannot bind port 42317: Address already in use (os error 98)",
+		"2026/11/05 17:33:28 listen tcp 127.0.0.1:39669: bind: address already in use",
+	} {
+		if !bindFailed(s) {
+			t.Errorf("not recognised as a bind failure: %s", s)
+		}
+	}
+	if bindFailed("panicked at src/main.rs:108:20: index out of bounds") {
+		t.Error("a real panic is not a bind failure")
+	}
 }
 
 func TestSummaryGroupsReleases(t *testing.T) {

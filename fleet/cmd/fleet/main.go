@@ -285,6 +285,7 @@ func main() {
 	listen := flag.String("listen", "127.0.0.1:19000", "address for /registry and /metrics")
 	fresh := flag.Bool("fresh", false, "reset every instance's config file to the seed file")
 	backtraces := flag.Bool("backtraces", false, "let Rust consumers print backtraces on panic. Costly in a crash loop: with 400 instances crash-looping, symbolizing backtraces alone can saturate a 4-core machine, much like the core dumps in Cloudflare's postmortem")
+	seed := flag.Int64("seed", 0, "override the layout seed, which decides which release each instance runs (and so which releases land in each ring)")
 	scale := flag.Float64("scale", 1, "multiply per_region counts, for quick local runs (e.g. 0.1)")
 	onBad := flag.String("on-bad-file", "", "run every consumer with the last-known-good library: keep_last_good or fail_closed, or off for the naive loader (default: each consumer's on_bad_file in the layout)")
 	flag.Parse()
@@ -292,6 +293,9 @@ func main() {
 	cfg, err := registry.LoadFleetConfig(*cfgPath)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if *seed != 0 {
+		cfg.Seed = *seed
 	}
 	if *scale != 1 {
 		for i := range cfg.Consumers {

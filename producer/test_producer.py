@@ -45,6 +45,26 @@ class ProducerTest(unittest.TestCase):
         self.assertEqual(arity.count(21), 5)
         self.assertEqual(doc["features"][0]["fields"][20], "v1")
 
+    def test_partial_replica_duplicates_some_rows(self) -> None:
+        run("grant-r0", "--db", self.db, "--columns", "30")
+        doc = self.features()
+        self.assertEqual(len(doc["features"]), 140)
+        names = [f["name"] for f in doc["features"]]
+        self.assertEqual(len(set(names)), 110)
+
+    def test_rare_extra_field(self) -> None:
+        doc = self.features("--extra-field", "v1", "--extra-count", "1", "--rare")
+        f = doc["features"][0]["fields"]
+        self.assertEqual((len(f), f[1], f[2], f[20]), (21, "HEAD", "NG", "v1"))
+
+    def test_corrupt_files(self) -> None:
+        doc = self.features("--corrupt", "string-weight")
+        self.assertIsInstance(doc["features"][0]["weight"], str)
+        run("features", "--db", self.db, "--out", self.out, "--corrupt", "truncate")
+        with open(self.out) as fh:
+            with self.assertRaises(json.JSONDecodeError):
+                json.load(fh)
+
     def test_blank_quota_policy(self) -> None:
         out = os.path.join(self.dir, "p.json")
         run("policy", "--out", out, "--blank-quota", "3")

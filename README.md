@@ -6,7 +6,7 @@ PushGate is an open-source safety gate for fast-moving config and data pushes. B
 
 It ships with **PushBench**, a reproducible benchmark of incidents rebuilt from public postmortems, so you can measure how much of a fleet each rollout strategy would have lost.
 
-> **Status: week 4 of 6 done.** The simulated fleet, both consumers at four releases each, the DuckDB producer, the three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback), **PushGate's pre-exposure gate (B3)** and the **consumer-side last-known-good library** (Go and Rust) work end to end, with benchmark results committed. Next: the full benchmark with good pushes, seeds and confidence intervals. See [Roadmap](#roadmap).
+> **Status: week 5 of 6 done.** The simulated fleet, both consumers at four releases each, the DuckDB producer, the three baselines (B0 push-all, B1 schema, B2 staged rollout with alarms and rollback), **PushGate's pre-exposure gate (B3)** and the **consumer-side last-known-good library** (Go and Rust) work end to end. The full benchmark (10 bad scenarios, 2 good pushes and a 500-file good-push corpus, 5 fleet layouts, confidence intervals) is committed. Next: the write-up and demo. See [Roadmap](#roadmap).
 
 ## Results so far
 
@@ -20,7 +20,9 @@ Three public incidents, rebuilt as scenarios on a 500-instance fleet:
 | **B3 PushGate** | Held all three before any instance got the file, on both fleet sizes, in 0.2 to 0.3 s per check. Each held push names the releases that crash and the panic. |
 | **Last-known-good library** | With the library inside the consumers, even B0 push-all crashed nothing: vulnerable releases refused the file and kept serving the old one. No requests failed. |
 
-Staged rollout picks ring 0 by instance, not by release, so whether it catches a release-specific bad file is partly luck. Running the file through every deployed consumer version *before* exposure removes the luck. Details in [What week 2 shows](#what-week-2-shows), [What week 3 shows](#what-week-3-shows) and [What week 4 shows](#what-week-4-shows).
+Across 10 bad scenarios and 5 fleet layouts (week 5, 100-instance fleet), B3 held 46 of 50 bad pushes before any instance got them (92%, 95% CI 81 to 97%), against 10 of 50 for B2. It held none of 500 safe files (0%, CI 0 to 0.8%) and added 0.3 s to a 10 s staged rollout. The four it missed are the rare-request scenario, which the gate catches only when the traffic sample happens to contain the rare request.
+
+Staged rollout picks ring 0 by instance, not by release, so whether it catches a release-specific bad file is partly luck. Running the file through every deployed consumer version *before* exposure removes the luck. Details in [What week 2 shows](#what-week-2-shows), [What week 3 shows](#what-week-3-shows), [What week 4 shows](#what-week-4-shows) and [What week 5 shows](#what-week-5-shows).
 
 ## Why this exists
 
@@ -102,9 +104,9 @@ How B0 to B2 work, and what B2 cannot see, is in [docs/baselines.md](docs/baseli
 
 **Scenarios**
 
-- **Done (3):** Cloudflare shape (duplicate rows past a preallocated limit), CrowdStrike shape (extra input field), Google Cloud shape (blank field on an unflagged path).
-- **Planned (about 9 more):** a producer flipping between good and bad output, a file safe for v44 but crashing v41, a slow memory leak that appears after 10 minutes, a failure that needs a rare request type the replay may miss, a rollback storm, and variations on the three above.
-- **Good-push corpus (about 500, not built):** added rules, retuned weights, normal 5 to 20% growth. This measures how often the gate wrongly blocks a safe push. A gate that blocks everything scores perfectly on bad pushes and is useless, so this corpus keeps the results honest.
+- **Bad (10):** the three incidents (Cloudflare duplicate rows, CrowdStrike extra input field, Google blank quota), plus a partial-replica Cloudflare variant, growth to 210 features, ordinary growth that only the oldest release cannot hold, a 21st field reached only by a rare request, a single-row Google variant, a half-written file and a wrong-type weight. Full list in [docs/bench.md](docs/bench.md).
+- **Good (2 through the fleet, 500 through the gate):** feature and project growth through the fleet, to measure push delay, and a corpus of 500 safe files (added rules, retuned weights, removed or replaced rules, flipped allows, new quotas) to measure false holds. A gate that blocks everything scores perfectly on bad pushes and is useless, so the corpus keeps the results honest.
+- **Not built:** a slow memory leak and a rollback storm, which the roadmap planned. Why is in [docs/bench.md](docs/bench.md).
 
 **Metrics**
 
@@ -137,7 +139,9 @@ pushgate/
 │   └── cmd/rollout/       push, set-lkg, rollback, freeze, unfreeze, status
 ├── bench/
 │   ├── scenarios/         incident scenarios (one JSON file each)
-│   ├── cmd/pushbench/     runs scenarios x strategies and measures the damage
+│   ├── cmd/pushbench/     runs scenarios x strategies x fleet seeds and measures the damage
+│   ├── cmd/goodcorpus/    500 safe files through the schema check and the gate (false holds, gate cost)
+│   ├── cmd/report/        tables with confidence intervals, and SVG charts
 │   └── results/           committed benchmark results
 ├── lib/
 │   ├── go/lkg/            last-known-good library for Go consumers
@@ -147,13 +151,11 @@ pushgate/
 ├── deploy/                fleet.json (layout), prometheus.yml
 ├── seed/                  initial config files every instance starts with
 ├── scripts/               smoke.py (CI check), demo_week1.sh
-├── docs/                  versions.md, baselines.md (B0 to B2), gate.md (B3), lkg.md (the library)
+├── docs/                  versions.md, baselines.md (B0 to B2), gate.md (B3), lkg.md (the library), bench.md (method)
 ├── .github/workflows/     CI
 ├── Dockerfile, docker-compose.yml
 └── Makefile
 ```
-
-Planned for later weeks: the good-push corpus under `bench/`.
 
 ## Quickstart
 
@@ -233,7 +235,7 @@ Same machine and settings as week 2, now with B3 and two ablations that run one 
 - **B3 held every bad file before any instance got it,** on the 500- and the 100-instance fleet. On the small fleet B2 again let the Google file reach 100% (12 of 20 go-policy instances crashed) and the CrowdStrike file reach 10%; B3 exposed nothing. Ring 0 luck no longer decides these shapes. Each check took 0.2 to 0.3 s against a one-minute budget.
 - **The sandbox does the work.** The diff alone catches only the Cloudflare file. It sees the 21-field rules and the blank quotas, but those are legal changes in general, so it warns rather than holds. Only running v41 to v44 shows which releases crash, which is the project's central claim.
 - **The report says what would have happened.** For CrowdStrike: v41, v42 and v43 (200 of 400 instances) crash on the second replayed request with an index out of bounds at `main.rs:108`, while v44 is fine.
-- **What this does not show yet:** how often the gate holds a good push. The good-push corpus in week 5 measures that. So far it passes identical files and 10% growth (unit tests).
+- **Good pushes:** week 3 checked only identical files and 10% growth. Week 5 ran 500 safe files through the gate, and none were held.
 
 ### What week 4 shows
 
@@ -250,6 +252,26 @@ The same benchmark with every consumer loading through the last-known-good libra
 - **Fail-closed trades availability for safety, as designed.** With `fail_closed`, B0 failed about as many requests as with no library, since refusing instances answer 503, but nothing crash-looped. B2 recovered in 3 to 6.5 s.
 - **Rust panics cannot be caught** (`panic = "abort"`), so bot-proxy relies on declared limits. Go's library also catches panics: go-policy's unchanged v43 code still hits the nil quota, and the library turns that into a rejection naming `main.go:101`.
 
+### What week 5 shows
+
+Every scenario under B0 to B3 on five fleet layouts of 100 instances ([full tables](bench/results/week5.md), [method](docs/bench.md)):
+
+![Share of the fleet that got each bad file](bench/results/week5/exposure.svg)
+
+| Strategy | Bad pushes held before exposure (95% CI) | Mean share of fleet that got a bad file | Mean failed instance-seconds |
+|---|---|---|---|
+| B0 push-all | 5 of 50, 10% (4 to 21%) | 90% | 778 ± 236 |
+| B1 schema | 10 of 50, 20% (11 to 33%) | 80% | 579 ± 213 |
+| B2 staged + alarms | 10 of 50, 20% (11 to 33%) | 26% | 13 ± 6 |
+| B3 PushGate | 46 of 50, 92% (81 to 97%) | 8% | 0 (3 runs had any failure) |
+
+- **B2's result depends on the layout.** With the same Google file, B2 stopped at 5% of the fleet on two layouts and reached 100% on two others, where rings 0 and 1 held only safe releases. On those, 12 of 20 go-policy instances crashed until the alarm rolled it back, about 10 s later. The same happened to the two v41-only files on one layout in five.
+- **B3 removed that variance.** It held every file that the deployed releases fail on with ordinary traffic, on every layout, because it tests each release rather than a sample of instances.
+- **The gate is only as good as its traffic sample.** The rare-request file breaks three releases but only on one request shape. The gate held it once in five runs, when the recorded sample happened to contain that request. In the other four it passed, and B3 behaved like B2: the crashes were too rare to trip the alarm, and the file reached the whole fleet.
+- **No false holds in 500 safe files** (0%, CI 0 to 0.8%). 28% passed with a warning, mostly a new 21-field shape or changed answers, which is the point of warn over hold. The gate cost 0.13 CPU-seconds and 95 ms per check.
+- **The corpus found a gate bug first.** The first run held 9 safe files: parallel sandbox processes raced for the same port, and once a replay hit the wrong process. The fix (own id per run, retry on bind failure) is in this week, and the numbers above are after it.
+- **The cheap checks still matter.** B0's format check stopped the half-written file and B1's schema stopped the wrong-type weight. The gate adds to them rather than replacing them.
+
 ## Roadmap
 
 | Week | Deliverable |
@@ -258,14 +280,14 @@ The same benchmark with every consumer loading through the last-known-good libra
 | 2 ✅ | Baselines B0 to B2: push service, rings, alarm rollback, kill switch. Rebuild the three incidents and confirm B0 takes down the fleet in each |
 | 3 ✅ | Gate checks: semantic diff (row count, cardinality, null rate, PSI drift) and sandbox with traffic replay, under 1 minute per run |
 | 4 ✅ | Consumer library: last-known-good fallback, declared limits, fail-open/closed setting, held-push reports, randomized reload backoff |
-| **5 ← next** | PushBench runs: 12 bad scenarios and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, blast-radius charts |
-| 6 | Write-up and demo: README as a short paper, 90-second video, one-command `make bench` |
+| 5 ✅ | PushBench runs: 12 bad scenarios and 500 good pushes against B0 to B3, 5 seeds, confidence intervals, blast-radius charts |
+| **6 ← next** | Write-up and demo: README as a short paper, 90-second video, one-command `make bench` |
 
 ## Limitations
 
 - **A simulated fleet is not a real one.** Incidents are rebuilt from the shapes in public postmortems, not the companies' real code or traffic.
-- **Results so far come from one 4-core machine.** Timings such as the 2 s alarm and 9 s recovery depend on that setup. Week 5 adds seeds and confidence intervals.
-- **Replay only catches what the sample covers.** Google's bug sat on a path only one policy shape reached. If the replay misses that request type, so does the gate. A rare-request scenario will measure this directly.
+- **Results come from one 4-core machine.** Timings such as the 2 s alarm and 9 s recovery depend on that setup. Week 5's seeds vary the fleet layout, not the machine. The seeded matrix runs on the 100-instance fleet to fit in two hours.
+- **Replay only catches what the sample covers.** Google's bug sat on a path only one policy shape reached. If the replay misses that request type, so does the gate. In week 5 the gate caught the rare-request scenario in 1 of 5 runs.
 - **Speed versus safety is a real tradeoff.** Security content needs to move fast. Results will be reported for both a fast lane and a full gate.
 - **Failing open is not always safe.** For auth or security rule files it may let through traffic that should be blocked. The library's `fail_closed` mode exists for those.
 - **The library needs a code release.** In the simulation every release gets it through a flag, which assumes a backport. In a real fleet it protects only the releases that ship it.

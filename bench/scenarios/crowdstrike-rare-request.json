@@ -1,0 +1,46 @@
+{
+  "name": "crowdstrike-rare-request",
+  "kind": "bad",
+  "incident": "CrowdStrike variant",
+  "consumer": "bot-proxy",
+  "summary": "One rule gets the 21st field, pinned to a request shape about 1 in 4,600 requests have. v41 to v43 crash only when such a request arrives, so a 1,000-request replay usually misses it.",
+  "breaks": [
+    "v41",
+    "v42",
+    "v43"
+  ],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{bad}",
+      "--extra-field",
+      "v1",
+      "--extra-count",
+      "1",
+      "--rare"
+    ]
+  ]
+}

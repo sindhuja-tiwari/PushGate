@@ -100,7 +100,14 @@ def cmd_init(a: argparse.Namespace) -> None:
     print(f"producer: created {a.db} with {a.features} features")
 
 
-def build_features(db: str, extra_field: str | None = None, extra_count: int = 0) -> dict:
+# A request shape loadgen sends rarely: one user agent in 8, one method in 3,
+# one country in 6, one ASN class in 4 and three low-cardinality slots in 2.
+# About 1 request in 4,600 matches a rule pinned to it.
+RARE_PIN = {1: "HEAD", 2: "NG", 3: "university", 4: "v1", 5: "v1", 6: "v1"}
+
+
+def build_features(db: str, extra_field: str | None = None, extra_count: int = 0, rare: bool = False,
+                   corrupt: str | None = None) -> dict:
     con = duckdb.connect(db, read_only=True)
     rows = con.execute(FEATURE_QUERY).fetchall()
     con.close()
@@ -112,14 +119,27 @@ def build_features(db: str, extra_field: str | None = None, extra_count: int = 0
         # out-of-bounds read.
         for f in features[:extra_count]:
             f["fields"] = [f["fields"][0]] + ["*"] * (TEMPLATE_FIELDS - 1) + [extra_field]
+            if rare:
+                # Only requests of the rare shape reach field 21, so a
+                # sampled replay can easily miss it.
+                for i, v in RARE_PIN.items():
+                    f["fields"][i] = v
+    if corrupt == "string-weight":
+        # A producer bug: one weight is written as a string. The JSON parses
+        # and the format is right, but the consumer's typed parser rejects it.
+        features[0]["weight"] = str(features[0]["weight"])
     digest = hashlib.sha256(json.dumps(features, sort_keys=True).encode()).hexdigest()[:10]
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return {"schema": "bot-features/1", "config_version": f"feat-{stamp}-{digest}", "features": features}
 
 
 def cmd_features(a: argparse.Namespace) -> None:
-    doc = build_features(a.db, a.extra_field, a.extra_count)
-    write_atomic(a.out, json.dumps(doc, indent=1))
+    doc = build_features(a.db, a.extra_field, a.extra_count, a.rare, a.corrupt)
+    text = json.dumps(doc, indent=1)
+    if a.corrupt == "truncate":
+        # A producer that died mid-write without an atomic rename.
+        text = text[: len(text) // 2]
+    write_atomic(a.out, text)
     print(f"producer: wrote {a.out}: {len(doc['features'])} features ({doc['config_version']})")
 
 
@@ -136,7 +156,13 @@ def cmd_run(a: argparse.Namespace) -> None:
 def cmd_grant(a: argparse.Namespace) -> None:
     con = duckdb.connect(a.db)
     con.execute("CREATE SCHEMA IF NOT EXISTS r0")
-    con.execute("CREATE OR REPLACE TABLE r0.http_request_features AS SELECT * FROM main.http_request_features LIMIT 0")
+    cols = "*"
+    if a.columns:
+        # A partial replica: only the first N feature columns exist in r0.
+        names = [r[0] for r in con.execute(
+            "SELECT column_name FROM information_schema.columns WHERE table_schema = 'main' AND table_name = 'http_request_features' ORDER BY ordinal_position").fetchall()]
+        cols = ", ".join(names[: a.columns + 1])  # request_id plus N features
+    con.execute(f"CREATE OR REPLACE TABLE r0.http_request_features AS SELECT {cols} FROM main.http_request_features LIMIT 0")
     con.close()
     print("producer: r0.http_request_features is now visible to the feature query")
 
@@ -186,6 +212,8 @@ def main() -> None:
         s.add_argument("--out", default="state/out/feature.json")
         s.add_argument("--extra-field", default=None, help="append this value as field 21 on some rules (CrowdStrike shape)")
         s.add_argument("--extra-count", type=int, default=5, help="how many rules get the extra field")
+        s.add_argument("--rare", action="store_true", help="pin the extra-field rules to a rare request shape")
+        s.add_argument("--corrupt", choices=["truncate", "string-weight"], default=None, help="write a broken file")
         if name == "run":
             s.add_argument("--interval", type=float, default=300)
         s.set_defaults(fn=fn)
@@ -193,6 +221,8 @@ def main() -> None:
     for name, fn in (("grant-r0", cmd_grant), ("revoke-r0", cmd_revoke)):
         s = sub.add_parser(name)
         s.add_argument("--db", default="state/producer.duckdb")
+        if name == "grant-r0":
+            s.add_argument("--columns", type=int, default=0, help="only the first N feature columns exist in r0 (default: all)")
         s.set_defaults(fn=fn)
 
     s = sub.add_parser("policy")

@@ -1,0 +1,46 @@
+{
+  "name": "good-feature-growth",
+  "kind": "good",
+  "incident": "Good push: 10 new features",
+  "consumer": "bot-proxy",
+  "summary": "A routine model update: 10 new features (110 to 120), under every release's limits. Nothing should hold or roll it back.",
+  "breaks": [],
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/big.duckdb",
+      "--features",
+      "120"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/big.duckdb",
+      "--out",
+      "{bad}"
+    ]
+  ]
+}

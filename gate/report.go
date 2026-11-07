@@ -159,7 +159,7 @@ func (r *Report) sortFindings() {
 
 var (
 	threadID = regexp.MustCompile(`thread '([^']*)' \(\d+\)`)
-	selfName = regexp.MustCompile(`\S+ v\d+ sandbox: `)
+	selfName = regexp.MustCompile(`\S+ v\d+ sandbox(-\d+)?: `)
 	tempCfg  = regexp.MustCompile(`"?/[^\s"]*pushgate-sandbox-[^\s"]*/config\.json"?`)
 )
 

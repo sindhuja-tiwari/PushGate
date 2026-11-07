@@ -46,8 +46,16 @@ func TestScenarioFilesParse(t *testing.T) {
 		t.Fatalf("want at least 3 scenarios, got %d", len(sc))
 	}
 	for _, s := range sc {
-		if s.Consumer == "" || len(s.Good) == 0 || len(s.Bad) == 0 || len(s.Breaks) == 0 {
+		if s.Consumer == "" || len(s.Good) == 0 || len(s.Bad) == 0 {
 			t.Errorf("%s is incomplete", s.Name)
+		}
+		switch {
+		case s.Kind == "bad" && len(s.Breaks) == 0:
+			t.Errorf("%s: a bad scenario must say which releases it breaks", s.Name)
+		case s.Kind == "good" && len(s.Breaks) != 0:
+			t.Errorf("%s: a good scenario breaks nothing", s.Name)
+		case s.Kind != "bad" && s.Kind != "good":
+			t.Errorf("%s: kind must be bad or good, got %q", s.Name, s.Kind)
 		}
 	}
 }

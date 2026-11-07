@@ -13,7 +13,7 @@ VERSIONS   := 41 42 43 44
 PY         := .venv/bin/python
 CARGO_DIR  := consumers/rust-proxy
 
-.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-lkg clean
+.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-lkg bench-week5 clean
 
 build: build-rust build-go tools
 
@@ -40,6 +40,8 @@ tools:
 	go build -o bin/rollout ./rollout/cmd/rollout
 	go build -o bin/pushbench ./bench/cmd/pushbench
 	go build -o bin/gate ./gate/cmd/gate
+	go build -o bin/goodcorpus ./bench/cmd/goodcorpus
+	go build -o bin/report ./bench/cmd/report
 
 producer-deps: $(PY)
 $(PY):
@@ -71,6 +73,14 @@ bench: build producer-deps
 
 bench-lkg: build producer-deps
 	bin/pushbench -window 45s -bake 10s -on-bad-file keep_last_good -strategies b0,b2,b3
+
+# Week 5: good-push corpus, then every scenario under B0 to B3 on five fleet
+# layouts, then tables and charts. About 2 hours on 4 cores.
+bench-week5: build producer-deps
+	bin/goodcorpus -n 500 -out bench/results/week5-good.json -md bench/results/week5-good.md
+	bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3,4,5 -strategies b0,b1,b2,b3 \
+	  -window 25s -bake 5s -out bench/results/week5.json -md state/bench/week5-raw.md
+	bin/report
 
 clean:
 	rm -rf bin state
