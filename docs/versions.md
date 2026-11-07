@@ -9,12 +9,12 @@ separate binary in `bin/<consumer>/v<NN>`.
 Built with one Cargo feature per release (`--features v41` and so on).
 Limits live in `consumers/rust-proxy/src/version.rs`.
 
-| Release | Feature capacity | Input slots | Fleet share |
-|---------|------------------|-------------|-------------|
-| v41     | 128              | 20          | 5%          |
-| v42     | 200              | 20          | 15%         |
-| v43     | 200              | 20          | 30%         |
-| v44     | 200              | 21          | 50%         |
+| Release | Feature capacity | Input slots | Debug tracing | Fleet share |
+|---------|------------------|-------------|---------------|-------------|
+| v41     | 128              | 20          | no            | 5%          |
+| v42     | 200              | 20          | no            | 15%         |
+| v43     | 200              | 20          | no            | 30%         |
+| v44     | 200              | 21          | yes           | 50%         |
 
 * **Feature capacity.** The table is preallocated. A file with more features
   fails to load, and the loader unwraps the error, so the process panics.
@@ -24,6 +24,12 @@ Limits live in `consumers/rust-proxy/src/version.rs`.
   array of request inputs. A rule with a 21st field indexes past the end on
   v41 to v43 and panics, but only when a request reaches that field. This is
   the CrowdStrike July 2024 shape. v44 has the extra slot.
+* **Debug tracing** (week 7). v44 added a `trace` flag on rules: a traced
+  rule keeps a 128 KB copy of every request it matches, for a debug endpoint
+  that was never wired up. Nothing frees it, so a traced rule that matches
+  real traffic is a slow memory leak on v44 only. Earlier releases ignore
+  the flag. With `bin/fleet -mem-limit-mb 64`, the supervisor kills an
+  instance over the limit like an out-of-memory killer.
 
 ## go-policy (Go)
 

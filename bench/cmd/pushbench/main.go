@@ -94,7 +94,10 @@ type Run struct {
 	Pushes []*rollout.Result `json:"pushes,omitempty"`
 	// Deliveries counts files written to instances during the run, rollbacks
 	// included: the load a rollback storm puts on the fleet.
-	Deliveries       int     `json:"deliveries,omitempty"`
+	Deliveries int `json:"deliveries,omitempty"`
+	// Restarts counts instance restarts (crashes and memory-limit kills)
+	// seen during the window.
+	Restarts         int     `json:"restarts"`
 	WindowS          float64 `json:"window_s"`
 	PeakFailing      int     `json:"peak_failing"`
 	PeakFailingShare float64 `json:"peak_failing_share"`
@@ -487,6 +490,9 @@ sampling:
 			}
 			if i.State != registry.StateUp || i.Restarts > prev[i.ID] || i.NotServing {
 				failing++
+			}
+			if i.Restarts > prev[i.ID] {
+				run.Restarts += i.Restarts - prev[i.ID]
 			}
 			if i.Rejected != "" && i.Rejected == badVersion {
 				refused++

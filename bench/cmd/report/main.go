@@ -71,6 +71,7 @@ func main() {
 	goodPath := flag.String("good", "bench/results/week5-good.json", "goodcorpus JSON")
 	outDir := flag.String("out", "bench/results/week5", "directory for charts")
 	md := flag.String("md", "bench/results/week5.md", "report (Markdown)")
+	title = flag.String("title", "week 5", "which run this is, for the report's heading")
 	flag.Parse()
 
 	var runs []run
@@ -171,6 +172,8 @@ func fmtCI(mean, half float64, unit string, digits int) string {
 	return fmt.Sprintf(f+" ± "+f+"%s", mean, half, unit)
 }
 
+var title *string
+
 // --- grouping ---
 
 var strategyOrder = []string{"b0", "b1", "b2", "b3"}
@@ -246,8 +249,8 @@ func writeReport(b *strings.Builder, runs []run, good []goodItem, chartDir strin
 		window = r.WindowS
 	}
 
-	fmt.Fprintf(b, "# PushBench week 5 results\n\nGenerated %s. %d bad scenarios and %d good pushes, each run under %s on %d fleet layouts (seeds %s). A seed changes which release each instance runs, and so which releases land in each ring. The fleet has %d bot-proxy and %d go-policy instances. Each run watched the fleet for %.0f s after the push. Intervals are 95%%: Wilson for proportions, Student t over seeds for means.\n\n",
-		time.Now().UTC().Format("2006-01-02 15:04 MST"), len(bad), len(scenarios(runs, "good")), upper(strats), len(seeds), joinSeeds(seeds), fleets["bot-proxy"], fleets["go-policy"], window)
+	fmt.Fprintf(b, "# PushBench %s results\n\nGenerated %s. %d bad scenarios and %d good pushes, each run under %s on %d fleet layouts (seeds %s). A seed changes which release each instance runs, and so which releases land in each ring. The fleet has %d bot-proxy and %d go-policy instances. Each run watched the fleet for %.0f s after the push. Intervals are 95%%: Wilson for proportions, Student t over seeds for means.\n\n",
+		*title, time.Now().UTC().Format("2006-01-02 15:04 MST"), len(bad), len(scenarios(runs, "good")), upper(strats), len(seeds), joinSeeds(seeds), fleets["bot-proxy"], fleets["go-policy"], window)
 
 	// Headline: per strategy over all bad runs.
 	b.WriteString("## Overall, bad pushes\n\n")
