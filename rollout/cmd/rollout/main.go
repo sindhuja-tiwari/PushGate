@@ -2,6 +2,7 @@
 // the PushBench baseline strategies, and holds the kill switch.
 //
 //	rollout push -strategy b3 -consumer bot-proxy -file f.json [-bake 20s] [-rings 1,10,100]
+//	rollout push -strategy b3-urgent -reason "block attack 1234" -consumer bot-proxy -file f.json
 //	rollout set-lkg -consumer bot-proxy -file f.json   mark a file as last known good
 //	rollout rollback -consumer bot-proxy               deliver last known good everywhere
 //	rollout freeze -consumer bot-proxy -reason "..."   stop all pushes for this file type
@@ -85,7 +86,8 @@ func main() {
 
 func push(rn *rollout.Runner, args []string) error {
 	fs := flag.NewFlagSet("push", flag.ExitOnError)
-	strategy := fs.String("strategy", "b3", "b0 (push-all), b1 (schema), b2 (staged with alarms), b3 (b2 with the pre-exposure gate), b3-diff or b3-sandbox")
+	strategy := fs.String("strategy", "b3", "b0 (push-all), b1 (schema), b2 (staged with alarms), b3 (b2 with the pre-exposure gate), b3-urgent (the gate, then 1% for 3 s, then everyone; needs -reason), b3-diff or b3-sandbox")
+	reason := fs.String("reason", "", "why this push is made; required by b3-urgent and recorded with the push")
 	consumer := fs.String("consumer", "", "consumer type (bot-proxy or go-policy)")
 	file := fs.String("file", "", "config file to push")
 	bake := fs.Duration("bake", 20*time.Second, "b2: how long each ring must stay healthy")
@@ -107,6 +109,7 @@ func push(rn *rollout.Runner, args []string) error {
 	if err != nil {
 		return err
 	}
+	s.Note = *reason
 	if *rings != "" {
 		if s.Rings, err = rollout.ParseRings(*rings); err != nil {
 			return err

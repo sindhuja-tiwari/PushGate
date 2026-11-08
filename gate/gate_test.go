@@ -342,3 +342,17 @@ func TestSandboxMemoryLeakHolds(t *testing.T) {
 		t.Fatalf("summary: %s", r.Summary())
 	}
 }
+
+func TestUrgentLane(t *testing.T) {
+	s, err := StrategyByName("b3-urgent", 10*time.Second, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Name != "b3-urgent" || len(s.Rings) != 2 || s.Rings[0] != 1 || s.Bake != UrgentBake || !s.NeedsNote {
+		t.Fatalf("urgent lane: %+v", s)
+	}
+	g, ok := s.Validators[len(s.Validators)-1].(*Gate)
+	if !ok || !g.Cfg.Diff || !g.Cfg.Sandbox {
+		t.Fatal("the urgent lane must run both gate layers")
+	}
+}

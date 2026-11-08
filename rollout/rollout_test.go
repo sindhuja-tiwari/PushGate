@@ -251,3 +251,24 @@ func TestB2RollsBackOnRejection(t *testing.T) {
 		}
 	}
 }
+
+func TestNeedsNoteRefusesWithoutReason(t *testing.T) {
+	f := newFakeFleet(10, []int{44}, tooMany)
+	rn := newRunner(t, f)
+	s := fastB2()
+	s.Rings, s.NeedsNote = []float64{1, 100}, true
+	if _, err := rn.Push(context.Background(), s, "bot-proxy", featureFile("next", 120)); err == nil {
+		t.Fatal("a push that needs a reason must not start without one")
+	}
+	if f.holding(`"next"`) != 0 {
+		t.Fatal("nothing should have been delivered")
+	}
+	s.Note = "block attack 1234"
+	r, err := rn.Push(context.Background(), s, "bot-proxy", featureFile("next", 120))
+	if err != nil || r.Status != StatusCompleted || r.Note != s.Note {
+		t.Fatalf("with a reason the push should complete and record it: %+v, %v", r, err)
+	}
+	if r.Events[0].Kind != "note" || r.Events[0].Detail != s.Note {
+		t.Fatalf("the reason should be the first event: %+v", r.Events[0])
+	}
+}

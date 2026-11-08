@@ -97,3 +97,9 @@ The rerun with targeted requests and the memory check ([full tables](../bench/re
 ## What week 8 adds
 
 `gate ci` and a GitHub Action run the gate on any repository without the simulated fleet ([docs/ci.md](ci.md)). A `pushgate.json` lists config files and the command line of each deployed release; each pull request that changes one of those files is replayed against every release and compared with the base branch's version. `examples/ci/` has a 70-line Python rate limiter whose release 1 divides by a limit's `burst`, and `scripts/test_gate_ci.sh` (run in CI) checks that five known-bad files are held and two good ones pass. The `pushgate` workflow runs the action on pull requests that touch `examples/ci/`, the gate or the action itself.
+
+## Finishing
+
+- **An urgent lane** (`b3-urgent`) for content that cannot wait: the whole gate, then ring 0 for 3 s with alarms, then everyone, and a reason recorded with every such push ([gate.md](gate.md#the-urgent-lane)). On every scenario and layout it held all 56 bad pushes, like B3, and took good pushes to the whole fleet in 3.4 s instead of 10.4 s.
+- **MIT license.**
+- **v1 of the GitHub Action**, so other repositories can pin `sindhuja-tiwari/PushGate@v1`.

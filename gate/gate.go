@@ -188,8 +188,27 @@ func B3(bake time.Duration, cfg Config) rollout.Strategy {
 	return s
 }
 
-// StrategyByName resolves b0, b1, b2, b3 and the ablations b3-diff and
-// b3-sandbox (one gate layer each).
+// UrgentBake is the urgent lane's bake at ring 0: long enough for the crash
+// alarm, which fires within about 2 s of a crash in PushBench.
+const UrgentBake = 3 * time.Second
+
+// Urgent is the fast lane for content that cannot wait for a full staged
+// rollout, such as a rule against an attack in progress. The whole gate still
+// runs (it takes well under a second), then ring 0 bakes for UrgentBake with
+// the usual alarms and rollback, then the file goes to everyone. A push in this
+// lane must carry a reason, which is recorded with it. The kill switch still
+// applies.
+func Urgent(cfg Config) rollout.Strategy {
+	cfg.Diff, cfg.Sandbox = true, true
+	s := B3(UrgentBake, cfg)
+	s.Name = "b3-urgent"
+	s.Rings = []float64{1, 100}
+	s.NeedsNote = true
+	return s
+}
+
+// StrategyByName resolves b0, b1, b2, b3, the urgent lane b3-urgent, and the
+// ablations b3-diff and b3-sandbox (one gate layer each).
 func StrategyByName(name string, bake time.Duration, cfg Config) (rollout.Strategy, error) {
 	switch strings.ToLower(name) {
 	case "b3", "pushgate":
@@ -201,6 +220,8 @@ func StrategyByName(name string, bake time.Duration, cfg Config) (rollout.Strate
 	case "b3-sandbox":
 		cfg.Diff, cfg.Sandbox = false, true
 		return B3(bake, cfg), nil
+	case "b3-urgent", "urgent":
+		return Urgent(cfg), nil
 	}
 	return rollout.ByName(name, bake)
 }
