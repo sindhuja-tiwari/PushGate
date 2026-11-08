@@ -57,6 +57,11 @@ class ProducerTest(unittest.TestCase):
         f = doc["features"][0]["fields"]
         self.assertEqual((len(f), f[1], f[2], f[20]), (21, "HEAD", "NG", "v1"))
 
+    def test_trace_rule(self) -> None:
+        doc = self.features("--trace")
+        f = doc["features"][-1]
+        self.assertEqual((f["fields"], f["trace"]), (["*", "GET"], True))
+
     def test_corrupt_files(self) -> None:
         doc = self.features("--corrupt", "string-weight")
         self.assertIsInstance(doc["features"][0]["weight"], str)

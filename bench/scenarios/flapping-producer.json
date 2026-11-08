@@ -1,0 +1,62 @@
+{
+  "name": "flapping-producer",
+  "kind": "bad",
+  "incident": "Cloudflare, flapping producer",
+  "consumer": "bot-proxy",
+  "summary": "The Cloudflare producer did not fail once: its output flipped between good and bad every few minutes as different database nodes ran the query. Here it pushes the duplicate-row file and the good file in turn, every 15 s, six pushes in all. Without a gate, every bad push crashes the fleet again and every rollback is another fleet-wide delivery.",
+  "breaks": [
+    "v41",
+    "v42",
+    "v43",
+    "v44"
+  ],
+  "long": true,
+  "window": "100s",
+  "flap": {
+    "interval": "15s",
+    "pushes": 6
+  },
+  "good": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "init",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{good}"
+    ]
+  ],
+  "bad": [
+    [
+      "{py}",
+      "producer/producer.py",
+      "grant-r0",
+      "--db",
+      "{work}/producer.duckdb"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "features",
+      "--db",
+      "{work}/producer.duckdb",
+      "--out",
+      "{bad}"
+    ],
+    [
+      "{py}",
+      "producer/producer.py",
+      "revoke-r0",
+      "--db",
+      "{work}/producer.duckdb"
+    ]
+  ]
+}

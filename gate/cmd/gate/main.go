@@ -2,6 +2,12 @@
 // prints why it would pass or hold. It never delivers anything.
 //
 //	gate check -consumer bot-proxy -file f.json [-lkg old.json] [-layers diff,sandbox] [-json]
+//	gate ci [-spec pushgate.json] [-base origin/main] [-files a.json,b.json]
+//
+// gate ci is for a repository's CI (see action.yml and docs/ci.md): it
+// checks every changed config file the spec covers against the consumer
+// releases the spec lists, with the base branch's version as last known
+// good, and exits 1 if any is held.
 //
 // Without -lkg it uses the last known good file from the rollout store. The
 // sandbox runs every consumer release that is live in the fleet registry,
@@ -22,8 +28,13 @@ import (
 )
 
 func main() {
+	if len(os.Args) >= 2 && os.Args[1] == "ci" {
+		ci(os.Args[2:])
+		return
+	}
 	if len(os.Args) < 2 || os.Args[1] != "check" {
 		fmt.Fprintln(os.Stderr, "usage: gate check -consumer C -file F [flags]   (gate check -h for flags)")
+		fmt.Fprintln(os.Stderr, "       gate ci [-spec pushgate.json] [-base origin/main]   (gate ci -h for flags)")
 		os.Exit(2)
 	}
 	fs := flag.NewFlagSet("check", flag.ExitOnError)

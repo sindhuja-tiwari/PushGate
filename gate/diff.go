@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 )
 
 // Budgets are the semantic-diff thresholds. The rule of thumb behind the
@@ -23,12 +24,13 @@ type Budgets struct {
 	LatencyHoldX  float64 // sandbox: p99 above this multiple of last known good holds...
 	LatencyHoldMS float64 // ...if also this many ms above it
 	RSSWarnX      float64 // sandbox: memory above this multiple warns
+	GrowthHoldKB  float64 // sandbox: memory growth per replayed request above this holds
 }
 
 func DefaultBudgets() Budgets {
 	return Budgets{
 		HoldGrowth: 0.5, WarnGrowth: 0.2, PSIWarn: 0.25, ChurnWarn: 0.5, FlipWarn: 0.2,
-		OutputWarn: 0.1, ErrorHold: 0.01, LatencyHoldX: 3, LatencyHoldMS: 20, RSSWarnX: 2,
+		OutputWarn: 0.1, ErrorHold: 0.01, LatencyHoldX: 3, LatencyHoldMS: 20, RSSWarnX: 2, GrowthHoldKB: 4,
 	}
 }
 
@@ -66,7 +68,12 @@ func parse(data []byte) (*doc, error) {
 }
 
 // diff compares a candidate with the last known good file and adds findings.
-func diff(r *Report, consumer string, cand, lkg []byte, b Budgets) {
+func diff(r *Report, kind string, cand, lkg []byte, cfg Config) {
+	b := cfg.Budgets
+	if kind != "bot-proxy" && kind != "go-policy" {
+		diffGeneric(r, kind, cand, lkg, cfg)
+		return
+	}
 	c, err := parse(cand)
 	if err != nil {
 		r.add(Finding{Layer: "diff", Check: "parse", Severity: Hold, Detail: "candidate does not parse: " + err.Error()})
@@ -81,13 +88,77 @@ func diff(r *Report, consumer string, cand, lkg []byte, b Budgets) {
 		r.add(Finding{Layer: "diff", Check: "baseline", Severity: Warn, Detail: "last known good does not parse; semantic diff skipped"})
 		return
 	}
-	switch consumer {
-	case "bot-proxy":
+	if kind == "bot-proxy" {
 		diffFeatures(r, c.Features, l.Features, b)
-	case "go-policy":
+	} else {
 		diffPolicies(r, c.Policies, l.Policies, b)
-	default:
-		r.add(Finding{Layer: "diff", Check: "consumer", Severity: Info, Detail: "no semantic diff for " + consumer})
+	}
+}
+
+// diffGeneric is the semantic diff for a JSON file PushGate has no
+// built-in checks for: row count against the last known good file, and
+// duplicate keys, on the top-level array cfg.Rows identified by cfg.Key.
+func diffGeneric(r *Report, kind string, cand, lkg []byte, cfg Config) {
+	var c map[string]json.RawMessage
+	if err := json.Unmarshal(cand, &c); err != nil {
+		r.add(Finding{Layer: "diff", Check: "parse", Severity: Hold, Detail: "candidate is not a JSON object: " + err.Error()})
+		return
+	}
+	if cfg.Rows == "" {
+		r.add(Finding{Layer: "diff", Check: "consumer", Severity: Info, Detail: "no semantic diff for " + kind + " (set rows and key in the spec)"})
+		return
+	}
+	rows := func(doc map[string]json.RawMessage) ([]map[string]any, error) {
+		var out []map[string]any
+		raw, ok := doc[cfg.Rows]
+		if !ok {
+			return nil, fmt.Errorf("no %q array", cfg.Rows)
+		}
+		return out, json.Unmarshal(raw, &out)
+	}
+	cr, err := rows(c)
+	if err != nil {
+		r.add(Finding{Layer: "diff", Check: "parse", Severity: Hold, Detail: "candidate: " + err.Error()})
+		return
+	}
+	key := func(row map[string]any) string {
+		parts := make([]string, len(cfg.Key))
+		for i, k := range cfg.Key {
+			parts[i] = fmt.Sprint(row[k])
+		}
+		return strings.Join(parts, "/")
+	}
+	var lr []map[string]any
+	if lkg != nil {
+		var l map[string]json.RawMessage
+		if json.Unmarshal(lkg, &l) == nil {
+			lr, _ = rows(l)
+		}
+	}
+	if lr == nil {
+		r.add(Finding{Layer: "diff", Check: "baseline", Severity: Info, Detail: "no usable last known good file; row count not compared"})
+	} else {
+		growth(r, cfg.Rows+" count", len(cr), len(lr), cfg.Budgets)
+	}
+	if len(cfg.Key) == 0 {
+		return
+	}
+	ck := make([]string, len(cr))
+	for i, row := range cr {
+		ck[i] = key(row)
+	}
+	nc, ex := duplicates(ck)
+	nl := 0
+	if lr != nil {
+		lk := make([]string, len(lr))
+		for i, row := range lr {
+			lk[i] = key(row)
+		}
+		nl, _ = duplicates(lk)
+	}
+	if nc > nl {
+		r.add(Finding{Layer: "diff", Check: "duplicates", Severity: Hold,
+			Detail: fmt.Sprintf("%d %s share a %s with another row (e.g. %s); last known good had %d", nc, cfg.Rows, strings.Join(cfg.Key, "+"), ex, nl)})
 	}
 }
 

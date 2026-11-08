@@ -1,0 +1,34 @@
+# Dogfooding the PushGate GitHub Action (action.yml at the repository root)
+# on this repository's example config files. A pull request that changes
+# examples/ci/config/ runs every changed file through the releases listed in
+# examples/ci/pushgate.json and fails if any would crash, leak or slow down.
+name: pushgate
+
+on:
+  pull_request:
+    paths:
+      - "examples/ci/**"
+      - "action.yml"
+      - "gate/**"
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: consumers/rust-proxy
+      - name: Build the consumer releases the spec runs
+        run: make build-rust build-go
+      - name: PushGate
+        uses: ./
+        with:
+          spec: examples/ci/pushgate.json

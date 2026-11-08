@@ -1,25 +1,38 @@
-# PushBench (week 5)
+# PushBench (week 7)
 
 PushBench pushes bad and good files through each rollout strategy on a live
-simulated fleet and measures what the fleet went through. Week 5 runs the full
-matrix: every scenario under B0 to B3, on five fleet layouts, plus a corpus of
-500 safe files through the checks alone.
+simulated fleet and measures what the fleet went through. It runs every
+scenario under B0 to B3, on five fleet layouts, plus a corpus of 500 safe
+files through the checks alone. Week 7 reran it with the gate's targeted
+requests and memory check, and added two slow scenarios that run separately.
 
-Results: [bench/results/week5.md](../bench/results/week5.md). Good-push corpus:
-[bench/results/week5-good.md](../bench/results/week5-good.md).
+Results: [bench/results/week7.md](../bench/results/week7.md). Good-push corpus:
+[bench/results/week7-good.md](../bench/results/week7-good.md). Slow scenarios:
+[bench/results/week7-long.md](../bench/results/week7-long.md). Week 5's
+results, before targeted requests, stay in `bench/results/week5*`.
 
 ## What is run
 
 ```bash
 make build
-bin/goodcorpus -n 500 -out bench/results/week5-good.json -md bench/results/week5-good.md
-bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3,4,5 -strategies b0,b1,b2,b3 \
-  -window 25s -bake 5s -out bench/results/week5.json -md state/bench/week5-raw.md
-bin/report        # tables and charts: bench/results/week5.md, bench/results/week5/*.svg
+bin/goodcorpus -n 500 -out bench/results/week7-good.json -md bench/results/week7-good.md
+bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3,4,5 -strategies b0,b1,b2,b3 -mem-limit-mb 64 \
+  -window 25s -bake 5s -out bench/results/week7.json -md bench/results/week7-raw.md
+bin/report -title "week 7" -runs bench/results/week7.json -good bench/results/week7-good.json \
+  -out bench/results/week7 -md bench/results/week7.md
+bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3 -strategies b0,b1,b2,b3 -mem-limit-mb 64 -long \
+  -scenarios memory-leak,flapping-producer -bake 5s -out bench/results/week7-long.json -md bench/results/week7-long.md
 ```
 
-`make bench-week5` runs all three. On a 4-core machine the corpus takes under
-2 minutes and the matrix about 2 hours.
+`make bench` runs the first three, writing to `state/results/`
+(`make bench-quick`: one fleet layout and 100 safe files), and
+`make bench-long` runs the last. On a 4-core machine the corpus takes under
+2 minutes, the matrix about 2 hours and the slow scenarios about an hour.
+
+**Memory limit.** `-mem-limit-mb 64` gives every fleet instance a 64 MB
+resident memory limit, like a container limit: the supervisor samples each
+process every 500 ms and kills it when it goes over, and the instance then
+restarts like after a crash. A healthy consumer stays under 10 MB.
 
 **Fleet.** `-scale 0.2` gives 100 instances: 80 bot-proxy and 20 go-policy,
 across the same releases (v41 to v44) and the same release mix as the full
@@ -37,7 +50,9 @@ fleet cannot change after that.
 
 ## Scenarios
 
-Ten bad scenarios and two good pushes. "Breaks" is the set of releases that
+Twelve bad scenarios and two good pushes. The first ten and the good pushes
+run in `make bench`; the last two need longer windows and run in
+`make bench-long`. "Breaks" is the set of releases that
 fail on the file, checked by the producer tests and the gate's sandbox tests.
 
 | Scenario | Consumer | Breaks | What is wrong with the file |
@@ -55,16 +70,25 @@ fail on the file, checked by the producer tests and the gate's sandbox tests.
 | `good-feature-growth` | bot-proxy | none | 10 new features (120 in total) |
 | `good-policy-growth` | go-policy | none | 5 new projects |
 
-The roadmap planned 12 bad scenarios. Two are not built:
+| `memory-leak` | bot-proxy | v44 | debug tracing on for a rule that matches every GET; v44 keeps 128 KB per traced match and is killed at the memory limit about two minutes in (window 4 min) |
+| `flapping-producer` | bot-proxy | all | the duplicate-row file and the good file pushed in turn every 15 s, six pushes (window 100 s) |
 
-- **A slow memory leak.** It needs a consumer change that leaks per request
-  and a window of ten minutes or more per run, which would multiply the
-  matrix time by about 20. The gate is not expected to catch it (see
-  [gate.md](gate.md), "What it cannot see"), so the rings would carry it.
-- **A rollback storm.** Repeated bad pushes while a rollback is in progress
-  need a scripted producer in the loop, not a single file per run.
+**Memory leak.** v44 keeps a copy of every request that matches a rule with
+`"trace": true` and never frees it ([versions.md](versions.md)). Nothing
+crashes on load or on any single request, so B2's 5 s bakes see a healthy
+fleet and the push completes. Each v44 instance then grows by about 0.5 MB a
+second under the benchmark's load until the memory limit kills it, restarts
+on the same file, and grows again.
 
-Both remain good candidates for a follow-up.
+**Flapping producer.** Cloudflare's producer did not fail once: the file
+flipped between good and bad every few minutes, depending on which database
+nodes ran the query. The scenario pushes bad, good, bad, good, bad, good,
+15 s apart, without waiting for the previous rollout. The run's exposure
+counts the bad push that reached the most instances, and it also records how
+many file deliveries the fleet took in all.
+
+A leaking process keeps its memory after a rollback, so runs of a long
+scenario, and the run after one, each start on a freshly started fleet.
 
 ## Good-push corpus
 
@@ -81,7 +105,8 @@ random (seed 1):
 Every file is within every release's limits, so every hold is a false hold.
 Each file goes through B1's schema check and through the gate three times
 (diff only, sandbox only, both), against the real consumer binaries for v41 to
-v44 and the traffic sample in `gate/testdata/traffic.txt`. The corpus does not
+v44, the traffic sample in `gate/testdata/traffic.txt` and the targeted
+requests the gate builds for every changed rule. The corpus does not
 go through the fleet: the gate's verdict is the only thing that differs
 between B2 and B3 on a safe file. The two good scenarios in the matrix
 measure the push delay that B2 and B3 add on a live fleet.
@@ -97,7 +122,7 @@ measure the push delay that B2 and B3 add on a live fleet.
 
 ## Charts
 
-`bin/report` writes two static SVGs into `bench/results/week5/`:
+`bin/report` writes two static SVGs into `bench/results/week7/`:
 
 - `exposure.svg`: share of the fleet that got each bad file, per strategy,
   mean over seeds with the range as a whisker.

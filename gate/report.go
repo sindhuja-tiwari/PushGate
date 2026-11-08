@@ -45,6 +45,9 @@ type VersionResult struct {
 	LKGP99MS   float64 `json:"lkg_p99_ms"`
 	RSSKB      int     `json:"rss_kb"`
 	LKGRSSKB   int     `json:"lkg_rss_kb"`
+	// Memory added while replaying, from serving to the last request.
+	GrowthKB    int `json:"rss_growth_kb"`
+	LKGGrowthKB int `json:"lkg_rss_growth_kb"`
 }
 
 // Report is the gate's full answer for one candidate file.
@@ -107,12 +110,8 @@ func (r *Report) Summary() string {
 		g.n += inst[f.Version]
 	}
 	for _, g := range groups {
-		if strings.HasPrefix(g.check, "load: ") || strings.HasPrefix(g.check, "replay: ") {
-			verb, cause, _ := strings.Cut(g.check, ": ")
-			what := "crashes loading the file"
-			if verb == "replay" {
-				what = "crashes on replayed traffic"
-			}
+		verb, cause, _ := strings.Cut(g.check, ": ")
+		if what, ok := map[string]string{"load": "crashes loading the file", "replay": "crashes on replayed traffic", "memory-growth": "leaks memory"}[verb]; ok {
 			holds = append(holds, fmt.Sprintf("%s (%d of %d instances) %s: %s", strings.Join(g.versions, ", "), g.n, total, what, cause))
 		} else {
 			holds = append(holds, g.check)
@@ -206,6 +205,48 @@ func (r *Report) Text() string {
 			fmt.Fprintf(&b, "  v%-7d %-10d %-17s %-9d %-7d %5.2f (%5.2f)   %5.1f%%\n",
 				v.Version, v.Instances, res, v.Requests, v.Errors, v.P99MS, v.LKGP99MS, 100*v.OutputDiff)
 		}
+	}
+	return b.String()
+}
+
+// Markdown renders the report for a CI job summary or a pull request
+// comment: the verdict and summary, findings above info, and what each
+// release did with the file.
+func (r *Report) Markdown(file string) string {
+	var b strings.Builder
+	icon := map[string]string{"pass": "✅", "hold": "⛔"}[r.Verdict]
+	fmt.Fprintf(&b, "### %s PushGate %s: `%s`\n\n", icon, r.Verdict, file)
+	fmt.Fprintf(&b, "Consumer **%s**, candidate `%s`, last known good `%s`, checked in %d ms.\n\n", r.Consumer, r.Candidate, r.LastKnownGood, r.DurationMS)
+	if r.Verdict == "hold" {
+		fmt.Fprintf(&b, "> %s\n\n", r.Summary())
+	}
+	var shown []Finding
+	for _, f := range r.Findings {
+		if f.Severity != Info {
+			shown = append(shown, f)
+		}
+	}
+	if len(shown) > 0 {
+		b.WriteString("| Severity | Layer | Check | Detail |\n|---|---|---|---|\n")
+		for _, f := range shown {
+			fmt.Fprintf(&b, "| %s | %s | %s | %s |\n", f.Severity, f.Layer, f.Check, strings.ReplaceAll(f.Detail, "|", "\\|"))
+		}
+		b.WriteString("\n")
+	}
+	if len(r.Versions) > 0 {
+		b.WriteString("| Release | Instances | Result | Requests | Errors | p99 ms (last known good) | Answers changed |\n|---|---|---|---|---|---|---|\n")
+		for _, v := range r.Versions {
+			res := "ok"
+			switch {
+			case v.Crashed && v.CrashedOn > 0:
+				res = fmt.Sprintf("crashed on request %d", v.CrashedOn)
+			case v.Crashed:
+				res = "crashed on load"
+			}
+			fmt.Fprintf(&b, "| v%d | %d | %s | %d | %d | %.2f (%.2f) | %.1f%% |\n",
+				v.Version, v.Instances, res, v.Requests, v.Errors, v.P99MS, v.LKGP99MS, 100*v.OutputDiff)
+		}
+		b.WriteString("\n")
 	}
 	return b.String()
 }

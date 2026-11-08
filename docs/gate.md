@@ -49,18 +49,24 @@ All thresholds are in `gate.Budgets` (`gate/diff.go`).
 3. Wait for `/healthz`. A process that exits first crashed on load; its
    stderr is parsed for the panic (Rust `panicked at` or Go `panic:` plus the
    first non-runtime frame).
-4. Replay up to 1,000 requests from the traffic sample, one at a time. If a
-   request fails and the process exits, that request killed it, and the
-   report names it.
+4. Replay up to 1,000 requests from the traffic sample, one at a time, then
+   one request built for each new or changed entry (week 7): for bot-proxy,
+   a request that matches each changed rule, with wildcard slots filled from
+   a sampled request; for go-policy, a request for each changed project and
+   API, up to 200. A sampled replay reaches a changed rule only if the
+   sample holds a request it matches, which week 5 showed can fail for a
+   rare request shape. If a request fails and the process exits, that
+   request killed it, and the report names it.
 5. Compare with the last known good run: error share, p99 latency, resident
-   memory and the answer each request got (`bot` for bot-proxy, `allow` for
-   go-policy).
+   memory, memory growth during the replay, and the answer each sampled
+   request got (`bot` for bot-proxy, `allow` for go-policy).
 
 | Result | Severity |
 |---|---|
 | Crash on load or on a replayed request | hold |
 | More than 1% of replayed requests fail | hold |
 | p99 more than 3x last known good and more than 20 ms above it | hold |
+| Memory grows more than 4 KB per replayed request (and over 2 MB in all), at least 4x the growth with last known good | hold |
 | More than 10% of answers differ from last known good | warn (changed behavior is often the point) |
 | Memory more than 2x last known good | warn |
 
@@ -118,9 +124,13 @@ bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b3 -consumer bot-prox
 ## What it cannot see
 
 - **Requests the sample does not contain.** A crash that needs a rare request
-  shape is only caught if the sample includes one. A rare-request scenario in
-  week 5 measures this.
-- **Slow failures.** A leak that takes ten minutes to matter will not show in
-  a one-second replay. The rings and alarms behind the gate remain for that.
+  shape is only caught if the sample includes one. Week 5 measured this (1 of
+  5 runs caught). Since week 7 the gate also builds a request for every
+  changed rule, which covers the built-in formats. For other formats a
+  changed entry that no sampled request reaches is only checked for loading.
+- **Slow failures that do not grow with requests.** A leak per request shows
+  in the replay, because 1,000 requests are minutes of one instance's
+  traffic. A leak per second, or one that needs many distinct keys, does
+  not. The rings and alarms behind the gate remain for that.
 - **Releases not in the registry.** The gate tests what is deployed now. A
   release that rolls out after the file does is tested on its own rollout.

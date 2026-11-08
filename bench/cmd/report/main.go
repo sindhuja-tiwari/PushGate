@@ -2,7 +2,7 @@
 // good-push corpus into the week 5 results: tables with 95% confidence
 // intervals and two SVG charts.
 //
-//	report -runs bench/results/week5.json -good bench/results/week5-good.json -out bench/results/week5
+//	report -runs bench/results/week7.json -good bench/results/week7-good.json -out bench/results/week7
 package main
 
 import (
@@ -67,17 +67,18 @@ type goodItem struct {
 }
 
 func main() {
-	runsPath := flag.String("runs", "bench/results/week5.json", "pushbench runs JSON")
-	goodPath := flag.String("good", "bench/results/week5-good.json", "goodcorpus JSON")
-	outDir := flag.String("out", "bench/results/week5", "directory for charts")
-	md := flag.String("md", "bench/results/week5.md", "report (Markdown)")
+	runsPath := flag.String("runs", "bench/results/week7.json", "pushbench runs JSON")
+	goodPathFlag = flag.String("good", "bench/results/week7-good.json", "goodcorpus JSON")
+	outDir := flag.String("out", "bench/results/week7", "directory for charts")
+	md := flag.String("md", "bench/results/week7.md", "report (Markdown)")
+	title = flag.String("title", "week 7", "which run this is, for the report's heading")
 	flag.Parse()
 
 	var runs []run
 	readJSON(*runsPath, &runs)
 	var good []goodItem
-	if *goodPath != "" {
-		readJSON(*goodPath, &good)
+	if *goodPathFlag != "" {
+		readJSON(*goodPathFlag, &good)
 	}
 	if err := os.MkdirAll(*outDir, 0o755); err != nil {
 		log.Fatal(err)
@@ -171,6 +172,8 @@ func fmtCI(mean, half float64, unit string, digits int) string {
 	return fmt.Sprintf(f+" ± "+f+"%s", mean, half, unit)
 }
 
+var title, goodPathFlag *string
+
 // --- grouping ---
 
 var strategyOrder = []string{"b0", "b1", "b2", "b3"}
@@ -246,8 +249,8 @@ func writeReport(b *strings.Builder, runs []run, good []goodItem, chartDir strin
 		window = r.WindowS
 	}
 
-	fmt.Fprintf(b, "# PushBench week 5 results\n\nGenerated %s. %d bad scenarios and %d good pushes, each run under %s on %d fleet layouts (seeds %s). A seed changes which release each instance runs, and so which releases land in each ring. The fleet has %d bot-proxy and %d go-policy instances. Each run watched the fleet for %.0f s after the push. Intervals are 95%%: Wilson for proportions, Student t over seeds for means.\n\n",
-		time.Now().UTC().Format("2006-01-02 15:04 MST"), len(bad), len(scenarios(runs, "good")), upper(strats), len(seeds), joinSeeds(seeds), fleets["bot-proxy"], fleets["go-policy"], window)
+	fmt.Fprintf(b, "# PushBench %s results\n\nGenerated %s. %d bad scenarios and %d good pushes, each run under %s on %d fleet layouts (seeds %s). A seed changes which release each instance runs, and so which releases land in each ring. The fleet has %d bot-proxy and %d go-policy instances. Each run watched the fleet for %.0f s after the push. Intervals are 95%%: Wilson for proportions, Student t over seeds for means.\n\n",
+		*title, time.Now().UTC().Format("2006-01-02 15:04 MST"), len(bad), len(scenarios(runs, "good")), upper(strats), len(seeds), joinSeeds(seeds), fleets["bot-proxy"], fleets["go-policy"], window)
 
 	// Headline: per strategy over all bad runs.
 	b.WriteString("## Overall, bad pushes\n\n")
@@ -352,7 +355,7 @@ func writeReport(b *strings.Builder, runs []run, good []goodItem, chartDir strin
 			}
 			return k
 		}
-		fmt.Fprintf(b, "\n## Good-push corpus (gate only)\n\n%d safe files, run through the checks without a fleet ([details](week5-good.md)).\n\n", n)
+		fmt.Fprintf(b, "\n## Good-push corpus (gate only)\n\n%d safe files, run through the checks without a fleet ([details](%s)).\n\n", n, filepath.Base(strings.TrimSuffix(*goodPathFlag, ".json")+".md"))
 		b.WriteString("| Check | False holds | Rate (95% CI) |\n|---|---|---|\n")
 		row := func(name string, k int) {
 			lo, hi := wilson(k, n)
@@ -388,7 +391,9 @@ func writeReport(b *strings.Builder, runs []run, good []goodItem, chartDir strin
 			fmt.Fprintf(b, "- **%s**: B2 exposed between %.0f%% and %.0f%% of the fleet depending on the layout (%s).\n", sc.incident, lo, hi, strings.Join(exp, ", "))
 		}
 	}
-	if !any {
+	if len(seeds) < 2 {
+		b.WriteString("This takes at least two fleet layouts (-seeds).\n")
+	} else if !any {
 		b.WriteString("No scenario's B2 exposure varied by more than 5 points across seeds.\n")
 	}
 	fmt.Fprintf(b, "\n![Failing instances over time](%s/timeline.svg)\n", chartDir)

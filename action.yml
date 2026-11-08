@@ -1,0 +1,52 @@
+name: PushGate
+description: Hold a config change that crashes, leaks or slows any deployed release of the service that loads it, before it merges.
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  spec:
+    description: Path to pushgate.json, which lists the config files and the consumer releases that load them.
+    default: pushgate.json
+  base:
+    description: Git ref holding the last known good version of each file. Default, the pull request's base branch (or HEAD~1 on a push).
+    default: ""
+  files:
+    description: Comma-separated files to check. Default, every changed file the spec covers.
+    default: ""
+  go-version:
+    description: Go version used to build the gate.
+    default: "1.24"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache-dependency-path: ${{ github.action_path }}/go.sum
+
+    - name: Build the gate
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: go build -o "$RUNNER_TEMP/pushgate" ./gate/cmd/gate
+
+    - name: Check changed config files
+      shell: bash
+      env:
+        SPEC: ${{ inputs.spec }}
+        BASE: ${{ inputs.base }}
+        FILES: ${{ inputs.files }}
+        BASE_REF: ${{ github.base_ref }}
+      run: |
+        if [ -z "$BASE" ]; then
+          if [ -n "$BASE_REF" ]; then
+            git fetch --no-tags origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+            BASE="origin/$BASE_REF"
+          else
+            BASE="HEAD~1"
+          fi
+        fi
+        args=(ci -spec "$SPEC" -base "$BASE")
+        if [ -n "$FILES" ]; then args+=(-files "$FILES"); fi
+        "$RUNNER_TEMP/pushgate" "${args[@]}"

@@ -1,0 +1,56 @@
+{
+  "schema": "limits/1",
+  "config_version": "limits-2026-11-01",
+  "limits": [
+    {
+      "route": "/api/users",
+      "per_minute": 1200,
+      "burst": 10
+    },
+    {
+      "route": "/api/orders",
+      "per_minute": 120,
+      "burst": 5
+    },
+    {
+      "route": "/api/search",
+      "per_minute": 60,
+      "burst": 10
+    },
+    {
+      "route": "/api/login",
+      "per_minute": 120,
+      "burst": 20
+    },
+    {
+      "route": "/api/upload",
+      "per_minute": 120,
+      "burst": 5
+    },
+    {
+      "route": "/api/export",
+      "per_minute": 600,
+      "burst": 5
+    },
+    {
+      "route": "/api/billing",
+      "per_minute": 60,
+      "burst": 20
+    },
+    {
+      "route": "/api/reports",
+      "per_minute": 600,
+      "burst": 5
+    },
+    {
+      "route": "/api/webhooks",
+      "per_minute": 120,
+      "burst": 20
+    },
+    {
+      "route": "/api/admin",
+      "per_minute": 1200,
+      "burst": 5
+    }
+  ]
+}

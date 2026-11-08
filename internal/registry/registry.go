@@ -89,6 +89,7 @@ type Instance struct {
 	ConfigVersion string    `json:"config_version"`
 	LastExit      string    `json:"last_exit,omitempty"`
 	LastPanic     string    `json:"last_panic,omitempty"`
+	RSSKB         int       `json:"rss_kb,omitempty"` // resident memory, sampled every 500 ms
 	StateSince    time.Time `json:"state_since"`
 
 	// Set only for instances running the last-known-good library.

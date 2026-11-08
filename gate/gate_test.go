@@ -200,6 +200,11 @@ func (f fixedFleet) Deliver(registry.Instance, []byte) error { return nil }
 // sandboxGate runs the real consumer binaries from ../bin (make build).
 func sandboxGate(t *testing.T, consumer, lkg string, diff bool) *Gate {
 	t.Helper()
+	return sandboxGateCfg(t, consumer, lkg, diff, false)
+}
+
+func sandboxGateCfg(t *testing.T, consumer, lkg string, diff, noTargeted bool) *Gate {
+	t.Helper()
 	bin, _ := filepath.Abs("../bin")
 	for v := 41; v <= 44; v++ {
 		if _, err := os.Stat(filepath.Join(bin, consumer, fmt.Sprintf("v%d", v))); err != nil {
@@ -213,6 +218,7 @@ func sandboxGate(t *testing.T, consumer, lkg string, diff bool) *Gate {
 		Replay:      1000,
 		Diff:        diff,
 		Sandbox:     true,
+		NoTargeted:  noTargeted,
 		Budgets:     DefaultBudgets(),
 		LKG:         read(t, lkg),
 	})
@@ -239,6 +245,9 @@ func TestSandbox(t *testing.T) {
 		{"10% more features", "bot-proxy", "", "feature-good.json", grow(t, 11), nil, ""},
 		{"cloudflare duplicate rows", "bot-proxy", "feature-dup.json", "feature-good.json", nil, []int{41, 42, 43, 44}, "load"},
 		{"crowdstrike 21st field", "bot-proxy", "feature-21field.json", "feature-good.json", nil, []int{41, 42, 43}, "replay"},
+		// No request in testdata/traffic.txt matches the rare rule, so only
+		// the request built for the changed rule reaches it.
+		{"crowdstrike rare request", "bot-proxy", "feature-rare.json", "feature-good.json", nil, []int{41, 42, 43}, "replay"},
 		{"good policy file", "go-policy", "policy-good.json", "policy-good.json", nil, nil, ""},
 		{"google blank quota", "go-policy", "policy-blank.json", "policy-good.json", nil, []int{43, 44}, "load"},
 	}
@@ -276,5 +285,60 @@ func TestSandbox(t *testing.T) {
 				t.Fatalf("want a sandbox %s hold, got %v\n%s", c.check, err, r.Text())
 			}
 		})
+	}
+}
+
+// Without targeted requests the rare rule is never reached: the week 5 miss.
+func TestSandboxRareWithoutTargetedPasses(t *testing.T) {
+	g := sandboxGateCfg(t, "bot-proxy", "feature-good.json", false, true)
+	r, err := g.Check(context.Background(), "bot-proxy", read(t, "feature-rare.json"))
+	if err != nil || r.Verdict != "pass" {
+		t.Fatalf("sampled replay alone should miss the rare rule: %v\n%s", err, r.Text())
+	}
+}
+
+func TestTargetedFeatures(t *testing.T) {
+	sample := []string{"/score?f0=chrome&f1=GET&f2=US&f3=mobile&f4=v0&f20=v0"}
+	reqs := targeted("bot-proxy", read(t, "feature-rare.json"), read(t, "feature-good.json"), sample)
+	if len(reqs) != 1 {
+		t.Fatalf("one rule changed, got %d requests: %v", len(reqs), reqs)
+	}
+	want := "/score?f0=go-http-client&f1=HEAD&f2=NG&f3=university&f4=v1&f5=v1&f6=v1&f7=x"
+	if !strings.HasPrefix(reqs[0], want) || !strings.HasSuffix(reqs[0], "&f20=v1") {
+		t.Fatalf("request does not match the rule: %s", reqs[0])
+	}
+	if got := targeted("bot-proxy", read(t, "feature-good.json"), read(t, "feature-good.json"), sample); len(got) != 0 {
+		t.Fatalf("identical file should need no targeted requests: %v", got)
+	}
+}
+
+func TestTargetedPolicies(t *testing.T) {
+	reqs := targeted("go-policy", read(t, "policy-blank.json"), read(t, "policy-good.json"), nil)
+	if len(reqs) == 0 || len(reqs) > maxTargeted {
+		t.Fatalf("want requests for the changed policies, got %d", len(reqs))
+	}
+	for _, q := range reqs {
+		if !strings.HasPrefix(q, "/check?project=") {
+			t.Fatalf("bad request %s", q)
+		}
+	}
+}
+
+// A traced rule leaks memory on v44 only. No release crashes, but the
+// replay shows v44's memory growing with every request.
+func TestSandboxMemoryLeakHolds(t *testing.T) {
+	g := sandboxGate(t, "bot-proxy", "feature-good.json", false)
+	r, err := g.Check(context.Background(), "bot-proxy", read(t, "feature-trace.json"))
+	if !errors.Is(err, ErrHeld) || !has(r, "sandbox", "memory-growth", Hold) || len(crashed(r)) != 0 {
+		t.Fatalf("want a memory-growth hold and no crash, got %v\n%s", err, r.Text())
+	}
+	for _, f := range r.Findings {
+		if f.Check == "memory-growth" && f.Version != 44 {
+			t.Fatalf("only v44 traces: %s", f.Detail)
+		}
+	}
+	t.Log(r.Text())
+	if !strings.Contains(r.Summary(), "v44 (50 of 100 instances) leaks memory") {
+		t.Fatalf("summary: %s", r.Summary())
 	}
 }

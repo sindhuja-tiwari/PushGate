@@ -6,14 +6,17 @@
 #   make fleet        run the 500-instance fleet in the foreground
 #   make smoke        start the fleet, push a good and a bad file, check results
 #   make demo-week1   the Cloudflare-shaped push against B0 (push-all)
-#   make bench        B0 to B3 on every incident scenario (about 15 minutes)
-#   make bench-lkg    the same with the last-known-good library in every consumer
+#   make bench        the full benchmark: reproduces bench/results/week7.md (about 2 hours)
+#   make bench-long   the slow scenarios: memory leak and flapping producer (about an hour)
+#   make bench-quick  the same with one fleet layout (about 25 minutes)
+#   make demo         the demo run: two bad files under B0, B2 and B3 (make demo-video renders it)
+#   make bench-lkg    the three incidents with the last-known-good library in every consumer
 
 VERSIONS   := 41 42 43 44
 PY         := .venv/bin/python
 CARGO_DIR  := consumers/rust-proxy
 
-.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-lkg bench-week5 clean
+.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-quick bench-long bench-incidents bench-lkg demo demo-video clean
 
 build: build-rust build-go tools
 
@@ -68,19 +71,55 @@ smoke: build producer-deps
 demo-week1: build producer-deps
 	scripts/demo_week1.sh
 
+# The 90-second demo: a live run (about 1 minute), then the video from its
+# recording (needs ffmpeg).
+demo: build producer-deps
+	$(PY) scripts/demo.py
+
+demo-video: demo
+	$(PY) -m pip install -q pillow
+	$(PY) scripts/render_demo.py -o docs/demo.mp4
+
+# PushBench. `make bench` reproduces bench/results/week7.md in one command:
+# the 500-file good-push corpus, every scenario under B0 to B3 on five fleet
+# layouts, then tables and charts. About 2 hours on 4 cores. Results go to
+# $(RESULTS), so the committed ones are left alone; compare the two, or run
+# `make bench RESULTS=bench/results` to replace them.
+#
+# `make bench-quick` is the same with one fleet layout and 100 good files
+# (about 25 minutes, including the build). `make bench-long` runs the slow
+# scenarios (memory leak, flapping producer) on three layouts (about an hour).
+SEEDS      ?= 1,2,3,4,5
+GOOD       ?= 500
+STRATEGIES ?= b0,b1,b2,b3
+RESULTS    ?= state/results
+MEMLIMIT   ?= 64
+
 bench: build producer-deps
-	bin/pushbench -window 45s -bake 10s
+	@mkdir -p $(RESULTS)
+	bin/goodcorpus -n $(GOOD) -out $(RESULTS)/week7-good.json -md $(RESULTS)/week7-good.md
+	bin/pushbench -scale 0.2 -rate 1000 -seeds $(SEEDS) -strategies $(STRATEGIES) -mem-limit-mb $(MEMLIMIT) \
+	  -window 25s -bake 5s -out $(RESULTS)/week7.json -md $(RESULTS)/week7-raw.md
+	bin/report -title "week 7" -runs $(RESULTS)/week7.json -good $(RESULTS)/week7-good.json \
+	  -out $(RESULTS)/week7 -md $(RESULTS)/week7.md
+	@echo "Results: $(RESULTS)/week7.md"
+
+bench-long: build producer-deps
+	@mkdir -p $(RESULTS)
+	bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3 -strategies $(STRATEGIES) -mem-limit-mb $(MEMLIMIT) -long \
+	  -scenarios memory-leak,flapping-producer -bake 5s -out $(RESULTS)/week7-long.json -md $(RESULTS)/week7-long.md
+	@echo "Results: $(RESULTS)/week7-long.md"
+
+bench-quick:
+	$(MAKE) bench SEEDS=1 GOOD=100
+
+# Weeks 2 to 4: the three incidents on the full 500-instance fleet.
+bench-incidents: build producer-deps
+	bin/pushbench -window 45s -bake 10s -scenarios cloudflare-duplicate-rows,crowdstrike-extra-field,google-blank-quota
 
 bench-lkg: build producer-deps
-	bin/pushbench -window 45s -bake 10s -on-bad-file keep_last_good -strategies b0,b2,b3
-
-# Week 5: good-push corpus, then every scenario under B0 to B3 on five fleet
-# layouts, then tables and charts. About 2 hours on 4 cores.
-bench-week5: build producer-deps
-	bin/goodcorpus -n 500 -out bench/results/week5-good.json -md bench/results/week5-good.md
-	bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3,4,5 -strategies b0,b1,b2,b3 \
-	  -window 25s -bake 5s -out bench/results/week5.json -md state/bench/week5-raw.md
-	bin/report
+	bin/pushbench -window 45s -bake 10s -on-bad-file keep_last_good -strategies b0,b2,b3 \
+	  -scenarios cloudflare-duplicate-rows,crowdstrike-extra-field,google-blank-quota
 
 clean:
 	rm -rf bin state
