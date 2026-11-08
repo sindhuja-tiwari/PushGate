@@ -117,7 +117,7 @@ type Run struct {
 
 func main() {
 	scenarioGlob := flag.String("scenarios", "bench/scenarios/*.json", "scenario files: comma-separated globs or scenario names")
-	strategies := flag.String("strategies", "b0,b1,b2,b3", "comma-separated strategies (b0, b1, b2, b3, b3-diff, b3-sandbox)")
+	strategies := flag.String("strategies", "b0,b1,b2,b3", "comma-separated strategies (b0, b1, b2, b3, b3-urgent, b3-diff, b3-sandbox)")
 	window := flag.Duration("window", 45*time.Second, "how long to watch the fleet after each push")
 	bake := flag.Duration("bake", 10*time.Second, "b2 bake time per ring")
 	rate := flag.Int("rate", 2000, "loadgen requests per second")
@@ -157,6 +157,9 @@ func main() {
 		s, err := gate.StrategyByName(strings.TrimSpace(name), *bake, gcfg)
 		if err != nil {
 			log.Fatal(err)
+		}
+		if s.NeedsNote {
+			s.Note = "pushbench: urgent lane"
 		}
 		strats = append(strats, s)
 	}

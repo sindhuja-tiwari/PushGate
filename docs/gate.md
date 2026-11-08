@@ -121,6 +121,32 @@ bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b3 -consumer bot-prox
 
 `gate check` exits 0 on pass, 1 on hold and 2 on errors.
 
+## The urgent lane
+
+Some content cannot wait for a full staged rollout: a rule against an attack
+in progress, or a fix for the outage itself. `b3-urgent` is the lane for it:
+
+```bash
+bin/rollout push -strategy b3-urgent -reason "block attack, incident 1234" -consumer bot-proxy -file f.json
+```
+
+- The whole gate still runs. It takes well under a second, so skipping it
+  would save almost nothing and would remove the only check that sees every
+  release.
+- Then ring 0 (1%) bakes for 3 s with the usual crash, error-rate and refusal
+  alarms, which fire within about 2 s of a crash, and the file goes to
+  everyone.
+- The push refuses to start without `-reason`. The reason is recorded in the
+  push's result and timeline, so urgent pushes can be reviewed afterwards.
+- The kill switch still stops it.
+
+In PushBench ([results](../bench/results/urgent.md),
+[slow scenarios](../bench/results/urgent-long.md)) the urgent lane held all 50
+bad pushes and the 6 slow-scenario pushes before exposure, like B3, and the
+good pushes reached every instance in 3.4 s at the median against 10.4 s for
+B3. What it gives up is the 10% ring: a file that passes the gate and fails
+only after 3 s reaches the whole fleet sooner.
+
 ## What it cannot see
 
 - **Requests the sample does not contain.** A crash that needs a rare request

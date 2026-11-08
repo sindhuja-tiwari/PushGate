@@ -32,6 +32,11 @@ type Strategy struct {
 	// Zero means no health gate at all.
 	Bake   time.Duration
 	Alarms AlarmConfig
+	// NeedsNote makes Push refuse to start without a Note, for strategies
+	// that skip safety margins and so must say why (the urgent lane).
+	NeedsNote bool
+	// Note is the operator's reason for the push, recorded in its result.
+	Note string
 }
 
 // Gated reports whether the strategy watches health and can roll back.
@@ -132,6 +137,7 @@ type Result struct {
 	Started       time.Time      `json:"started"`
 	Status        string         `json:"status"`
 	Reason        string         `json:"reason,omitempty"`
+	Note          string         `json:"note,omitempty"`    // the operator's reason, for urgent pushes
 	Fleet         int            `json:"fleet"`             // instances of this consumer
 	Exposed       int            `json:"exposed"`           // instances that received the candidate file
 	ExposedPeak   float64        `json:"exposed_share"`     // Exposed / Fleet
@@ -183,6 +189,13 @@ func (rn *Runner) Push(ctx context.Context, s Strategy, consumer string, data []
 
 	if len(s.Rings) == 0 || s.Rings[len(s.Rings)-1] != 100 {
 		return nil, errors.New("strategy rings must end at 100")
+	}
+	if s.NeedsNote && strings.TrimSpace(s.Note) == "" {
+		return nil, fmt.Errorf("strategy %s needs a reason for the push", s.Name)
+	}
+	if s.Note != "" {
+		r.Note = s.Note
+		emit("note", 0, 0, s.Note)
 	}
 	if f, err := rn.Store.Frozen(consumer); err != nil {
 		return nil, err

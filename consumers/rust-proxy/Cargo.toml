@@ -3,7 +3,7 @@ name = "bot-proxy"
 version = "0.1.0"
 edition = "2021"
 description = "PushGate test consumer: a bot-scoring proxy module with a preallocated feature table (Cloudflare shape) and a fixed-arity rule template (CrowdStrike shape)."
-license = "Apache-2.0"
+license = "MIT"
 
 [[bin]]
 name = "bot-proxy"

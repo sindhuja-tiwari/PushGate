@@ -42,7 +42,7 @@ check, and the job summary says which releases and why.
          - uses: actions/checkout@v4
            with:
              fetch-depth: 0          # the gate reads the base branch's version of each file
-         - uses: sindhuja-tiwari/PushGate@main
+         - uses: sindhuja-tiwari/PushGate@v1
            with:
              spec: pushgate.json
    ```

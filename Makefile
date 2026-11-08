@@ -9,6 +9,7 @@
 #   make bench        the full benchmark: reproduces bench/results/week7.md (about 2 hours)
 #   make bench-long   the slow scenarios: memory leak and flapping producer (about an hour)
 #   make bench-quick  the same with one fleet layout (about 25 minutes)
+#   make bench-urgent the urgent lane on every scenario (about 30 minutes)
 #   make demo         the demo run: two bad files under B0, B2 and B3 (make demo-video renders it)
 #   make bench-lkg    the three incidents with the last-known-good library in every consumer
 
@@ -16,7 +17,7 @@ VERSIONS   := 41 42 43 44
 PY         := .venv/bin/python
 CARGO_DIR  := consumers/rust-proxy
 
-.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-quick bench-long bench-incidents bench-lkg demo demo-video clean
+.PHONY: build build-rust build-go tools test seed producer-deps fleet smoke demo-week1 bench bench-quick bench-long bench-urgent bench-incidents bench-lkg demo demo-video clean
 
 build: build-rust build-go tools
 
@@ -109,6 +110,13 @@ bench-long: build producer-deps
 	bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3 -strategies $(STRATEGIES) -mem-limit-mb $(MEMLIMIT) -long \
 	  -scenarios memory-leak,flapping-producer -bake 5s -out $(RESULTS)/week7-long.json -md $(RESULTS)/week7-long.md
 	@echo "Results: $(RESULTS)/week7-long.md"
+
+bench-urgent: build producer-deps
+	@mkdir -p $(RESULTS)
+	bin/pushbench -scale 0.2 -rate 1000 -seeds $(SEEDS) -strategies b3-urgent -mem-limit-mb $(MEMLIMIT) \
+	  -window 25s -bake 5s -out $(RESULTS)/urgent.json -md $(RESULTS)/urgent.md
+	bin/pushbench -scale 0.2 -rate 1000 -seeds 1,2,3 -strategies b3-urgent -mem-limit-mb $(MEMLIMIT) -long \
+	  -scenarios memory-leak,flapping-producer -bake 5s -out $(RESULTS)/urgent-long.json -md $(RESULTS)/urgent-long.md
 
 bench-quick:
 	$(MAKE) bench SEEDS=1 GOOD=100

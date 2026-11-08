@@ -73,6 +73,8 @@ blank quota block; last known good had 0)
 
 **In CI** ([docs/ci.md](docs/ci.md)). `gate ci` and the GitHub Action in `action.yml` run the same checks on any repository: a `pushgate.json` lists the config files and the command line of each deployed release, and every pull request that changes one of those files is checked against the base branch's version. A hold fails the check and the job summary says which releases fail and why. No simulated fleet is needed.
 
+**Urgent lane** ([docs/gate.md](docs/gate.md#the-urgent-lane)). For content that cannot wait, such as a rule against an attack in progress, `b3-urgent` still runs the whole gate, then bakes ring 0 for 3 s with the usual alarms and goes to everyone. It refuses to start without a reason, which is recorded with the push.
+
 **Rings and kill switch** ([docs/baselines.md](docs/baselines.md)). Rings of 1%, 10% and 100% with bake times, crash and error-rate alarms, rollback, and one command to freeze all pushes of a file type. Deliberately simple: AppConfig already does this well.
 
 ## 3. Evaluation setup
@@ -110,9 +112,11 @@ Full tables: [bench/results/week7.md](bench/results/week7.md). Corpus: [bench/re
 
 **4.5 False holds and cost.** None of the 500 safe files was held by B1, by either gate layer alone, or by both (0%, CI 0 to 0.8%). 28% passed with a warning, mostly a new rule shape or changed answers. A check took 99 ms at p50 and 0.14 CPU-seconds with 8 sandboxed processes, or about 0.25 s on a machine also running the fleet. B3 added 0.3 s to a 10 s staged rollout for the good pushes, far under the 2-minute budget we set. The first corpus run did hold 9 safe files, which exposed a race in the gate itself: parallel sandbox processes competed for the same port. The fix (an id per run that `/healthz` must echo, and a retry on bind failure) came before the numbers above.
 
-**4.6 The cheap checks still matter.** B0's format check stopped the half-written file and B1's schema stopped the wrong-type weight. Those are B0's 5 and B1's 10 holds. The gate adds to them rather than replacing them.
+**4.6 The urgent lane** ([results](bench/results/urgent.md)). Run on the same 12 scenarios and 5 layouts, plus the slow scenarios on 3, `b3-urgent` held all 56 bad pushes before exposure, as B3 did, and the good pushes reached every instance in 3.4 s at the median against 10.4 s for B3 and 10.0 s for B2.
 
-**4.7 The safety net works without the gate** ([week 4 results](docs/history.md#what-week-4-shows)). With the last-known-good library in every consumer, even B0 pushing the three incident files to all 500 instances crashed nothing. Each vulnerable instance refused the file with the reason, for example `feature 0 has 21 match fields; this release reads 20 input slots`, and kept serving the old one. The library needs a code release to reach every consumer, though. The gate protects the releases already running.
+**4.7 The cheap checks still matter.** B0's format check stopped the half-written file and B1's schema stopped the wrong-type weight. Those are B0's 5 and B1's 10 holds. The gate adds to them rather than replacing them.
+
+**4.8 The safety net works without the gate** ([week 4 results](docs/history.md#what-week-4-shows)). With the last-known-good library in every consumer, even B0 pushing the three incident files to all 500 instances crashed nothing. Each vulnerable instance refused the file with the reason, for example `feature 0 has 21 match fields; this release reads 20 input slots`, and kept serving the old one. The library needs a code release to reach every consumer, though. The gate protects the releases already running.
 
 ## 5. Limitations and threats to validity
 
@@ -120,7 +124,7 @@ Full tables: [bench/results/week7.md](bench/results/week7.md). Corpus: [bench/re
 - **One machine.** Timings such as the 2 s alarm and the 0.1 s check come from one 4-core machine. The seeds vary the fleet layout, not the hardware. The seeded matrix runs on 100 instances, and the three incidents were also run on 500 ([development log](docs/history.md)).
 - **The scenarios were written by the same people as the gate.** Eight of ten bad files break at load time, where the sandbox is strongest. The rare-request and memory-leak scenarios were added to probe the gate's blind spots, and the gate was then extended to catch them, so they show the fix works, not that no blind spots remain. A leak that grows too slowly to show in 1,000 requests, or one triggered only by traffic the gate does not build, would still pass, and the rings and alarms remain for that.
 - **The safe corpus is synthetic.** Its mutations are routine by construction. Real producers make stranger safe changes, so 0 of 500 is an optimistic bound.
-- **Speed versus safety.** Security content has to move fast. At about 0.1 s per check the gate adds little delay here, but a fast lane for urgent content was not built.
+- **Speed versus safety.** Security content has to move fast. The urgent lane keeps the gate but drops the 10% ring and shortens the bake, so a file that passes the gate and fails only after a few seconds reaches the whole fleet sooner than under B3.
 - **Failing open is not always safe.** For auth or security rule files it may let through traffic that should be blocked. The library's `fail_closed` mode exists for those.
 - **Data-triggered failures only.** PushGate does not catch ordinary code bugs or bad commands such as Facebook's 2021 BGP withdrawal.
 
@@ -136,6 +140,7 @@ Needs Go 1.24+, a recent stable Rust toolchain, Python 3.10+ and, for the video,
 make bench        # the full benchmark: corpus, 240 fleet runs, tables and charts (about 2 hours)
 make bench-quick  # one fleet layout and 100 safe files (about 25 minutes)
 make bench-long   # the memory-leak and flapping-producer scenarios (about an hour)
+make bench-urgent # the urgent lane on every scenario (about 30 minutes)
 make demo         # the demo run, live in the terminal (about 1 minute)
 make demo-video   # ...and render it to docs/demo.mp4
 ```
@@ -151,6 +156,7 @@ bin/pgctl status                             # who runs what, and which config e
 bin/rollout set-lkg -consumer bot-proxy -file seed/feature.json
 bin/gate check -consumer bot-proxy -file f.json                  # pass or hold, and why; delivers nothing
 bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b3 -bake 10s -consumer bot-proxy -file f.json
+bin/rollout -loadgen http://127.0.0.1:19100 push -strategy b3-urgent -reason "incident 1234" -consumer bot-proxy -file f.json
 bin/pgctl crashes                            # crash-looping instances, grouped by panic
 bin/rollout freeze -consumer bot-proxy -reason "incident 1234"   # kill switch
 bin/rollout rollback -consumer bot-proxy                         # last known good, everywhere
@@ -193,6 +199,7 @@ pushgate/
 | 6 ✅ | Write-up and demo: this README, a 90-second video, one-command `make bench` |
 | 7 ✅ | Close blind spots: a replayed request for every changed rule, memory-growth holds, and the memory-leak and flapping-producer scenarios (12 bad scenarios) |
 | 8 ✅ | Real CI use: `gate ci` and a GitHub Action for any repository's config files ([docs/ci.md](docs/ci.md)) |
+| 9 ✅ | Finish: an urgent lane for content that cannot wait, MIT license, v1 release of the Action |
 
 What each week found at the time is in [docs/history.md](docs/history.md).
 
@@ -204,9 +211,10 @@ What each week found at the time is in [docs/history.md](docs/history.md).
 - [AWS AppConfig: monitoring deployments for automatic rollback](https://docs.aws.amazon.com/appconfig/latest/userguide/monitoring-deployments.html)
 - [Codefresh: progressive delivery for ConfigMaps with Argo Rollouts](https://codefresh.io/blog/progressive-delivery-for-kubernetes-config-maps-using-argo-rollouts)
 - [Sun et al., Testing Configuration Changes in Context to Prevent Production Failures (OSDI 2020)](https://www.usenix.org/conference/osdi20/presentation/sun)
+- [Tang et al., Holistic Configuration Management at Facebook (SOSP 2015)](https://sigops.org/s/conferences/sosp/2015/current/index.html)
 
-The 8.5M device figure for CrowdStrike is Microsoft's public estimate from July 2024. Meta's Configerator paper (Tang et al., SOSP 2015) is cited from memory.
+The 8.5M device figure for CrowdStrike is Microsoft's public estimate from July 2024.
 
 ## License
 
-To be decided.
+MIT. See [LICENSE](LICENSE).
