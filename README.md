@@ -1,5 +1,7 @@
 # PushGate
 
+![tests](https://github.com/sindhuja-tiwari/PushGate/actions/workflows/tests.yml/badge.svg)
+
 **Stop a bad config push before it takes down the fleet.**
 
 [![The demo: B2 carries a bad policy file to the whole fleet, PushGate holds it](docs/demo-preview.gif)](docs/demo.mp4)
