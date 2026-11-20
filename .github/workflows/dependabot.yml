@@ -1,0 +1,28 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: monthly
+  - package-ecosystem: cargo
+    directories:
+      - "/consumers/rust-proxy"
+      - "/lib/rust/lkg"
+    schedule:
+      interval: monthly
+    ignore:
+      # the benchmark consumers should stay reproducible: review major bumps by hand
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: pip          # producer/requirements.txt
+    directory: "/producer"
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: monthly
+  - package-ecosystem: github-actions   # also covers the root action.yml
+    directory: "/"
+    schedule:
+      interval: monthly
